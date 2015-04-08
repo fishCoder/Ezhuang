@@ -1,6 +1,5 @@
 package com.ezhuang;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.Editable;
@@ -12,7 +11,7 @@ import android.widget.ImageView;
 import com.ezhuang.common.Global;
 import com.ezhuang.common.JsonUtil;
 import com.ezhuang.common.enter.SimpleTextWatcher;
-import com.ezhuang.model.CurrentUser;
+import com.ezhuang.model.StaffUser;
 import com.loopj.android.http.RequestParams;
 
 
@@ -21,7 +20,6 @@ import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.FocusChange;
-import org.androidannotations.annotations.OnActivityResult;
 import org.androidannotations.annotations.ViewById;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -66,6 +64,13 @@ public class LoginActivity extends BaseActivity {
 
     @AfterViews
     void init(){
+
+        RequestParams params = new RequestParams();
+        params.put("phone", "18850131312");
+        params.put("password", "159951");
+        postNetwork(HOST_LOGIN, params, HOST_LOGIN);
+
+
         editName.addTextChangedListener(textWatcher);
         editPassword.addTextChangedListener(textWatcher);
         editValify.addTextChangedListener(textWatcher);
@@ -74,12 +79,9 @@ public class LoginActivity extends BaseActivity {
         editName.addTextChangedListener(textWatcherName);
     }
 
-    final private int RESULT_CLOSE = 100;
-    @OnActivityResult(RESULT_CLOSE)
-    void resultRegiter(int result) {
-        if (result == Activity.RESULT_OK) {
-            finish();
-        }
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 
     @Click
@@ -100,8 +102,8 @@ public class LoginActivity extends BaseActivity {
             }
 
             RequestParams params = new RequestParams();
-            params.put("userName", name);
-            params.put("passWord", password);
+            params.put("phone", name);
+            params.put("password", password);
             if (captchaLayout.getVisibility() == View.VISIBLE) {
                 params.put("j_captcha", captcha);
             }
@@ -115,17 +117,34 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
+    final int RESULT_REQUEST_USERINFO = 21;
     @Override
     public void parseJson(int code, JSONObject respanse, String tag, int pos, Object data) throws JSONException {
+
+        if(code==-1){
+            showErrorMsg(code,respanse);
+            return;
+        }
+
         if(tag.equals(HOST_LOGIN)){
-            if(code==0){
-                CurrentUser currentUser = JsonUtil.Json2Object(respanse.getString("data"), CurrentUser.class);
-                currentUser.save();
-                showProgressBar(true);
-                startActivity(new Intent(LoginActivity.this, MainActivity.class));
-            }else{
+            if(code==10001){
+                StaffUser currentUser = JsonUtil.Json2Object(respanse.getString("data"), StaffUser.class);
+                //TODO 保存登陆用户
+                MyApp.currentUser = currentUser;
                 showProgressBar(false);
-                showErrorMsg(code, respanse);
+                currentUser.save();
+//                UserDetailActivity_
+//                        .intent(this)
+//                        .globalKey(MyApp.currentUser.getGlobal_key())
+//                        .companyType(MyApp.currentUser.getCompanyType())
+//                        .startForResult(RESULT_REQUEST_USERINFO);
+
+                Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                startActivity(intent);
+                finish();
+            }else{
+                showMiddleToast("密码或账号不正确");
+                showProgressBar(false);
             }
 
         }

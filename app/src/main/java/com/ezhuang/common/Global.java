@@ -31,6 +31,7 @@ import android.widget.ImageView;
 
 import com.ezhuang.MyApp;
 import com.ezhuang.common.htmltext.GrayQuoteSpan;
+import com.ezhuang.model.CurrentUser;
 import com.loopj.android.http.PersistentCookieStore;
 
 import org.apache.http.cookie.Cookie;
@@ -47,19 +48,29 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
  * Created by cc191954 on 14-8-233.
  */
 public class Global {
-    public static final String HOST_CODING = "http://192.168.0.151/Perfect:8080";
+    public static final String HOST_91JZ = "http://91jzw.com";
 
-    public static String HOST = HOST_CODING;
+    public static String HOST = HOST_91JZ;
+
+    public static String PROJECT_MANAGER = "5";
+    public static String CEHCK = "10";
+    public static String BUYER = "8";
+    public static String STAFF = "9";
+    public static String QUALITY = "13";
+
+    public static CurrentUser currentUser = null;
 
     public static SimpleDateFormat DateFormatTime = new SimpleDateFormat("HH:mm");
 
-    private static SimpleDateFormat DayFormatTime = new SimpleDateFormat("yyyy-MM-dd");
+    public static SimpleDateFormat DayFormatTime = new SimpleDateFormat("yyyy-MM-dd");
     public static SimpleDateFormat MonthDayFormatTime = new SimpleDateFormat("MMMdd日");
 
     public static SimpleDateFormat WeekFormatTime = new SimpleDateFormat("EEE");
@@ -128,8 +139,8 @@ public class Global {
     }
 
     public static void copy(Context context, String content) {
-        ClipboardManager cmb = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-        cmb.setText(content);
+//        ClipboardManager cmb = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+//        cmb.setText(content);
     }
 
     public static String replaceAvatar(JSONObject json) {
@@ -496,5 +507,15 @@ public class Global {
         }
         //return Math.round(size) + units[i];
         return df.format(size) + " " + units[i];
+    }
+
+    public static boolean isMoblie(String moblie){
+        Pattern p = Pattern.compile("^((13[0-9])|(15[^4,\\D])|(17[0-9])|(18[0,5-9]))\\d{8}$");
+        Matcher m = p.matcher(moblie);
+        return m.matches();
+    }
+
+    public static boolean isFloat(String sFloat){
+        return Pattern.compile("([1-9]+[0-9]*|0)(\\.[\\d]+)?").matcher(sFloat).matches();
     }
 }

@@ -9,6 +9,8 @@ import java.util.List;
 import com.activeandroid.ActiveAndroid;
 import com.ezhuang.common.Unread;
 import com.ezhuang.common.third.MyImageDownloader;
+import com.ezhuang.model.CurrentUser;
+import com.ezhuang.model.StaffUser;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -28,6 +30,8 @@ public class MyApp extends Application {
     public static int sEmojiMonkey;
 
     public static Unread sUnread;
+
+    public static StaffUser currentUser;
 
     public static boolean sMainCreate = false;
 

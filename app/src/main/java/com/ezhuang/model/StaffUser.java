@@ -1,8 +1,13 @@
 package com.ezhuang.model;
 
+import com.activeandroid.Model;
+import com.activeandroid.annotation.Table;
+
+import java.io.Serializable;
 import java.util.List;
 
-public class StaffUser {
+@Table(name="staff")
+public class StaffUser extends Model implements Serializable  {
 
 	private String global_key; // 用户id
 	private String phone;
@@ -18,12 +23,12 @@ public class StaffUser {
 	private String status;//
 	private Integer isActive;// (0未激活 1激活)
 
-	private List<Role> role;//
+	private List<Role> roles;//
 
 	public StaffUser(String global_key, String phone, String password,
 			String avatar, String name, String email, String wxId,
 			String createTime, String companyId, Integer companyType,
-			String status, Integer isActive, List<Role> role) {
+			String status, Integer isActive, List<Role> roles) {
 		super();
 		this.global_key = global_key;
 		this.phone = phone;
@@ -37,7 +42,7 @@ public class StaffUser {
 		this.companyType = companyType;
 		this.status = status;
 		this.isActive = isActive;
-		this.role = role;
+		this.roles = roles;
 	}
 
 	public StaffUser() {
@@ -140,12 +145,12 @@ public class StaffUser {
 		this.isActive = isActive;
 	}
 
-	public List<Role> getRole() {
-		return role;
+	public List<Role> getRoles() {
+		return roles;
 	}
 
-	public void setRole(List<Role> role) {
-		this.role = role;
+	public void setRoles(List<Role> roles) {
+		this.roles = roles;
 	}
 
     public String getCompanyName() { return companyName; }

@@ -8,6 +8,31 @@
         <item>设置</item>
     </string-array>
 
+    <string-array name="staff_apps">
+        <item>创建项目</item>
+        <item>查看项目</item>
+        <item>投诉/报修</item>
+    </string-array>
+
+    <string-array name="project_manager_apps">
+        <item>我的项目</item>
+        <item>开单记录</item>
+        <item>汇报进度</item>
+    </string-array>
+
+    <string-array name="check_apps">
+        <item>审核</item>
+        <item>审核记录</item>
+    </string-array>
+
+    <string-array name="buyer_apps">
+        <item>采购</item>
+    </string-array>
+
+    <string-array name="quality_apps">
+        <item>质检</item>
+    </string-array>
+
     <string-array name="program_title">
         <item>全部项目</item>
         <item>我参与的</item>
@@ -94,11 +119,21 @@
         <item>重发激活邮件</item>
     </string-array>
 
-    <string-array name="strings_priority_inverse">
-        <item>十万火急</item>
-        <item>优先处理</item>
-        <item>正常处理</item>
-        <item>有空再看</item>
+    <string-array name="project_item_name">
+        <item>项目名称</item>
+        <item>项目地址</item>
+        <item>户型</item>
+        <item>面积</item>
+        <item>合同编号</item>
+        <item>备注</item>
+        <item>业主姓名</item>
+        <item>业主地址</item>
+        <item>业主电话</item>
+        <item>设计师</item>
+        <item>项目经理</item>
+        <item>审核</item>
+        <item>采购</item>
+        <item>质检</item>
     </string-array>
 
     <string-array name="topic_type">
@@ -118,9 +153,9 @@
     </string-array>
 
     <string-array name="user_detail_activity_list_first">
-        <item>所在地</item>
-        <item>座右铭</item>
-        <item>个性标签</item>
+        <item>职位</item>
+        <item>电话</item>
+        <item>加入时间</item>
     </string-array>
 
     <string-array name="user_detail_list_first">

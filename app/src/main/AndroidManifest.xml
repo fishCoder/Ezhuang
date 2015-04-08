@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ezhuang" >
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <application
         android:name=".MyApp"
         android:allowBackup="true"
@@ -9,19 +12,45 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
 
-        <uses-permission android:name="android.permission.INTERNET" />
-        <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
         <activity
             android:name=".MainActivity"
+            android:theme="@style/AppThemeNoActionbar"
             android:label="@string/app_name" >
         </activity>
         <activity
             android:name=".LoginActivity_"
+            android:theme="@style/AppThemeNoActionbar"
+            android:label="@string/app_name">
+        </activity>
+        <activity
+            android:name=".project.detail.AttachmentsPicDetailActivity_"
             android:label="@string/app_name" >
         </activity>
         <activity
+            android:name=".user.UserDetailActivity_"
+            android:theme="@style/TranslateActionbar"
+            android:label="@string/person_home_page"
+            >
+        </activity>
+        <activity
+            android:name=".ImagePagerActivity_"
+            android:screenOrientation="portrait"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name=".project.detail.CreatProjectActivity_"
+            android:screenOrientation="portrait"
+            android:label="@string/create_project" >
+        </activity>
+        <activity
+            android:name=".project.detail.SetProjectInfo_"
+            android:screenOrientation="portrait"
+            android:label="@string/create_project" >
+        </activity>
+
+        <activity
             android:name=".EntranceActivity_"
+            android:theme="@style/AppThemeNoActionbar"
             android:label="entrance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

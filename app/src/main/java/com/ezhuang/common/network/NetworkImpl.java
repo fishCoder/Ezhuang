@@ -4,11 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.ezhuang.LoginActivity_;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
-import com.ezhuang.LoginActivity_;
 import com.ezhuang.common.Global;
 
 import org.apache.http.Header;
@@ -88,6 +88,7 @@ public class NetworkImpl {
                     callback.parseJson(NETWORK_ERROR, errorResponse, tag, dataPos, data);
                     if (isPageRequest(tag)) {
 //                        callback.setPageBottom(NetworkCallback.PageStyle.LoadingFail);
+
                     }
 
                 } catch (Exception e) {

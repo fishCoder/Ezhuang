@@ -1,6 +1,7 @@
 package com.ezhuang;
 
-import android.app.Activity;
+import android.support.v7.app.ActionBarActivity;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -14,7 +15,6 @@ import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import  com.ezhuang.common.CustomDialog;
-import com.ezhuang.common.FootUpdate;
 import com.ezhuang.common.Global;
 import com.ezhuang.common.ImageLoadTool;
 import com.ezhuang.common.UnreadNotify;
@@ -34,7 +34,7 @@ import org.json.JSONObject;
 /**
  * Created by Administrator on 2015/4/2 0002.
  */
-public class BaseActivity extends Activity implements NetworkCallback {
+public class BaseActivity extends ActionBarActivity implements NetworkCallback {
     protected LayoutInflater mInflater;
     private ImageLoadTool imageLoadTool = new ImageLoadTool();
 
@@ -42,7 +42,7 @@ public class BaseActivity extends Activity implements NetworkCallback {
 
     private NetworkImpl networkImpl;
 
-    protected FootUpdate mFootUpdate = new FootUpdate();
+    protected ImagePagerActivity.FootUpdate mFootUpdate = new ImagePagerActivity.FootUpdate();
 
     protected void showProgressBar(boolean show) {
         showProgressBar(show, "");
@@ -126,6 +126,7 @@ public class BaseActivity extends Activity implements NetworkCallback {
 
     @Override
     public void parseJson(int code, JSONObject respanse, String tag, int pos, Object data) throws JSONException {
+
     }
 
     protected void getNextPageNetwork(String url, final String tag) {

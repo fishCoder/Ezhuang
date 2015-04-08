@@ -1,11 +1,12 @@
-package com.ezhuang.common;
+package com.ezhuang;
 
 import android.view.LayoutInflater;
 import android.view.View;
 
+import com.ezhuang.common.Global;
+
 import java.lang.reflect.Method;
 
-import com.ezhuang.R;
 /**
  * Created by chaochen on 14-10-22.
  */
