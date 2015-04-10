@@ -56,7 +56,7 @@ import java.util.regex.Pattern;
  * Created by cc191954 on 14-8-233.
  */
 public class Global {
-    public static final String HOST_91JZ = "http://91jzw.com";
+    public static final String HOST_91JZ = "http://121.41.117.203:80";
 
     public static String HOST = HOST_91JZ;
 
@@ -65,6 +65,8 @@ public class Global {
     public static String BUYER = "8";
     public static String STAFF = "9";
     public static String QUALITY = "13";
+
+    public static String[] PJ_STATE = new String[]{"","启动","进行中","竣工"};
 
     public static CurrentUser currentUser = null;
 

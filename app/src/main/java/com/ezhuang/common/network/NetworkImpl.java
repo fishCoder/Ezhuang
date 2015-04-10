@@ -19,6 +19,10 @@ import java.util.HashMap;
 
 public class NetworkImpl {
     public static final int NETWORK_ERROR = -1;
+    public static final int SERVICE_SYS_ERROR = 40001;
+    public static final int SESSION_TIME_OUT = 20001;
+    public static final int REQ_SUCCESSS = 10001;
+
     private final NetworkCallback callback;
 
     public HashMap<String, PageInfo> mPages = new HashMap<String, PageInfo>();
@@ -63,6 +67,14 @@ public class NetworkImpl {
 
                     if (code == 1000) {
                         appContext.startActivity(new Intent(appContext, LoginActivity_.class));
+                    }
+
+                    if (code == SERVICE_SYS_ERROR){
+                        callback.showError("服务器内部错误");
+                    }
+
+                    if (code == SESSION_TIME_OUT){
+                        //TODO: session失效处理
                     }
 
                     try {

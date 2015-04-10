@@ -9,10 +9,12 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.ezhuang.common.Global;
 import com.ezhuang.common.network.BaseFragment;
 import com.ezhuang.model.Role;
 import com.ezhuang.model.StaffUser;
 import com.ezhuang.project.detail.CreatProjectActivity_;
+import com.ezhuang.project.detail.ViewProjectActivity_;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
@@ -47,6 +49,7 @@ public class FragmentHome extends BaseFragment {
     @ViewById
     ListView listRoleFunction;
 
+
     @AfterViews
     void init(){
 
@@ -66,8 +69,13 @@ public class FragmentHome extends BaseFragment {
         listRoleFunction.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getActivity(),CreatProjectActivity_.class);
-                getActivity().startActivity(intent);
+                if(list.get(position)[0].equals("查看项目")){
+                    ViewProjectActivity_.intent(getActivity()).roleId(Global.STAFF).start();
+                }else{
+                    Intent intent = new Intent(getActivity(),CreatProjectActivity_.class);
+                    getActivity().startActivity(intent);
+                }
+
             }
         });
 
@@ -76,19 +84,18 @@ public class FragmentHome extends BaseFragment {
 
     List<Object[]> getApps(String roleId){
         List<Object[]> list    =new LinkedList<>();
-        Map<String,Object> item = new HashMap<>();
 
         String[] apps = {};
 
-        if("5".equals(roleId)) {
+        if(Global.PROJECT_MANAGER.equals(roleId)) {
             apps = project_manager_apps;
-        }else if("8".equals(roleId)){
+        }else if(Global.BUYER.equals(roleId)){
             apps = buyer_apps;
-        }else if("9".equals(roleId)){
+        }else if(Global.STAFF.equals(roleId)){
             apps = staff_apps;
-        }else if("10".equals(roleId)){
+        }else if(Global.CEHCK.equals(roleId)){
             apps = check_apps;
-        }else if("13".equals(roleId)){
+        }else if(Global.QUALITY.equals(roleId)){
             apps = quality_apps;
         }
 
@@ -125,7 +132,7 @@ public class FragmentHome extends BaseFragment {
         }
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            View view=convertView;
+            View view;
 
             Object[] item = (Object[])getItem(position);
 

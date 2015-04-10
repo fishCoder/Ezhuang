@@ -129,6 +129,11 @@ public class BaseActivity extends ActionBarActivity implements NetworkCallback {
 
     }
 
+    @Override
+    public void showError(String msg) {
+        showButtomToast(msg);
+    }
+
     protected void getNextPageNetwork(String url, final String tag) {
         networkImpl.getNextPageNetwork(url, tag);
     }

@@ -67,7 +67,7 @@ public class LoginActivity extends BaseActivity {
 
         RequestParams params = new RequestParams();
         params.put("phone", "18850131312");
-        params.put("password", "159951");
+        params.put("password", "123456");
         postNetwork(HOST_LOGIN, params, HOST_LOGIN);
 
 
@@ -120,11 +120,6 @@ public class LoginActivity extends BaseActivity {
     final int RESULT_REQUEST_USERINFO = 21;
     @Override
     public void parseJson(int code, JSONObject respanse, String tag, int pos, Object data) throws JSONException {
-
-        if(code==-1){
-            showErrorMsg(code,respanse);
-            return;
-        }
 
         if(tag.equals(HOST_LOGIN)){
             if(code==10001){

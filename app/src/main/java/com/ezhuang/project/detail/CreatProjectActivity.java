@@ -199,10 +199,6 @@ public class CreatProjectActivity extends BaseActivity {
 
     @Override
     public void parseJson(int code, JSONObject respanse, String tag, int pos, Object data) throws JSONException {
-        if(code==-1){
-            showErrorMsg(code,respanse);
-            return;
-        }
 
         if(tag.equals(Global.PROJECT_MANAGER)){
             if(code==10001){

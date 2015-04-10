@@ -146,6 +146,11 @@ public class BaseFragment extends Fragment implements NetworkCallback, FootUpdat
     public void parseJson(int code, JSONObject respanse, String tag, int pos, Object data) throws JSONException {
     }
 
+    @Override
+    public void showError(String msg) {
+        showButtomToast(msg);
+    }
+
     protected void postNetwork(String url, RequestParams params, final String tag) {
         networkImpl.loadData(url, params, tag, -1, null, NetworkImpl.Request.Post);
     }

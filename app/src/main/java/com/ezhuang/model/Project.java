@@ -6,8 +6,10 @@ package com.ezhuang.model;
 public class Project {
     private String pjId;
     private String pjName; // 项目名称
-    private String pjOwnerId; // 业主id
     private String pjCpId; // 所属公司
+
+    private String userName;
+    private String realName;
 
     private String pjRemark; // 备注
     private String pjCreateTime; // 创建时间
@@ -16,24 +18,17 @@ public class Project {
     private String pjAddress; // 施工地址
     private Integer pjState; // 项目状态 1:启动 2:进行中 3:竣工
 
-    private String pjCreatorId; // 创建人id
     private String pj_no; // 项目编号
     private String pjHousetype; // 户型
     private String pjArea; // 面积
     private String pjContractnum; // 合同编号
     private String pjDesigner; // 设计师
 
-    private String pjMId; // 项目经理id
-    private String pjMName;
-
-    private String pjCheckerId; // 审核员
-    private String pjCheckerName;
-
-    private String pjBuyerId; // 采购员id
-    private String pjBuyerName;
-
-    private String pjQualityId; // 质检员
-    private String pjQualityName;
+    private StaffUser pjCreator; // 创建人id
+    private StaffUser pjChecker;
+    private StaffUser pjBuyer;
+    private StaffUser pjM;
+    private StaffUser pjQuality;
 
     public String getPjId() {
         return pjId;
@@ -51,20 +46,28 @@ public class Project {
         this.pjName = pjName;
     }
 
-    public String getPjOwnerId() {
-        return pjOwnerId;
-    }
-
-    public void setPjOwnerId(String pjOwnerId) {
-        this.pjOwnerId = pjOwnerId;
-    }
-
     public String getPjCpId() {
         return pjCpId;
     }
 
     public void setPjCpId(String pjCpId) {
         this.pjCpId = pjCpId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getRealName() {
+        return realName;
+    }
+
+    public void setRealName(String realName) {
+        this.realName = realName;
     }
 
     public String getPjRemark() {
@@ -115,14 +118,6 @@ public class Project {
         this.pjState = pjState;
     }
 
-    public String getPjCreatorId() {
-        return pjCreatorId;
-    }
-
-    public void setPjCreatorId(String pjCreatorId) {
-        this.pjCreatorId = pjCreatorId;
-    }
-
     public String getPj_no() {
         return pj_no;
     }
@@ -163,67 +158,43 @@ public class Project {
         this.pjDesigner = pjDesigner;
     }
 
-    public String getPjMId() {
-        return pjMId;
+    public StaffUser getPjCreator() {
+        return pjCreator;
     }
 
-    public void setPjMId(String pjMId) {
-        this.pjMId = pjMId;
+    public void setPjCreator(StaffUser pjCreator) {
+        this.pjCreator = pjCreator;
     }
 
-    public String getPjMName() {
-        return pjMName;
+    public StaffUser getPjChecker() {
+        return pjChecker;
     }
 
-    public void setPjMName(String pjMName) {
-        this.pjMName = pjMName;
+    public void setPjChecker(StaffUser pjChecker) {
+        this.pjChecker = pjChecker;
     }
 
-    public String getPjCheckerId() {
-        return pjCheckerId;
+    public StaffUser getPjBuyer() {
+        return pjBuyer;
     }
 
-    public void setPjCheckerId(String pjCheckerId) {
-        this.pjCheckerId = pjCheckerId;
+    public void setPjBuyer(StaffUser pjBuyer) {
+        this.pjBuyer = pjBuyer;
     }
 
-    public String getPjCheckerName() {
-        return pjCheckerName;
+    public StaffUser getPjM() {
+        return pjM;
     }
 
-    public void setPjCheckerName(String pjCheckerName) {
-        this.pjCheckerName = pjCheckerName;
+    public void setPjM(StaffUser pjM) {
+        this.pjM = pjM;
     }
 
-    public String getPjBuyerId() {
-        return pjBuyerId;
+    public StaffUser getPjQuality() {
+        return pjQuality;
     }
 
-    public void setPjBuyerId(String pjBuyerId) {
-        this.pjBuyerId = pjBuyerId;
-    }
-
-    public String getPjBuyerName() {
-        return pjBuyerName;
-    }
-
-    public void setPjBuyerName(String pjBuyerName) {
-        this.pjBuyerName = pjBuyerName;
-    }
-
-    public String getPjQualityId() {
-        return pjQualityId;
-    }
-
-    public void setPjQualityId(String pjQualityId) {
-        this.pjQualityId = pjQualityId;
-    }
-
-    public String getPjQualityName() {
-        return pjQualityName;
-    }
-
-    public void setPjQualityName(String pjQualityName) {
-        this.pjQualityName = pjQualityName;
+    public void setPjQuality(StaffUser pjQuality) {
+        this.pjQuality = pjQuality;
     }
 }
