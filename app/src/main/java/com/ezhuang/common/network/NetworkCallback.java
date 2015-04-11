@@ -13,4 +13,6 @@ public interface NetworkCallback {
     void getNetwork(String uri, String tag);
 
     void showError(String msg);
+
+    void refreshSession();
 }

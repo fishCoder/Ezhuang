@@ -42,7 +42,8 @@ public class BaseActivity extends ActionBarActivity implements NetworkCallback {
 
     private NetworkImpl networkImpl;
 
-    protected ImagePagerActivity.FootUpdate mFootUpdate = new ImagePagerActivity.FootUpdate();
+
+    public String REFRESH_SESSION = Global.HOST + "/app/stf/loginAgain.do";
 
     protected void showProgressBar(boolean show) {
         showProgressBar(show, "");
@@ -59,6 +60,16 @@ public class BaseActivity extends ActionBarActivity implements NetworkCallback {
     protected void showProgressBar(boolean show, int messageId) {
         String message = getString(messageId);
         showProgressBar(show, message);
+    }
+
+
+    @Override
+    public void refreshSession() {
+
+        RequestParams params = new RequestParams();
+        params.put("phone", MyApp.currentUser.getPhone());
+        params.put("password", MyApp.currentUser.getPassword());
+        postNetwork(REFRESH_SESSION,params,REFRESH_SESSION);
     }
 
     protected View.OnClickListener mOnClickUser = new View.OnClickListener() {

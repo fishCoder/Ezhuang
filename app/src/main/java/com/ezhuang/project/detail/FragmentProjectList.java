@@ -1,6 +1,6 @@
 package com.ezhuang.project.detail;
 
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.graphics.Paint;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -8,26 +8,17 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.ezhuang.MyApp;
 import com.ezhuang.R;
-import com.ezhuang.ImagePagerActivity;
+import com.ezhuang.common.BlankViewDisplay;
 import com.ezhuang.common.Global;
-import com.ezhuang.common.JsonUtil;
 import com.ezhuang.common.network.BaseFragment;
-import com.ezhuang.common.network.NetworkImpl;
-import com.ezhuang.common.network.RefreshBaseFragment;
 import com.ezhuang.model.Project;
-import com.ezhuang.model.StaffUser;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.ViewById;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -38,74 +29,38 @@ import java.util.List;
 @EFragment(R.layout.fragment_project_list)
 public class FragmentProjectList extends BaseFragment {
 
-    @FragmentArg
-    String roleId; //类型 1：客服 2：项目经理 3：审核员 4：质检员
 
     @ViewById
     PullToRefreshListView listView;
 
-
-
     List<Project> listProject;
 
+    ProjectListListener listListener;
 
-    String PROJECT_BY_ROLE = Global.HOST + "/app/project/queryMyProject.do?roleId=%s&global_key=%s";
 
-    String PROJECT_BY_ROLE_MORE = Global.HOST + "/app/project/queryMyProject.do?roleId=%s&global_key=%s&lastPjId=%s";
+    @ViewById
+    View blankLayout;
 
     @AfterViews
     void init(){
-        showDialogLoading();
-
-        mFootUpdate.init(listView, mInflater, this);
 
         listProject = new LinkedList<>();
-
         listView.setAdapter(adapter);
+        listView.setMode(PullToRefreshBase.Mode.BOTH);
         listView.setOnRefreshListener(onRefreshListener);
 
-        getNetwork(String.format(PROJECT_BY_ROLE, roleId, MyApp.currentUser.getGlobal_key(), ""), PROJECT_BY_ROLE);
     }
 
-    @Override
-    public void parseJson(int code, JSONObject respanse, String tag, int pos, Object data) throws JSONException {
-
-        if(tag.equals(PROJECT_BY_ROLE)){
-            if(code == NetworkImpl.REQ_SUCCESSS){
-                listProject.clear();
-                JSONArray jsonArray = respanse.getJSONArray("data");
-                for(int i=0; i<jsonArray.length() ;i++){
-                    Project project = getProject(jsonArray.getString(i), jsonArray.getJSONObject(i));
-                    listProject.add(project);
-                }
-            }
-        }
-
-        if(tag.equals(PROJECT_BY_ROLE_MORE)){
-            if(code == NetworkImpl.REQ_SUCCESSS){
-                JSONArray jsonArray = respanse.getJSONArray("data");
-                for(int i=0; i<jsonArray.length() ;i++){
-                    Project project = getProject(jsonArray.getString(i),jsonArray.getJSONObject(i));
-                    listProject.add(project);
-                }
-            }
-        }
-
-        listView.onRefreshComplete();
+    void updateData(List<Project> list){
+        this.listProject = list;
         adapter.notifyDataSetChanged();
-        hideProgressDialog();
+        listView.onRefreshComplete();
+//        BlankViewDisplay.setBlank(1, this, false, blankLayout, null);
     }
 
-    Project getProject(String sProject,JSONObject jsonObject) throws  JSONException{
-        Project project = JsonUtil.Json2Object(sProject,Project.class);
-        project.setPjM(JsonUtil.Json2Object(jsonObject.getString("pjM"), StaffUser.class));
-        project.setPjChecker(JsonUtil.Json2Object(jsonObject.getString("pjChecker"), StaffUser.class));
-        project.setPjBuyer(JsonUtil.Json2Object(jsonObject.getString("pjBuyer"), StaffUser.class));
-        project.setPjQuality(JsonUtil.Json2Object(jsonObject.getString("pjQuality"), StaffUser.class));
-
-        return project;
+    void setProjectListListener(ProjectListListener listListener){
+        this.listListener = listListener;
     }
-
 
 
     BaseAdapter adapter = new BaseAdapter() {
@@ -144,6 +99,10 @@ public class FragmentProjectList extends BaseFragment {
                 viewHolder.pjCreateTime = (TextView) view.findViewById(R.id.pj_create_time);
                 viewHolder.pjState = (TextView) view.findViewById(R.id.pj_state);
                 viewHolder.iconPjState = (ImageView) view.findViewById(R.id.icon_pj_state);
+                viewHolder.pjBillCount = (TextView) view.findViewById(R.id.pj_bill_count);
+                viewHolder.pjBillCount.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
+                viewHolder.pjPgCount = (TextView) view.findViewById(R.id.pj_pg_count);
+                viewHolder.pjPgCount.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
 
                 convertView = view;
                 convertView.setTag(viewHolder);
@@ -162,6 +121,8 @@ public class FragmentProjectList extends BaseFragment {
             viewHolder.qualityName.setText(project.getPjQuality().getName());
             viewHolder.pjCreateTime.setText(project.getPjCreateTime());
             viewHolder.pjState.setText(Global.PJ_STATE[project.getPjState()]);
+            viewHolder.pjBillCount.setText(""+project.getBillCount());
+            viewHolder.pjPgCount.setText(""+project.getPgCount());
 
             return convertView;
         }
@@ -179,14 +140,21 @@ public class FragmentProjectList extends BaseFragment {
         TextView pjCreateTime;
         TextView pjState;
         ImageView iconPjState;
+        TextView pjBillCount;
+        TextView pjPgCount;
     }
 
 
     PullToRefreshBase.OnRefreshListener onRefreshListener = new PullToRefreshBase.OnRefreshListener<ListView>() {
         @Override
         public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-            getNetwork(String.format(PROJECT_BY_ROLE, roleId, MyApp.currentUser.getGlobal_key(), ""), PROJECT_BY_ROLE);
 
+            if(PullToRefreshBase.Mode.PULL_FROM_START == listView.getCurrentMode()){
+                listListener.refresh();
+            }else{
+                listListener.loadMore();
+
+            }
         }
     };
 }

@@ -4,6 +4,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.ezhuang.R;
+import com.ezhuang.project.detail.FragmentProjectList;
 
 
 /**
@@ -40,11 +41,11 @@ public class BlankViewDisplay {
         String text = "";
 
         if (request) {
-//            if (fragment instanceof ProjectListFragment) {
-//                iconId = R.drawable.ic_exception_blank_task;
-//                text = "您还没有项目\n快去coding网站创建吧";
-//
-//            }
+            if (fragment instanceof FragmentProjectList) {
+                iconId = R.mipmap.ic_exception_blank_task;
+                text = "没有项目";
+
+            }
 
         } else {
             iconId = R.mipmap.ic_exception_no_network;

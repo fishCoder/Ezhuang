@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TextView;
 
+import com.ezhuang.common.LoginBackground;
+
 public class MainActivity extends BaseActivity {
     //定义FragmentTabHost对象
     private FragmentTabHost mTabHost;
@@ -41,6 +43,10 @@ public class MainActivity extends BaseActivity {
      * 初始化组件
      */
     private void initView(){
+
+        LoginBackground loginBackground = new LoginBackground(this);
+        loginBackground.update();
+
         //实例化布局对象
         layoutInflater = LayoutInflater.from(this);
 

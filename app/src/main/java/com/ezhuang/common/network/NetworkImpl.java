@@ -65,7 +65,7 @@ public class NetworkImpl {
                 try {
                     int code = response.getInt("code");
 
-                    if (code == 1000) {
+                    if (code == 10003 && !(appContext instanceof LoginActivity_)) {
                         appContext.startActivity(new Intent(appContext, LoginActivity_.class));
                     }
 
@@ -74,7 +74,7 @@ public class NetworkImpl {
                     }
 
                     if (code == SESSION_TIME_OUT){
-                        //TODO: session失效处理
+                        callback.refreshSession();
                     }
 
                     try {

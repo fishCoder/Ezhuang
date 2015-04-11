@@ -2,16 +2,21 @@ package com.ezhuang;
 
 
 import android.content.Intent;
+import android.net.Uri;
 import android.view.View;
 import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import com.ezhuang.common.LoginBackground;
+
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.res.AnimationRes;
+
+import java.io.File;
 
 /**
  * Created by Administrator on 2015/4/2 0002.
@@ -34,10 +39,22 @@ public class EntranceActivity extends BaseActivity {
     @AnimationRes
     Animation entrance;
 
+    Uri background = null;
 
     @AfterViews
     void init() {
 
+        LoginBackground.PhotoItem photoItem = new LoginBackground(this).getPhoto();
+        File file = photoItem.getCacheFile(this);
+        if (file.exists()) {
+            background = Uri.fromFile(file);
+            image.setImageURI(background);
+            title.setText(photoItem.getTitle());
+
+            if (photoItem.isGuoguo()) {
+                hideLogo();
+            }
+        }
 
         entrance.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -55,6 +72,12 @@ public class EntranceActivity extends BaseActivity {
             }
         });
         image.startAnimation(entrance);
+    }
+
+    private void hideLogo() {
+        mask.setVisibility(View.GONE);
+        title.setVisibility(View.GONE);
+        logo.setVisibility(View.GONE);
     }
 
     void next(){

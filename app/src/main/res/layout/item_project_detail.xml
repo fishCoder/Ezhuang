@@ -55,7 +55,7 @@
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:text="进行中"
-                android:textColor="#555555"
+                android:textColor="#aaa"
                 android:textSize="12sp" />
 
         </LinearLayout>
@@ -79,7 +79,7 @@
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:text="8888-88-88 88:88:88"
-                android:textColor="#555555"
+                android:textColor="#aaa"
                 android:textSize="12sp" />
 
 
@@ -105,11 +105,11 @@
             android:layout_width="wrap_content"
             android:text="地址"
             android:textColor="#555555"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
 
         <ImageView
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
             android:scrollbars = "horizontal"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="15dp"
@@ -121,7 +121,7 @@
             android:layout_height="wrap_content"
 
             android:singleLine="true"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:focusable="false"
             android:textColor="#555555"
             android:background="@android:color/transparent"
@@ -143,11 +143,11 @@
             android:layout_height="wrap_content"
             android:text="业主"
             android:textColor="#555555"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
 
         <ImageView
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
             android:scrollbars = "horizontal"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="15dp"
@@ -162,18 +162,18 @@
             android:singleLine="true"
             android:text="某某某"
             android:textColor="#555555"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="电话"
             android:textColor="#555555"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
 
         <ImageView
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
             android:scrollbars = "horizontal"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="15dp"
@@ -188,7 +188,7 @@
             android:singleLine="true"
             android:text="13107625228"
             android:textColor="#555555"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
 
     </LinearLayout>
 
@@ -218,7 +218,7 @@
                 android:singleLine="true"
                 android:text="项目经理"
                 android:textColor="#555555"
-                android:textSize="16sp" />
+                android:textSize="14sp" />
 
 
             <TextView
@@ -231,7 +231,7 @@
                 android:singleLine="true"
                 android:text="XXX"
                 android:textColor="#555555"
-                android:textSize="16sp" />
+                android:textSize="14sp" />
 
 
         </LinearLayout>
@@ -253,7 +253,7 @@
                 android:singleLine="true"
                 android:text="审        核"
                 android:textColor="#555555"
-                android:textSize="16sp" />
+                android:textSize="14sp" />
 
 
             <TextView
@@ -266,7 +266,7 @@
                 android:singleLine="true"
                 android:text="XXX"
                 android:textColor="#555555"
-                android:textSize="16sp" />
+                android:textSize="14sp" />
 
 
         </LinearLayout>
@@ -299,7 +299,7 @@
                 android:singleLine="true"
                 android:text="采        购"
                 android:textColor="#555555"
-                android:textSize="16sp" />
+                android:textSize="14sp" />
 
 
             <TextView
@@ -312,7 +312,7 @@
                 android:singleLine="true"
                 android:text="诸葛建国"
                 android:textColor="#555555"
-                android:textSize="16sp" />
+                android:textSize="14sp" />
 
 
         </LinearLayout>
@@ -335,7 +335,7 @@
                 android:singleLine="true"
                 android:text="质        检"
                 android:textColor="#555555"
-                android:textSize="16sp" />
+                android:textSize="14sp" />
 
 
             <TextView
@@ -348,25 +348,117 @@
                 android:singleLine="true"
                 android:text="诸葛建国"
                 android:textColor="#555555"
-                android:textSize="16sp" />
+                android:textSize="14sp" />
 
 
         </LinearLayout>
     </LinearLayout>
 
+    <!--<View-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_marginLeft="25dp"-->
+    <!--android:layout_height="1dp"-->
+    <!--android:background="@color/divide" />-->
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
+        android:gravity="left"
         android:orientation="horizontal"
-        android:paddingTop="10dp"
         android:paddingBottom="10dp"
         android:paddingLeft="30dp"
         android:paddingRight="30dp"
         >
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="开单数"
+                android:textColor="#555555"
+                android:textSize="15sp" />
+
+            <!--<ImageView-->
+                <!--android:layout_width="16dp"-->
+                <!--android:layout_height="16dp"-->
+                <!--android:scrollbars = "horizontal"-->
+                <!--android:layout_marginLeft="5dp"-->
+                <!--android:src="@mipmap/ic_file_pdf" />-->
+
+            <TextView
+                android:id="@+id/pj_bill_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="11"
+                android:layout_marginLeft="5dp"
+                android:textColor="#1E88E5"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="个"
+                android:layout_marginLeft="5dp"
+                android:textColor="#555555"
+                android:textSize="15sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="装修进度"
+                android:textColor="#555555"
+                android:textSize="15sp" />
+
+            <!--<ImageView-->
+                <!--android:layout_width="16dp"-->
+                <!--android:layout_height="16dp"-->
+                <!--android:scrollbars = "horizontal"-->
+                <!--android:layout_marginLeft="5dp"-->
+                <!--android:src="@mipmap/ic_file_video" />-->
+
+            <TextView
+                android:id="@+id/pj_pg_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="10"
+                android:layout_marginLeft="5dp"
+                android:textColor="#1E88E5"
+
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="个"
+                android:layout_marginLeft="5dp"
+                android:textColor="#555555"
+                android:textSize="15sp" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

@@ -30,6 +30,25 @@ public class Project {
     private StaffUser pjM;
     private StaffUser pjQuality;
 
+    private Integer pgCount;
+    private Integer billCount;
+
+    public Integer getPgCount() {
+        return pgCount;
+    }
+
+    public void setPgCount(Integer pgCount) {
+        this.pgCount = pgCount;
+    }
+
+    public Integer getBillCount() {
+        return billCount;
+    }
+
+    public void setBillCount(Integer billCount) {
+        this.billCount = billCount;
+    }
+
     public String getPjId() {
         return pjId;
     }

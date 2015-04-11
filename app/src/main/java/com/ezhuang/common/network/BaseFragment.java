@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.ezhuang.MyApp;
 import com.ezhuang.user.UserDetailActivity_;
 import com.loopj.android.http.RequestParams;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -42,6 +43,8 @@ public class BaseFragment extends Fragment implements NetworkCallback, FootUpdat
 
     private ProgressDialog mProgressDialog;
 
+    public String REFRESH_SESSION = Global.HOST + "/app/stf/loginAgain.do";
+
     protected void showProgressBar(boolean show) {
         showProgressBar(show, "");
     }
@@ -53,6 +56,15 @@ public class BaseFragment extends Fragment implements NetworkCallback, FootUpdat
 
         mProgressDialog.setIndeterminate(false);
         mProgressDialog.setProgress(progress);
+    }
+
+    @Override
+    public void refreshSession() {
+
+        RequestParams params = new RequestParams();
+        params.put("phone", MyApp.currentUser.getPhone());
+        params.put("password", MyApp.currentUser.getPassword());
+        postNetwork(REFRESH_SESSION,params,REFRESH_SESSION);
     }
 
     protected void showProgressBar(boolean show, String message) {

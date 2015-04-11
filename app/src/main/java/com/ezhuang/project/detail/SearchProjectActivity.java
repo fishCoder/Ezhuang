@@ -1,5 +1,10 @@
 package com.ezhuang.project.detail;
 
+import android.support.v7.app.ActionBar;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
+import android.widget.EditText;
 
 import com.ezhuang.BaseActivity;
 import com.ezhuang.R;
@@ -13,7 +18,7 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.OptionsItem;
-import org.androidannotations.annotations.OptionsMenu;
+import org.androidannotations.annotations.ViewById;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,13 +27,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Created by Administrator on 2015/4/9 0009.
+ * Created by Administrator on 2015/4/11 0011.
  */
-
-@EActivity(R.layout.activity_view_project)
-@OptionsMenu(R.menu.menu_fragment_project)
-public class ViewProjectActivity extends BaseActivity {
-
+@EActivity(R.layout.activity_search_project)
+public class SearchProjectActivity extends BaseActivity{
 
     @Extra("roleId")
     public String roleId;
@@ -38,47 +40,82 @@ public class ViewProjectActivity extends BaseActivity {
 
     List<Project> listProject;
 
-    String PROJECT_BY_ROLE = Global.HOST + "/app/project/queryMyProject.do?roleId=%s&global_key=%s";
+    @ViewById
+    View emptyView, container;
 
-    String PROJECT_BY_ROLE_MORE = Global.HOST + "/app/project/queryMyProject.do?roleId=%s&global_key=%s&lastPjId=%s";
+    EditText editText;
+
+    String PROJECT_BY_SEARCH = Global.HOST + "/app/project/queryMyProject.do?roleId=%s&global_key=%s&keyword=%s";
+
+    String PROJECT_BY_SEARCH_MORE = Global.HOST + "/app/project/queryMyProject.do?roleId=%s&global_key=%s&keyword=%s&lastPjId=%s";
+
+    String keyword = "";
 
     FragmentProjectList_ fragment;
 
     @AfterViews
     void init(){
-        showDialogLoading();
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowCustomEnabled(true);
+
+        actionBar.setCustomView(R.layout.activity_search_project_actionbar);
+        editText = (EditText) findViewById(R.id.editText);
+        editText.addTextChangedListener(watcher);
+
         if(listProject == null){
             listProject = new LinkedList<>();
         }
-
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         fragment = new FragmentProjectList_();
         fragment.setProjectListListener(new ProjectListListener() {
             @Override
             public void refresh() {
-                ViewProjectActivity.this.getNetwork(String.format(PROJECT_BY_ROLE, roleId, staffId), PROJECT_BY_ROLE);
+                SearchProjectActivity.this
+                        .getNetwork(String.format(PROJECT_BY_SEARCH, roleId, staffId, keyword), PROJECT_BY_SEARCH);
             }
 
             @Override
             public void loadMore() {
-                ViewProjectActivity.this.getNetwork(String.format(PROJECT_BY_ROLE_MORE, roleId, staffId, listProject.get(listProject.size() - 1).getPjId()), PROJECT_BY_ROLE_MORE);
+                SearchProjectActivity.this
+                        .getNetwork(String.format(PROJECT_BY_SEARCH_MORE, roleId, staffId ,keyword ,listProject.get(listProject.size() - 1).getPjId()), PROJECT_BY_SEARCH_MORE);
             }
         });
-        getNetwork(String.format(PROJECT_BY_ROLE, roleId, staffId), PROJECT_BY_ROLE);
+
+
         getSupportFragmentManager().beginTransaction().add(R.id.container,fragment).commit();
     }
 
-    @OptionsItem
-    void action_search() {
-        SearchProjectActivity_.intent(this).roleId(roleId).staffId(staffId).start();
-    }
+    TextWatcher watcher = new TextWatcher(){
+
+        @Override
+        public void afterTextChanged(Editable s) {
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if (s.length() > 0 && !keyword.equals(s.toString())) {
+                keyword = s.toString();
+
+                getNetwork(String.format(PROJECT_BY_SEARCH, roleId, staffId,keyword), PROJECT_BY_SEARCH);
+
+                showDialogLoading();
+                emptyView.setVisibility(View.INVISIBLE);
+                container.setVisibility(View.VISIBLE);
+            }
+
+            getSupportActionBar().setTitle(R.string.title_activity_search_project);
+        }
+
+    };
 
     @Override
     public void parseJson(int code, JSONObject respanse, String tag, int pos, Object data) throws JSONException {
-
-        if(tag.equals(PROJECT_BY_ROLE)){
+        if(tag.equals(PROJECT_BY_SEARCH)){
             if(code == NetworkImpl.REQ_SUCCESSS){
                 listProject.clear();
                 JSONArray jsonArray = respanse.getJSONArray("data");
@@ -89,7 +126,7 @@ public class ViewProjectActivity extends BaseActivity {
             }
         }
 
-        if(tag.equals(PROJECT_BY_ROLE_MORE)){
+        if(tag.equals(PROJECT_BY_SEARCH_MORE)){
             if(code == NetworkImpl.REQ_SUCCESSS){
                 JSONArray jsonArray = respanse.getJSONArray("data");
                 int len = jsonArray.length();
@@ -106,10 +143,18 @@ public class ViewProjectActivity extends BaseActivity {
             }
         }
 
-        updateSearchResult();
         hideProgressDialog();
-    }
 
+        if (listProject.isEmpty()) {
+            emptyView.setVisibility(View.VISIBLE);
+            container.setVisibility(View.INVISIBLE);
+        } else {
+            emptyView.setVisibility(View.INVISIBLE);
+            container.setVisibility(View.VISIBLE);
+        }
+
+        updateSearchResult();
+    }
 
     Project getProject(String sProject,JSONObject jsonObject) throws  JSONException{
         Project project = JsonUtil.Json2Object(sProject, Project.class);
@@ -129,5 +174,4 @@ public class ViewProjectActivity extends BaseActivity {
     private void updateSearchResult() {
         fragment.updateData(listProject);
     }
-
 }
