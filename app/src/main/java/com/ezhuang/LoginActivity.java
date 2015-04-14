@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import com.ezhuang.common.Global;
 import com.ezhuang.common.JsonUtil;
 import com.ezhuang.common.enter.SimpleTextWatcher;
+import com.ezhuang.model.AccountInfo;
 import com.ezhuang.model.StaffUser;
 import com.loopj.android.http.RequestParams;
 
@@ -127,7 +128,7 @@ public class LoginActivity extends BaseActivity {
                 //TODO 保存登陆用户
                 MyApp.currentUser = currentUser;
                 showProgressBar(false);
-                currentUser.save();
+                AccountInfo.saveAccount(LoginActivity.this,currentUser);
 //                UserDetailActivity_
 //                        .intent(this)
 //                        .globalKey(MyApp.currentUser.getGlobal_key())

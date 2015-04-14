@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 
 import com.ezhuang.common.LoginBackground;
+import com.ezhuang.model.AccountInfo;
+import com.ezhuang.model.StaffUser;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
@@ -54,6 +56,11 @@ public class EntranceActivity extends BaseActivity {
             if (photoItem.isGuoguo()) {
                 hideLogo();
             }
+        }
+
+        if(AccountInfo.isLogin(this)){
+            StaffUser staffUser = AccountInfo.loadAccount(this);
+            //TODO 免登陆
         }
 
         entrance.setAnimationListener(new Animation.AnimationListener() {

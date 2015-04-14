@@ -42,11 +42,11 @@ public class ViewProjectActivity extends BaseActivity {
 
     String PROJECT_BY_ROLE_MORE = Global.HOST + "/app/project/queryMyProject.do?roleId=%s&global_key=%s&lastPjId=%s";
 
-    FragmentProjectList_ fragment;
+    FragmentProjectList fragment;
 
     @AfterViews
     void init(){
-        showDialogLoading();
+
         if(listProject == null){
             listProject = new LinkedList<>();
         }
@@ -54,8 +54,10 @@ public class ViewProjectActivity extends BaseActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        fragment = new FragmentProjectList_();
-        fragment.setProjectListListener(new ProjectListListener() {
+        fragment = FragmentProjectList_.builder().arg("roleId",roleId).build();
+        fragment.roleId = roleId;
+
+        fragment.setProjectListListener(new ListListener() {
             @Override
             public void refresh() {
                 ViewProjectActivity.this.getNetwork(String.format(PROJECT_BY_ROLE, roleId, staffId), PROJECT_BY_ROLE);
@@ -107,7 +109,6 @@ public class ViewProjectActivity extends BaseActivity {
         }
 
         updateSearchResult();
-        hideProgressDialog();
     }
 
 

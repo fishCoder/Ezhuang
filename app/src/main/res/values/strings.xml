@@ -4,6 +4,8 @@
     <string name="app_name">91精装</string>
     <string name="create_project">创建项目</string>
     <string name="view_project">查看项目</string>
+    <string name="view_bill">查看订单</string>
+    <string name="add_bill">项目开单</string>
     <string name="person_home_page">个人主页</string>
     <string name="action_settings">设置</string>
     <string name="action_refrush">刷新</string>

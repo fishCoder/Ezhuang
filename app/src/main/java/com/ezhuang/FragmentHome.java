@@ -71,7 +71,11 @@ public class FragmentHome extends BaseFragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if(list.get(position)[0].equals("查看项目")){
                     ViewProjectActivity_.intent(getActivity()).roleId(Global.STAFF).staffId(MyApp.currentUser.getGlobal_key()).start();
-                }else{
+                }else
+                if(list.get(position)[0].equals("我的项目")){
+                    ViewProjectActivity_.intent(getActivity()).roleId(Global.PROJECT_MANAGER).staffId(MyApp.currentUser.getGlobal_key()).start();
+                }else
+                {
                     Intent intent = new Intent(getActivity(),CreatProjectActivity_.class);
                     getActivity().startActivity(intent);
                 }

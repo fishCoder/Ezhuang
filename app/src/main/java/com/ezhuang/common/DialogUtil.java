@@ -150,7 +150,7 @@ public class DialogUtil {
         }
 
         public void startAnimation() {
-            loadingRoundAnimation.setStartTime(500L);//不然会跳帧
+            //loadingRoundAnimation.setStartTime(500L);//不然会跳帧
             loadingRound.setAnimation(loadingRoundAnimation);
             loadingLogo.startAnimation(loadingLogoAnimation);
         }

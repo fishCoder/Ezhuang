@@ -48,6 +48,7 @@ dependencies {
 
 
     compile project(':pulltorefresh')
+    compile project(':tableFixHeaders')
 }
 
 //################

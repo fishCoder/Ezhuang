@@ -277,7 +277,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="30dp"
-        android:paddingBottom="10dp"
         android:orientation="horizontal"
         >
 
@@ -365,14 +364,16 @@
         android:layout_height="wrap_content"
         android:gravity="left"
         android:orientation="horizontal"
-        android:paddingBottom="10dp"
         android:paddingLeft="30dp"
         android:paddingRight="30dp"
         >
 
         <LinearLayout
+            android:id="@+id/layout_bill_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:gravity="center_vertical">
 
             <TextView
@@ -415,9 +416,12 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/layout_pg_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:gravity="center_vertical">
 
             <TextView
@@ -459,6 +463,31 @@
                 android:textSize="15sp" />
 
         </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_pj_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="10dp"
+        android:visibility="gone"
+        android:gravity="center">
+
+        <com.gc.materialdesign.views.ButtonRectangle
+            android:id="@+id/add_bill"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:background="#1E88E5"
+            android:text="项目开单" />
+
+        <com.gc.materialdesign.views.ButtonRectangle
+            android:id="@+id/add_pg"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:background="#1E88E5"
+            android:text="汇报进度" />
 
     </LinearLayout>
 

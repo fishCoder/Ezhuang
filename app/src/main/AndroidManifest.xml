@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ezhuang" >
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
@@ -57,6 +58,24 @@
             android:name=".project.detail.SearchProjectActivity_"
             android:screenOrientation="portrait"
             android:label="@string/view_project" >
+        </activity>
+
+        <activity
+            android:name=".project.ProjectBillActivity_"
+            android:screenOrientation="portrait"
+            android:label="@string/view_bill" >
+        </activity>
+
+        <activity
+            android:name=".project.OpenBillActivity_"
+            android:screenOrientation="portrait"
+            android:label="@string/add_bill" >
+        </activity>
+
+        <activity
+            android:name=".project.AddMaterialToBillActivity_"
+            android:screenOrientation="portrait"
+            android:label="@string/add_bill" >
         </activity>
 
         <activity

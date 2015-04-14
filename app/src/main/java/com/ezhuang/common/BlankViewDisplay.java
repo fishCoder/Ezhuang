@@ -4,6 +4,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.ezhuang.R;
+import com.ezhuang.project.ProjectBillFragment;
 import com.ezhuang.project.detail.FragmentProjectList;
 
 
@@ -46,7 +47,10 @@ public class BlankViewDisplay {
                 text = "没有项目";
 
             }
-
+            if (fragment instanceof ProjectBillFragment){
+                iconId = R.mipmap.ic_exception_blank_task;
+                text = "没有开单";
+            }
         } else {
             iconId = R.mipmap.ic_exception_no_network;
             text = "获取数据失败\n请检查下网络是否通畅";

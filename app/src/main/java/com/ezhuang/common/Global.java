@@ -60,6 +60,8 @@ public class Global {
 
     public static String HOST = HOST_91JZ;
 
+    public static int PAGE_SIZE = 15;
+
     public static String PROJECT_MANAGER = "5";
     public static String CEHCK = "10";
     public static String BUYER = "8";

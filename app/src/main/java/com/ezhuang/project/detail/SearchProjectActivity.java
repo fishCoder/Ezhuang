@@ -51,7 +51,7 @@ public class SearchProjectActivity extends BaseActivity{
 
     String keyword = "";
 
-    FragmentProjectList_ fragment;
+    FragmentProjectList fragment;
 
     @AfterViews
     void init(){
@@ -67,8 +67,9 @@ public class SearchProjectActivity extends BaseActivity{
             listProject = new LinkedList<>();
         }
 
-        fragment = new FragmentProjectList_();
-        fragment.setProjectListListener(new ProjectListListener() {
+        fragment = FragmentProjectList_.builder().arg("roleId","roleId").build();
+        fragment.roleId = roleId;
+        fragment.setProjectListListener(new ListListener() {
             @Override
             public void refresh() {
                 SearchProjectActivity.this
@@ -101,7 +102,7 @@ public class SearchProjectActivity extends BaseActivity{
             if (s.length() > 0 && !keyword.equals(s.toString())) {
                 keyword = s.toString();
 
-                getNetwork(String.format(PROJECT_BY_SEARCH, roleId, staffId,keyword), PROJECT_BY_SEARCH);
+                getNetwork(String.format(PROJECT_BY_SEARCH, roleId, staffId, keyword), PROJECT_BY_SEARCH);
 
                 showDialogLoading();
                 emptyView.setVisibility(View.INVISIBLE);

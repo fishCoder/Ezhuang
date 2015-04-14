@@ -9,10 +9,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.ezhuang.R;
-import com.ezhuang.common.BlankViewDisplay;
 import com.ezhuang.common.Global;
 import com.ezhuang.common.network.BaseFragment;
 import com.ezhuang.model.Project;
+import com.ezhuang.project.OpenBillActivity_;
+import com.ezhuang.project.ProjectBillActivity_;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
@@ -35,8 +36,10 @@ public class FragmentProjectList extends BaseFragment {
 
     List<Project> listProject;
 
-    ProjectListListener listListener;
+    ListListener listListener;
 
+
+    public String roleId;
 
     @ViewById
     View blankLayout;
@@ -44,7 +47,10 @@ public class FragmentProjectList extends BaseFragment {
     @AfterViews
     void init(){
 
-        listProject = new LinkedList<>();
+        if(listProject==null){
+            listProject = new LinkedList<>();
+        }
+
         listView.setAdapter(adapter);
         listView.setMode(PullToRefreshBase.Mode.BOTH);
         listView.setOnRefreshListener(onRefreshListener);
@@ -55,10 +61,11 @@ public class FragmentProjectList extends BaseFragment {
         this.listProject = list;
         adapter.notifyDataSetChanged();
         listView.onRefreshComplete();
+        hideProgressDialog();
 //        BlankViewDisplay.setBlank(1, this, false, blankLayout, null);
     }
 
-    void setProjectListListener(ProjectListListener listListener){
+    void setProjectListListener(ListListener listListener){
         this.listListener = listListener;
     }
 
@@ -104,6 +111,10 @@ public class FragmentProjectList extends BaseFragment {
                 viewHolder.pjPgCount = (TextView) view.findViewById(R.id.pj_pg_count);
                 viewHolder.pjPgCount.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
 
+                viewHolder.layoutBillCount = view.findViewById(R.id.layout_bill_count);
+                viewHolder.layoutPgCount = view .findViewById(R.id.pj_pg_count);
+                viewHolder.layoutPjBtn = view.findViewById(R.id.layout_pj_btn);
+
                 convertView = view;
                 convertView.setTag(viewHolder);
             }else{
@@ -124,6 +135,24 @@ public class FragmentProjectList extends BaseFragment {
             viewHolder.pjBillCount.setText(""+project.getBillCount());
             viewHolder.pjPgCount.setText(""+project.getPgCount());
 
+            if(Global.PROJECT_MANAGER.equals(roleId)){
+                viewHolder.layoutPjBtn.setVisibility(View.VISIBLE);
+                viewHolder.layoutPjBtn.findViewById(R.id.add_bill).setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View v) {
+                        OpenBillActivity_.intent(getActivity()).start();
+                    }
+                });
+                viewHolder.layoutPjBtn.findViewById(R.id.add_pg).setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                });
+            }
+
+            viewHolder.layoutBillCount.setOnClickListener(new BillListener(project.getPjId()));
+
             return convertView;
         }
     };
@@ -142,7 +171,28 @@ public class FragmentProjectList extends BaseFragment {
         ImageView iconPjState;
         TextView pjBillCount;
         TextView pjPgCount;
+
+        View layoutBillCount;
+        View layoutPgCount;
+
+        View layoutPjBtn;
     }
+
+    class BillListener implements   View.OnClickListener {
+
+        String pjId = null;
+
+        public BillListener(String pjId){
+            this.pjId = pjId;
+        }
+
+        @Override
+        public void onClick(View v) {
+            ProjectBillActivity_.intent(getActivity()).pjId(pjId).start();
+            getActivity().overridePendingTransition(R.anim.alpha_in,R.anim.left_slide_out);
+        }
+    }
+
 
 
     PullToRefreshBase.OnRefreshListener onRefreshListener = new PullToRefreshBase.OnRefreshListener<ListView>() {

@@ -8,5 +8,10 @@
         android:icon="@mipmap/ic_menu_ok"
         android:orderInCategory="100"
         app:showAsAction="always" />
-
+    <item
+        android:id="@+id/action_add"
+        android:title="添加"
+        android:icon="@mipmap/ic_menu_add"
+        android:orderInCategory="100"
+        app:showAsAction="always" />
 </menu>
