@@ -66,12 +66,6 @@ public class LoginActivity extends BaseActivity {
     @AfterViews
     void init(){
 
-        RequestParams params = new RequestParams();
-        params.put("phone", "18850131312");
-        params.put("password", "123456");
-        postNetwork(HOST_LOGIN, params, HOST_LOGIN);
-
-
         editName.addTextChangedListener(textWatcher);
         editPassword.addTextChangedListener(textWatcher);
         editValify.addTextChangedListener(textWatcher);

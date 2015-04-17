@@ -1,6 +1,8 @@
 package com.ezhuang.project.detail;
 
 
+import android.os.AsyncTask;
+
 import com.ezhuang.BaseActivity;
 import com.ezhuang.R;
 import com.ezhuang.common.Global;
@@ -47,8 +49,10 @@ public class ViewProjectActivity extends BaseActivity {
     @AfterViews
     void init(){
 
+
         if(listProject == null){
             listProject = new LinkedList<>();
+            showDialogLoading();
         }
 
 
@@ -82,33 +86,98 @@ public class ViewProjectActivity extends BaseActivity {
 
         if(tag.equals(PROJECT_BY_ROLE)){
             if(code == NetworkImpl.REQ_SUCCESSS){
-                listProject.clear();
-                JSONArray jsonArray = respanse.getJSONArray("data");
-                for(int i=0; i<jsonArray.length() ;i++){
-                    Project project = getProject(jsonArray.getString(i), jsonArray.getJSONObject(i));
-                    listProject.add(project);
-                }
+
+                new AsyncTask<JSONObject,Void,Void>(){
+                    @Override
+                    protected Void doInBackground(JSONObject... params) {
+                        listProject.clear();
+                        JSONArray jsonArray = null;
+                        try {
+                            jsonArray = params[0].getJSONArray("data");
+                            for(int i=0; i<jsonArray.length() ;i++){
+                                Project project = getProject(jsonArray.getString(i), jsonArray.getJSONObject(i));
+                                listProject.add(project);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        publishProgress();
+                        return null;
+                    }
+
+                    @Override
+                    protected void onProgressUpdate(Void... values) {
+
+                        super.onProgressUpdate(values);
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void aVoid) {
+                        hideProgressDialog();
+                        updateSearchResult();
+                        super.onPostExecute(aVoid);
+                    }
+                }.execute(respanse);
+
+
+            }else{
+
+
             }
         }
 
         if(tag.equals(PROJECT_BY_ROLE_MORE)){
             if(code == NetworkImpl.REQ_SUCCESSS){
-                JSONArray jsonArray = respanse.getJSONArray("data");
-                int len = jsonArray.length();
-                if(len==0){
-                    showButtomToast("没有更多了");
-                }
-                else{
-                    for(int i=0; i< len ;i++){
-                        Project project = getProject(jsonArray.getString(i),jsonArray.getJSONObject(i));
-                        listProject.add(project);
+
+
+                new AsyncTask<JSONObject,Void,Boolean>(){
+                    @Override
+                    protected Boolean doInBackground(JSONObject... params) {
+
+                        JSONArray jsonArray = null;
+                        try {
+                            jsonArray = params[0].getJSONArray("data");
+                            int len = jsonArray.length();
+                            if(len==0){
+                                publishProgress();
+                            }
+                            else{
+                                for(int i=0; i< len ;i++){
+                                    Project project = getProject(jsonArray.getString(i),jsonArray.getJSONObject(i));
+                                    listProject.add(project);
+                                }
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            return  false;
+                        }
+
+                        return true;
                     }
-                }
+
+                    @Override
+                    protected void onProgressUpdate(Void... values) {
+                        showButtomToast("没有更多了");
+                        super.onProgressUpdate(values);
+                    }
+
+                    @Override
+                    protected void onPostExecute(Boolean reslut) {
+                        hideProgressDialog();
+                        updateSearchResult();
+                        super.onPostExecute(reslut);
+                    }
+                }.execute(respanse);
+
+
 
             }
+
+
+
         }
 
-        updateSearchResult();
     }
 
 

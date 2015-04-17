@@ -9,14 +9,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import com.ezhuang.common.Global;
+import com.ezhuang.common.JsonUtil;
 import com.ezhuang.common.LoginBackground;
 import com.ezhuang.model.AccountInfo;
 import com.ezhuang.model.StaffUser;
+import com.loopj.android.http.RequestParams;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.res.AnimationRes;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 
@@ -43,6 +48,10 @@ public class EntranceActivity extends BaseActivity {
 
     Uri background = null;
 
+    boolean isLogin = false;
+
+    String HOST_LOGIN = Global.HOST + "/app/stf/login.do";
+
     @AfterViews
     void init() {
 
@@ -60,7 +69,11 @@ public class EntranceActivity extends BaseActivity {
 
         if(AccountInfo.isLogin(this)){
             StaffUser staffUser = AccountInfo.loadAccount(this);
-            //TODO 免登陆
+            isLogin = true;
+            RequestParams params = new RequestParams();
+            params.put("phone", staffUser.getPhone());
+            params.put("password", staffUser.getPassword());
+            postNetwork(HOST_LOGIN, params, HOST_LOGIN);
         }
 
         entrance.setAnimationListener(new Animation.AnimationListener() {
@@ -88,11 +101,40 @@ public class EntranceActivity extends BaseActivity {
     }
 
     void next(){
+
+        if(!isLogin){
+            toLoginActivity();
+        }else{
+            Intent intent = new Intent(EntranceActivity.this,MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
+    }
+
+    void toLoginActivity(){
         Intent intent;
         intent = new Intent(this,LoginActivity_.class);
         startActivity(intent);
         finish();
 
         overridePendingTransition(R.anim.alpha_in, R.anim.alpha_out);
+    }
+
+    @Override
+    public void parseJson(int code, JSONObject respanse, String tag, int pos, Object data) throws JSONException {
+
+        if(tag.equals(HOST_LOGIN)){
+            if(code==10001){
+                StaffUser currentUser = JsonUtil.Json2Object(respanse.getString("data"), StaffUser.class);
+                MyApp.currentUser = currentUser;
+                AccountInfo.saveAccount(EntranceActivity.this,currentUser);
+
+            }else{
+                toLoginActivity();
+            }
+
+        }
+
     }
 }

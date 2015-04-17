@@ -1,5 +1,6 @@
 package com.ezhuang.project;
 
+
 import android.os.AsyncTask;
 import android.view.View;
 import android.view.ViewGroup;
@@ -107,10 +108,11 @@ public class ProjectBillFragment extends BaseFragment {
             viewHolder.bill_create_time.setText(bill.getBillTime());
             viewHolder.bill_state.setText(bill_state[bill.getState()]);
             viewHolder.item_count.setText(""+bill.getBdCount());
-
             return convertView;
         }
     };
+
+
 
     class ViewHolder{
         TextView bill_no;

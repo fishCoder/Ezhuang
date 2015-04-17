@@ -143,9 +143,7 @@ public class SearchProjectActivity extends BaseActivity{
 
             }
         }
-
         hideProgressDialog();
-
         if (listProject.isEmpty()) {
             emptyView.setVisibility(View.VISIBLE);
             container.setVisibility(View.INVISIBLE);

@@ -99,16 +99,26 @@ public class ProjectBillActivity extends BaseActivity {
                     String json = jsonArray.getString(i);
                     bills.add(JsonUtil.Json2Object(json,ProjectBill.class));
                 }
+                hideProgressDialog();
                 fragment.updateDate(bills);
             }
         }else
         if(tag.equals(QUERY_BILL_MORE)){
             if(code == NetworkImpl.REQ_SUCCESSS){
-
+                JSONArray jsonArray = respanse.getJSONArray("data");
+                if(jsonArray.length()==0){
+                    showButtomToast("没有更多");
+                }else
+                for (int i=0;i<jsonArray.length();i++){
+                    String json = jsonArray.getString(i);
+                    bills.add(JsonUtil.Json2Object(json,ProjectBill.class));
+                }
+                hideProgressDialog();
+                fragment.updateDate(bills);
             }
 
         }
-        hideProgressDialog();
+
     }
 
     @OptionsItem(android.R.id.home)

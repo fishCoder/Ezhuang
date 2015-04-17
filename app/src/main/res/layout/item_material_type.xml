@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:minHeight="48dp"
+    android:gravity="center_vertical"
+    android:paddingLeft="50sp"
+    android:paddingRight="15sp">
+
+    <ImageView
+        android:id="@+id/type_icon"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginRight="15dp"
+        android:src="@mipmap/user_home_project" />
+
+
+    <TextView
+        android:id="@+id/material_type"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="辅材及泥料"
+        android:textColor="#222222"
+        android:textSize="18sp" />
+
+
+</LinearLayout>

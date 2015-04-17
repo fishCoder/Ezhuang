@@ -12,7 +12,7 @@ import com.ezhuang.R;
 import com.ezhuang.common.Global;
 import com.ezhuang.common.network.BaseFragment;
 import com.ezhuang.model.Project;
-import com.ezhuang.project.OpenBillActivity_;
+import com.ezhuang.project.AddMaterialToBillActivity_;
 import com.ezhuang.project.ProjectBillActivity_;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
@@ -49,11 +49,10 @@ public class FragmentProjectList extends BaseFragment {
 
         if(listProject==null){
             listProject = new LinkedList<>();
+            listView.setAdapter(adapter);
+            listView.setMode(PullToRefreshBase.Mode.BOTH);
+            listView.setOnRefreshListener(onRefreshListener);
         }
-
-        listView.setAdapter(adapter);
-        listView.setMode(PullToRefreshBase.Mode.BOTH);
-        listView.setOnRefreshListener(onRefreshListener);
 
     }
 
@@ -61,7 +60,6 @@ public class FragmentProjectList extends BaseFragment {
         this.listProject = list;
         adapter.notifyDataSetChanged();
         listView.onRefreshComplete();
-        hideProgressDialog();
 //        BlankViewDisplay.setBlank(1, this, false, blankLayout, null);
     }
 
@@ -140,7 +138,7 @@ public class FragmentProjectList extends BaseFragment {
                 viewHolder.layoutPjBtn.findViewById(R.id.add_bill).setOnClickListener(new View.OnClickListener(){
                     @Override
                     public void onClick(View v) {
-                        OpenBillActivity_.intent(getActivity()).start();
+                        AddMaterialToBillActivity_.intent(getActivity()).start();
                     }
                 });
                 viewHolder.layoutPjBtn.findViewById(R.id.add_pg).setOnClickListener(new View.OnClickListener(){

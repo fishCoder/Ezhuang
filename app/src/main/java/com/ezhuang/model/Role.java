@@ -1,6 +1,8 @@
 package com.ezhuang.model;
 
-public class Role {
+import java.io.Serializable;
+
+public class Role implements Serializable {
 	private String roleId;
 	private String roleName;// ` varchar(20) DEFAULT NULL,
 
