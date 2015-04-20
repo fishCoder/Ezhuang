@@ -1,14 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingRight="10dp"
-    android:gravity="right|center_vertical">
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
 
+    <LinearLayout
+        android:id="@+id/id_back"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center|right" >
 
+        <com.gc.materialdesign.views.ButtonFlat
+            android:id="@+id/btnDel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#1E88E5"
+            android:text="删除" />
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/id_front"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingRight="10dp"
+        android:background="#fff"
+        android:orientation="vertical"
+        android:gravity="right|center_vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -131,16 +150,20 @@
 
         <com.ezhuang.common.AutoHeightGridView
             android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp"
             android:id="@+id/gridView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:columnWidth="@dimen/image_add_maopao_width"
+            android:columnWidth="@dimen/image_display_width"
             android:numColumns="3"
             android:horizontalSpacing="8dp"
             android:verticalSpacing="8dp"
             android:stretchMode="columnWidth"
             android:gravity="center" />
+    </LinearLayout>
 
-</LinearLayout>
+
+
+
+</FrameLayout>

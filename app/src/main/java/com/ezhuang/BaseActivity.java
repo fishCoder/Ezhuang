@@ -24,6 +24,7 @@ import com.ezhuang.common.DialogUtil;
 import com.loopj.android.http.RequestParams;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+import com.qiniu.android.storage.UploadManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;

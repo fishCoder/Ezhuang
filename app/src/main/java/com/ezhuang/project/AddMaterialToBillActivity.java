@@ -1,6 +1,8 @@
 package com.ezhuang.project;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -15,18 +17,27 @@ import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 
 import com.ezhuang.BaseActivity;
+import com.ezhuang.MyApp;
 import com.ezhuang.R;
 import com.ezhuang.common.Global;
 import com.ezhuang.common.JsonUtil;
 import com.ezhuang.common.PhotoOperate;
 import com.ezhuang.common.network.NetworkImpl;
 import com.ezhuang.common.photopick.PhotoPickActivity;
+import com.ezhuang.model.BillDetail;
+import com.ezhuang.model.Billing;
+import com.ezhuang.model.BillingDetail;
 import com.ezhuang.model.SpMaterial;
 import com.ezhuang.model.SpMtType;
 import com.ezhuang.project.detail.ListListener;
+import com.loopj.android.http.RequestParams;
+import com.qiniu.android.http.ResponseInfo;
+import com.qiniu.android.storage.UpCompletionHandler;
+import com.qiniu.android.storage.UploadManager;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.OnActivityResult;
 import org.androidannotations.annotations.OptionsItem;
 import org.json.JSONArray;
@@ -34,11 +45,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by Administrator on 2015/4/14 0014.
@@ -64,6 +77,8 @@ public class AddMaterialToBillActivity extends BaseActivity {
 
     String QUERY_MATERIAL = Global.HOST + "/app/project/queryProjectMaterialsByAndroid.do";
 
+    String SUBMIT_BILLING = Global.HOST + "/app/project/addProjectBilling.do";
+
     Map<String,List<SpMaterial>> mData;
     List<SpMtType> mType;
 
@@ -77,6 +92,14 @@ public class AddMaterialToBillActivity extends BaseActivity {
 
     public SpMaterial spMaterial;
 
+    EditText billRemarkEdit;
+
+    String QINIU_TOKEN = Global.HOST + "/app/qiniu/appToken.do";
+
+    Billing projectBilling;
+
+    @Extra
+    String projectId;
 
     @AfterViews
     void init(){
@@ -86,12 +109,17 @@ public class AddMaterialToBillActivity extends BaseActivity {
             mType = new LinkedList<>();
             searchData = new LinkedList<>();
             billData = new LinkedList<>();
+            projectBilling = new Billing();
+            projectBilling.pj_id = projectId;
+            projectBilling.pj_bill_details = new LinkedList<>();
         }
 
         actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowCustomEnabled(true);
         changeToSubmitActionBar();
+
+
 
         fillBillItemFragment = new FillBillItemFragment();
         viewAndSubmitBillFragment = ViewAndSubmitBillFragment_.builder().build();
@@ -117,12 +145,60 @@ public class AddMaterialToBillActivity extends BaseActivity {
     void changeToSubmitActionBar(){
 
         needToback = true;
-
         actionBar.setCustomView(R.layout.submit_bill_actionbar);
         findViewById(R.id.action_submit).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                if(billData.size()==0){
+                    showButtomToast("没有可提交的内容");
+                    return;
+                }
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(AddMaterialToBillActivity.this);
+
+                billRemarkEdit = (EditText) mInflater.inflate(R.layout.my_edit_text,null);
+
+                builder.setTitle("提交");
+                builder.setView(billRemarkEdit);
+                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        boolean isNeedUploadPic = false;
+                        int imageCount = 0;
+                        for(SpMaterial item : billData){
+                            if(item.itemImages.size()>0){
+                                isNeedUploadPic = true;
+                                imageCount += item.itemImages.size();
+                            }
+                        }
+
+                        if(imageCount==hasUpPic.size()){
+                            //刚才已经上传过
+                            isNeedUploadPic = false;
+                        }
+
+                        if(isNeedUploadPic){
+                            getNetwork(QINIU_TOKEN,QINIU_TOKEN);
+                            showProgressBar(true,"请求TOKEN");
+                        }else{
+                            for(SpMaterial item : billData){
+                                BillingDetail detail = new BillingDetail();
+                                detail.bill_d_dosage = item.item_count;
+                                detail.bill_d_m_id = item.mtId;
+                                detail.bill_d_remark = item.item_remark;
+                                detail.bill_d_img = "";
+                                projectBilling.pj_bill_details.add(detail);
+                            }
+                            submitBilling();
+                        }
+
+
+                    }
+                });
+                builder.setNegativeButton("取消",null);
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }
         });
         findViewById(R.id.action_add).setOnClickListener(new View.OnClickListener() {
@@ -211,6 +287,12 @@ public class AddMaterialToBillActivity extends BaseActivity {
             }
         }
     }
+    //待上传图片总数
+    int imgCount = 0;
+    //已上传图片数量
+    int hasUpImgCount = 0;
+    //本地路径 服务器路径
+    Map<String,String> hasUpPic = new HashMap<>();
 
     @Override
     public void parseJson(int code, JSONObject respanse, final String tag, int pos, Object data) throws JSONException {
@@ -240,6 +322,7 @@ public class AddMaterialToBillActivity extends BaseActivity {
                                     SpMaterial spMaterial = new SpMaterial(childList.getJSONObject(k));
                                     spMaterials.add(spMaterial);
                                     totalSpMaterial.add(spMaterial);
+
                                 }
 
                                 mData.put(type.typeId, spMaterials);
@@ -292,7 +375,113 @@ public class AddMaterialToBillActivity extends BaseActivity {
             }
 
         }
+        if(QINIU_TOKEN.equals(tag)){
+            if(code == NetworkImpl.REQ_SUCCESSS){
 
+                imgCount = 0;
+                hasUpImgCount = 0;
+
+                String token = respanse.getString("data");
+                Log.i("七牛上传凭证", token);
+                projectBilling.pj_bill_remark = billRemarkEdit.getText().toString();
+                UploadManager uploadManager = new UploadManager();
+                for (SpMaterial bill_item : billData){
+
+
+                    BillingDetail detail = new BillingDetail();
+                    detail.bill_d_dosage = bill_item.item_count;
+                    detail.bill_d_m_id = bill_item.mtId;
+                    detail.bill_d_remark = bill_item.item_remark;
+                    detail.bill_d_img = "";
+
+
+                    for (FillBillItemFragment.PhotoData photoData : (List<FillBillItemFragment.PhotoData>) bill_item.itemImages){
+                        Log.i("上传图片本地路径",photoData.uri.toString());
+                        String url = photoData.uri.toString();
+
+                        String fileType =  url.substring(url.lastIndexOf("."),url.length());
+                        String key = new StringBuffer(MyApp.currentUser.getCompanyId())
+                                .append("/bill/")
+                                .append(UUID.randomUUID().toString())
+                                .append(fileType).toString();
+                        if(hasUpPic.get(url)==null||hasUpPic.get(url).isEmpty()){
+                            uploadManager.put(new File(Global.getPath(this, photoData.uri)),key, token,new BillUpCompletionHandler(detail,url),null);
+                            imgCount++;
+                        }
+
+                    }
+
+
+
+                    projectBilling.pj_bill_details.add(detail);
+                }
+
+                showProgressBar(true,String.format("上传图片[%d/%d]",hasUpImgCount,imgCount));
+            }else{
+                showButtomToast("请求TOKEN失败");
+                showProgressBar(false);
+            }
+        }
+        if(SUBMIT_BILLING.equals(tag)){
+            Log.i("提交开单",""+code);
+            showProgressBar(false);
+            if(code == NetworkImpl.REQ_SUCCESSS){
+                billData.clear();
+                viewAndSubmitBillFragment.updateData(billData);
+                showButtomToast("提交成功");
+            }else{
+                showButtomToast("错误码:"+code);
+            }
+        }
+    }
+
+    class BillUpCompletionHandler implements UpCompletionHandler{
+
+        BillingDetail detail;
+        String localUrl;
+        public BillUpCompletionHandler(BillingDetail detail,String localUrl){
+            this.detail = detail;
+            this.localUrl = localUrl;
+        }
+
+        @Override
+        public void complete(String key, ResponseInfo info, JSONObject response) {
+            Log.v("info.statusCode",""+info.statusCode);
+            Log.v("上传一张图片",key);
+
+            if(info.statusCode==200){
+
+                hasUpPic.put(localUrl,key);
+
+                if(detail.bill_d_img.isEmpty()){
+                    detail.bill_d_img = key;
+                }else {
+                    detail.bill_d_img += "&" + key;
+                }
+
+                hasUpImgCount++;
+                showProgressBar(true,String.format("上传图片[%d/%d]",hasUpImgCount,imgCount));
+
+                if(hasUpImgCount==imgCount){
+                    submitBilling();
+                }
+
+            }else{
+                showProgressBar(false);
+                showMiddleToast("图片上传出错");
+            }
+        }
+    }
+
+
+    void submitBilling(){
+        showProgressBar(true,"提交开单数据");
+        String json = JsonUtil.Object2Json(projectBilling);
+        Log.i("sProjectBill",json);
+        RequestParams params = new RequestParams();
+        params.put("sProjectBill",json);
+
+        postNetwork(SUBMIT_BILLING,params,SUBMIT_BILLING);
     }
 
     TextWatcher watcher = new TextWatcher() {
@@ -367,6 +556,7 @@ public class AddMaterialToBillActivity extends BaseActivity {
     };
 
     void toPickUpPhotoActivity(){
+        Log.v(this.getClass().getSimpleName()+" 准备跳转 ",""+System.currentTimeMillis());
         Intent intent = new Intent(this, PhotoPickActivity.class);
         intent.putExtra(PhotoPickActivity.EXTRA_MAX, 6);
         startActivityForResult(intent, FillBillItemFragment.RESULT_REQUEST_PICK_PHOTO);
@@ -394,29 +584,18 @@ public class AddMaterialToBillActivity extends BaseActivity {
         }
     }
 
-
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data){
-//        if (requestCode == FillBillItemFragment.RESULT_REQUEST_PICK_PHOTO) {
-//            if (resultCode == Activity.RESULT_OK) {
-//                try {
-//                    fillBillItemFragment.show(getFragmentManager(), "");
-//                    List<FillBillItemFragment.PhotoData> photoDataList = new LinkedList<>();
-//                    ArrayList<PhotoPickActivity.ImageInfo> pickPhots = (ArrayList<PhotoPickActivity.ImageInfo>) data.getSerializableExtra("data");
-//                    for (PhotoPickActivity.ImageInfo item : pickPhots) {
-//                        Uri uri = Uri.parse(item.path);
-//                        File outputFile = photoOperate.scal(uri);
-//
-//                        photoDataList.add(new FillBillItemFragment.PhotoData(outputFile));
-//
+//    @OnActivityResult(FillBillItemFragment.RESULT_REQUEST_IMAGE)
+//    void result_view_alter_photo(int resultCode, Intent data){
+//        if (resultCode == RESULT_OK) {
+//            ArrayList<String> delUris = data.getStringArrayListExtra("mDelUrls");
+//            for (String item : delUris) {
+//                for (int i = 0; i < spMaterial.itemImages.size(); ++i) {
+//                    if (((List<FillBillItemFragment.PhotoData>)spMaterial.itemImages).get(i).uri.toString().equals(item)) {
+//                        spMaterial.itemImages.remove(i);
 //                    }
-//                    fillBillItemFragment.updateData(photoDataList);
-//                } catch (Exception e) {
-//                    showMiddleToast("缩放图片失败");
-//                    Global.errorLog(e);
 //                }
-//
 //            }
+//
 //        }
 //    }
 
@@ -428,6 +607,7 @@ public class AddMaterialToBillActivity extends BaseActivity {
                 if(m.mtId.equals(spMaterial.mtId)){
                     m.item_count = spMaterial.item_count;
                     m.item_remark = spMaterial.item_remark;
+                    m.itemImages = spMaterial.itemImages;
                     flag = false;
                 }
             }

@@ -57,6 +57,7 @@ import java.util.regex.Pattern;
  */
 public class Global {
     public static final String HOST_91JZ = "http://121.41.117.203:80";
+//    public static final String HOST_91JZ = "http://192.168.0.103:8080/Perfect";
 
     public static String HOST = HOST_91JZ;
 

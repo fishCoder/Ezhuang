@@ -69,6 +69,7 @@ public class EntranceActivity extends BaseActivity {
 
         if(AccountInfo.isLogin(this)){
             StaffUser staffUser = AccountInfo.loadAccount(this);
+            MyApp.currentUser = staffUser;
             isLogin = true;
             RequestParams params = new RequestParams();
             params.put("phone", staffUser.getPhone());

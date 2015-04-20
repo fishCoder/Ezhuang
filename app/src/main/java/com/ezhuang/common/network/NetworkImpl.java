@@ -125,6 +125,7 @@ public class NetworkImpl {
                 mUpdateing.put(tag, false);
             }
 
+
             @Override
             public void onFinish() {
             }

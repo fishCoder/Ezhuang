@@ -5,6 +5,7 @@ import android.widget.TextView;
 
 import com.ezhuang.R;
 import com.ezhuang.project.ProjectBillFragment;
+import com.ezhuang.project.ViewAndSubmitBillFragment;
 import com.ezhuang.project.detail.FragmentProjectList;
 
 
@@ -50,6 +51,10 @@ public class BlankViewDisplay {
             if (fragment instanceof ProjectBillFragment){
                 iconId = R.mipmap.ic_exception_blank_task;
                 text = "没有开单";
+            }
+            if (fragment instanceof ViewAndSubmitBillFragment){
+                iconId = R.mipmap.ic_exception_blank_task;
+                text = "没有东西 赶紧去选定吧";
             }
         } else {
             iconId = R.mipmap.ic_exception_no_network;

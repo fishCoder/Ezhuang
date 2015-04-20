@@ -13,6 +13,8 @@ import com.ezhuang.common.Global;
 import com.ezhuang.common.network.BaseFragment;
 import com.ezhuang.model.Role;
 import com.ezhuang.model.StaffUser;
+import com.ezhuang.project.ProjectBillActivity_;
+import com.ezhuang.project.ViewBillingActivity_;
 import com.ezhuang.project.detail.CreatProjectActivity_;
 import com.ezhuang.project.detail.ViewProjectActivity_;
 
@@ -54,7 +56,7 @@ public class FragmentHome extends BaseFragment {
         if(list.size()==0){
             StaffUser staffUser = MyApp.currentUser;
 
-            for(Role role : staffUser.getRoles()){
+           for(Role role : staffUser.getRoles()){
                 groupkey.add(role.getRoleName());
                 list.add(new Object[]{role.getRoleName()});
                 list.addAll(getApps(role.getRoleId()));
@@ -69,6 +71,9 @@ public class FragmentHome extends BaseFragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if(list.get(position)[0].equals("查看项目")){
                     ViewProjectActivity_.intent(getActivity()).roleId(Global.STAFF).staffId(MyApp.currentUser.getGlobal_key()).start();
+                }else
+                if(list.get(position)[0].equals("审核")){
+                    ViewBillingActivity_.intent(getActivity()).roleId(Global.CEHCK).start();
                 }else
                 if(list.get(position)[0].equals("我的项目")){
                     ViewProjectActivity_.intent(getActivity()).roleId(Global.PROJECT_MANAGER).staffId(MyApp.currentUser.getGlobal_key()).start();

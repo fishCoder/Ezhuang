@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:ptr="http://schemas.android.com/apk/res-auto"
+    xmlns:swipe="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.handmark.pulltorefresh.library.PullToRefreshListView
+    <com.fortysevendeg.swipelistview.SwipeListView
         android:id="@+id/listView"
-        android:layout_height="fill_parent"
-        android:layout_width="fill_parent"
-        android:fastScrollEnabled="false"
-        android:smoothScrollbar="true"
-        android:overScrollMode="never"
-        ptr:ptrShowIndicator="false" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        swipe:swipeActionLeft="reveal"
+        swipe:swipeBackView="@+id/id_back"
+        swipe:swipeCloseAllItemsWhenMoveList="true"
+        swipe:swipeFrontView="@+id/id_front"
+        swipe:swipeMode="left"
+        swipe:swipeOffsetLeft="250dp"
+        swipe:swipeOpenOnLongPress="false" />
 
     <include
         android:id="@+id/blankLayout"

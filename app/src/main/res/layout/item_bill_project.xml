@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        >
+
+        <EditText
+            android:id="@+id/pj_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:singleLine="true"
+            android:textSize="20sp"
+            android:focusable="false"
+            android:background="@android:color/transparent"
+            android:text="这是一个项目" />
+
+
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="30dp"
+        android:layout_marginTop="5dp"
+        android:paddingBottom="5dp"
+        android:orientation="horizontal"
+        >
+
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingRight="15sp">
+
+            <TextView
+                android:id="@+id/pm"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="项目经理"
+                android:textColor="#555555"
+                android:textSize="14sp" />
+
+
+            <TextView
+                android:id="@+id/pm_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginLeft="5dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="XXX"
+                android:textColor="#555555"
+                android:textSize="14sp" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingRight="15sp">
+
+            <TextView
+                android:id="@+id/check"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="审        核"
+                android:textColor="#555555"
+                android:textSize="14sp" />
+
+
+            <TextView
+                android:id="@+id/check_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginLeft="5dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="XXX"
+                android:textColor="#555555"
+                android:textSize="14sp" />
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="30dp"
+        android:orientation="horizontal"
+        >
+
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:baselineAligned="false"
+            android:layout_marginBottom="10dp"
+            android:paddingRight="15sp">
+
+            <TextView
+                android:id="@+id/buyer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="采        购"
+                android:textColor="#555555"
+                android:textSize="14sp" />
+
+
+            <TextView
+                android:id="@+id/buyer_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginLeft="5dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="诸葛建国"
+                android:textColor="#555555"
+                android:textSize="14sp" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:baselineAligned="false"
+            android:paddingRight="15sp">
+
+            <TextView
+                android:id="@+id/quality"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="质        检"
+                android:textColor="#555555"
+                android:textSize="14sp" />
+
+
+            <TextView
+                android:id="@+id/quality_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginLeft="5dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="诸葛建国"
+                android:textColor="#555555"
+                android:textSize="14sp" />
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+
+
+
+</LinearLayout>

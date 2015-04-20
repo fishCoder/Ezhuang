@@ -119,7 +119,7 @@ public class FragmentProjectList extends BaseFragment {
                 viewHolder  = (ViewHolder) convertView.getTag();
             }
 
-            Project project = (Project) getItem(position);
+            final Project project = (Project) getItem(position);
             viewHolder.pjName.setText(project.getPjName());
             viewHolder.pjAddress.setText(project.getPjAddress());
             viewHolder.ownerName.setText(project.getRealName());
@@ -138,7 +138,7 @@ public class FragmentProjectList extends BaseFragment {
                 viewHolder.layoutPjBtn.findViewById(R.id.add_bill).setOnClickListener(new View.OnClickListener(){
                     @Override
                     public void onClick(View v) {
-                        AddMaterialToBillActivity_.intent(getActivity()).start();
+                        AddMaterialToBillActivity_.intent(getActivity()).projectId(project.getPjId()).start();
                     }
                 });
                 viewHolder.layoutPjBtn.findViewById(R.id.add_pg).setOnClickListener(new View.OnClickListener(){

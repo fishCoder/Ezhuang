@@ -15,6 +15,7 @@
     <dimen name="image_single_micro_width">60dp</dimen>
     <dimen name="image_single_min_size">150dp</dimen>
 
+    <dimen name="image_display_width">93dp</dimen>
     <dimen name="image_add_maopao_width">62dp</dimen>
     <dimen name="message_text_margin_bottom">5dp</dimen>
 

@@ -97,6 +97,7 @@ public class ProjectBillFragment extends BaseFragment {
                 viewHolder.item_count = (TextView) view.findViewById(R.id.item_count);
 
                 convertView = view;
+                convertView.setTag(viewHolder);
 
             }else{
                 viewHolder = (ViewHolder) convertView.getTag();

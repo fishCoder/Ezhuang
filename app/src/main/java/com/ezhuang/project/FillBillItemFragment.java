@@ -208,34 +208,23 @@ public class FillBillItemFragment extends DialogFragment {
                 holder = (ViewHolder) convertView.getTag();
             }
 
+            holder.image.setImageResource(R.mipmap.ic_default_image);
 
-//            if (position == getCount() - 1) {
-//                if (getCount() == (PHOTO_MAX_COUNT + 1)) {
-//                    holder.image.setVisibility(View.INVISIBLE);
-//
-//                } else {
-//                    holder.image.setVisibility(View.VISIBLE);
-//                    holder.image.setImageResource(R.mipmap.make_maopao_add);
-//                    holder.uri = "";
-//                }
-//
-//            } else {
-                holder.image.setVisibility(View.VISIBLE);
-                PhotoData photoData = mData.get(position);
-                Uri data = photoData.uri;
-                holder.uri = data.toString();
+            holder.image.setVisibility(View.VISIBLE);
+            PhotoData photoData = mData.get(position);
+            Uri data = photoData.uri;
+            holder.uri = data.toString();
 
-                ImageLoader.getInstance().loadImage(data.toString(), mSize, new SimpleImageLoadingListener() {
-                    @Override
-                    public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                        for (ViewHolder item : holderList) {
-                            if (item.uri.equals(imageUri)) {
-                                item.image.setImageBitmap(loadedImage);
-                            }
+            ImageLoader.getInstance().loadImage(data.toString(), mSize, new SimpleImageLoadingListener() {
+                @Override
+                public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                    for (ViewHolder item : holderList) {
+                        if (item.uri.equals(imageUri)) {
+                            item.image.setImageBitmap(loadedImage);
                         }
                     }
-                });
-//            }
+                }
+            });
 
             return holder.image;
         }

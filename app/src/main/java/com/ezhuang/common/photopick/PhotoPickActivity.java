@@ -1,10 +1,15 @@
 package com.ezhuang.common.photopick;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
@@ -47,7 +52,9 @@ public class PhotoPickActivity extends BaseActivity {
     LayoutInflater mInflater;
 
     public static final String EXTRA_MAX = "EXTRA_MAX";
+
     private int mMaxPick = 6;
+
 
     public static DisplayImageOptions optionsImage = new DisplayImageOptions
             .Builder()
@@ -74,6 +81,7 @@ public class PhotoPickActivity extends BaseActivity {
     }
 
     LinkedHashMap<String, ArrayList<ImageInfo>> mFolders = new LinkedHashMap();
+
     ArrayList<String> mFoldersName = new ArrayList();
 
     ArrayList<ImageInfo> mPickData = new ArrayList();
@@ -112,76 +120,104 @@ public class PhotoPickActivity extends BaseActivity {
 
         lastTime = System.currentTimeMillis();
 
-        displayTime(0);
-
-        String[] projection = {MediaStore.Images.ImageColumns._ID,
-                MediaStore.Images.ImageColumns.DATA,
-                MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
-                MediaStore.Images.ImageColumns.WIDTH,
-                MediaStore.Images.ImageColumns.HEIGHT,
-                MediaStore.Images.ImageColumns.MINI_THUMB_MAGIC};
-
-        String selection = "";
-        String[] selectionArgs = null;
-        Cursor mImageExternalCursor = managedQuery(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, selection, selectionArgs, MediaStore.MediaColumns.DATE_ADDED + " DESC");
-
-        displayTime(0);
-
-        ArrayList<ImageInfo> allPhoto = new ArrayList();
-        allPhoto.add(new ImageInfo(CameraItem));
-        mFoldersName.add(allPhotos);
-
-        while (mImageExternalCursor.moveToNext()) {
-            String s0 = mImageExternalCursor.getString(0);
-            String s1 = mImageExternalCursor.getString(1);
-            String s2 = mImageExternalCursor.getString(2);
-            int width = mImageExternalCursor.getInt(3);
-            int height = mImageExternalCursor.getInt(4);
-            long thumbnailId = mImageExternalCursor.getLong(5);
-
-            String s = String.format("%s,%s,%s, %s, %s, %s", s0, s1, s2, width, height, thumbnailId);
-            Log.d("", "sss " + s);
-            if (Global.isImageUri(s1)) {
-                s1 = "file://" + s1;
-            }
-            ImageInfo imageInfo = new ImageInfo(s1);
-            imageInfo.photoId = Long.valueOf(s0);
-            imageInfo.width = width;
-            imageInfo.height = height;
-
-            ArrayList<ImageInfo> value = mFolders.get(s2);
-            if (value == null) {
-                value = new ArrayList<ImageInfo>();
-                mFolders.put(s2, value);
-                mFoldersName.add(s2);
-            }
-            allPhoto.add(imageInfo);
-            value.add(imageInfo);
-        }
-        mFolders.put(allPhotos, allPhoto);
-
-        displayTime(1);
-
-        mPhotoAdapter.setData(mFolders.get(mFoldersName.get(0)));
-        mListView.setAdapter(mFoldAdapter);
-        mListView.setOnItemClickListener(mOnItemClick);
-
-        displayTime(2);
-
-        mGridView.setAdapter(mPhotoAdapter);
-        mGridView.setOnItemClickListener(mOnPhotoItemClick);
-        displayTime(3);
-
-        // 必须这么刷一下，否则很卡，也许是ImageLoader某个地方的线程写的有问题，当然了，更有可能是我用的的有问题：），先这样吧
-        mGridView.post(new Runnable() {
+        new AsyncTask<Void,Void,Void>(){
             @Override
-            public void run() {
-            }
-        });
+            protected Void doInBackground(Void... params) {
 
-        String folderName = mFoldersName.get(0);
-        mFoldName.setText(folderName);
+                long start = System.currentTimeMillis();
+
+                displayTime(0);
+
+                String[] projection = {MediaStore.Images.ImageColumns._ID,
+                        MediaStore.Images.ImageColumns.DATA,
+                        MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
+                        MediaStore.Images.ImageColumns.WIDTH,
+                        MediaStore.Images.ImageColumns.HEIGHT,
+                        MediaStore.Images.ImageColumns.MINI_THUMB_MAGIC};
+
+                String selection = "";
+                String[] selectionArgs = null;
+                Cursor mImageExternalCursor = managedQuery(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, selection, selectionArgs, MediaStore.MediaColumns.DATE_ADDED + " DESC");
+
+                displayTime(0);
+
+                ArrayList<ImageInfo> allPhoto = new ArrayList();
+                allPhoto.add(new ImageInfo(CameraItem));
+                mFoldersName.add(allPhotos);
+
+                while (mImageExternalCursor.moveToNext()) {
+                    String s0 = mImageExternalCursor.getString(0);
+                    String s1 = mImageExternalCursor.getString(1);
+                    String s2 = mImageExternalCursor.getString(2);
+                    int width = mImageExternalCursor.getInt(3);
+                    int height = mImageExternalCursor.getInt(4);
+                    long thumbnailId = mImageExternalCursor.getLong(5);
+
+                    String s = String.format("%s,%s,%s, %s, %s, %s", s0, s1, s2, width, height, thumbnailId);
+                    Log.d("", "sss " + s);
+                    if (Global.isImageUri(s1)) {
+                        s1 = "file://" + s1;
+                    }
+                    ImageInfo imageInfo = new ImageInfo(s1);
+                    imageInfo.photoId = Long.valueOf(s0);
+                    imageInfo.width = width;
+                    imageInfo.height = height;
+
+                    ArrayList<ImageInfo> value = mFolders.get(s2);
+                    if (value == null) {
+                        value = new ArrayList<ImageInfo>();
+                        mFolders.put(s2, value);
+                        mFoldersName.add(s2);
+                    }
+                    allPhoto.add(imageInfo);
+                    value.add(imageInfo);
+                }
+                mFolders.put(allPhotos, allPhoto);
+
+                long end = System.currentTimeMillis();
+
+                Log.v("加载数据",""+(end-start));
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+
+                long start = System.currentTimeMillis();
+
+                displayTime(1);
+
+                mPhotoAdapter.setData(mFolders.get(mFoldersName.get(0)));
+                mListView.setAdapter(mFoldAdapter);
+                mListView.setOnItemClickListener(mOnItemClick);
+
+                displayTime(2);
+
+                mGridView.setAdapter(mPhotoAdapter);
+                mGridView.setOnItemClickListener(mOnPhotoItemClick);
+                displayTime(3);
+
+                // 必须这么刷一下，否则很卡，也许是ImageLoader某个地方的线程写的有问题，当然了，更有可能是我用的的有问题：），先这样吧
+//                mGridView.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        mPhotoAdapter.notifyDataSetChanged();
+//                    }
+//                });
+
+                String folderName = mFoldersName.get(0);
+                mFoldName.setText(folderName);
+
+                long end = System.currentTimeMillis();
+
+                Log.v("加载UI",""+(end-start));
+            }
+        }.execute();
+
     }
+
 
     View.OnClickListener onClickPre = new View.OnClickListener() {
         @Override
@@ -293,13 +329,10 @@ public class PhotoPickActivity extends BaseActivity {
     }
 
     private void send() {
-        if (mPickData.isEmpty()) {
-            setResult(Activity.RESULT_CANCELED);
-        } else {
-            Intent intent = new Intent();
-            intent.putExtra("data", mPickData);
-            setResult(Activity.RESULT_OK, intent);
-        }
+
+        Intent intent = new Intent();
+        intent.putExtra("data", mPickData);
+        setResult(Activity.RESULT_OK, intent);
 
         finish();
     }
@@ -455,17 +488,20 @@ public class PhotoPickActivity extends BaseActivity {
 
                 ImageInfo data = (ImageInfo) getItem(position);
                 ImageLoader imageLoader = ImageLoader.getInstance();
-
 //                holder.icon.setImageBitmap(MediaStore.Images.Thumbnails.getThumbnail(getContentResolver(), 10797, MediaStore.Images.Thumbnails.MINI_KIND, null));
 
-                Cursor c = MediaStore.Images.Thumbnails.queryMiniThumbnail(getContentResolver(), data.photoId, MediaStore.Images.Thumbnails.MINI_KIND, new String[] {MediaStore.Images.Thumbnails.DATA});
-                if (c!=null && c.moveToNext()) {
-                    imageLoader.displayImage("file://" + c.getString(0), holder.icon, optionsImage);
-                }
+//                Cursor c = MediaStore.Images.Thumbnails.queryMiniThumbnail(getContentResolver(), data.photoId, MediaStore.Images.Thumbnails.MINI_KIND, new String[] {MediaStore.Images.Thumbnails.DATA});
+//                if (c!=null && c.moveToNext()) {
+//                    imageLoader.displayImage("file://" + c.getString(0), holder.icon, optionsImage);
+//                    Log.v("加载的图路径哟~",c.getString(0));
+//                }else{
+//                   Log.v("注意了注意了","没有加载图片");
+//                   Log.v("图片id",""+data.photoId);
+//                }
 
-//                imageLoader.displayImage(data.path, holder.icon, optionsImage);
+                imageLoader.displayImage(data.path, holder.icon, optionsImage);
 
-                        ((GridViewCheckTag) holder.check.getTag()).path = data.path;
+                ((GridViewCheckTag) holder.check.getTag()).path = data.path;
 
                 boolean picked = isPicked(data.path);
                 holder.check.setChecked(picked);
