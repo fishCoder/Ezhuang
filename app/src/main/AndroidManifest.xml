@@ -109,6 +109,13 @@
         </activity>
 
         <activity
+            android:name=".project.ViewBillDetailActivity_"
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait"
+            android:label="@string/bill_detail" >
+        </activity>
+
+        <activity
             android:name=".EntranceActivity_"
             android:theme="@style/AppThemeNoActionbar"
             android:label="entrance">

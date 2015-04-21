@@ -7,6 +7,7 @@
     <string name="view_bill">查看订单</string>
     <string name="add_bill">项目开单</string>
     <string name="person_home_page">个人主页</string>
+    <string name="bill_detail">订单详情</string>
 
     <string name="action_settings">设置</string>
     <string name="action_refrush">刷新</string>
@@ -15,7 +16,7 @@
     <string name="title_activity_task_add">添加任务</string>
     <string name="title_activity_members">项目成员列表</string>
 
-    <string name="title_activity_test">TestActivity</string>
+
     <string name="title_activity_setting">设置</string>
     <string name="title_activity_user_info">个人信息</string>
     <string name="title_activity_set_password">密码设置</string>

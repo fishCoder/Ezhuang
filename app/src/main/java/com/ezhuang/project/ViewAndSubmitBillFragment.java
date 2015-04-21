@@ -18,6 +18,7 @@ import com.ezhuang.R;
 import com.ezhuang.common.BlankViewDisplay;
 import com.ezhuang.common.Global;
 import com.ezhuang.common.network.BaseFragment;
+import com.ezhuang.model.PhotoData;
 import com.ezhuang.model.SpMaterial;
 import com.fortysevendeg.swipelistview.BaseSwipeListViewListener;
 import com.fortysevendeg.swipelistview.SwipeListView;
@@ -29,6 +30,7 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.res.StringArrayRes;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -46,11 +48,18 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
 
     AddMaterialToBillActivity.FillBillItem fillBillItem;
 
+    public boolean readOnly = false;
+
     @ViewById
     SwipeListView listView;
 
     @ViewById
     View blankLayout;
+
+    @StringArrayRes
+    String[] bill_detail_state;
+
+    public boolean dealblank = true;
 
     @AfterViews
     void init(){
@@ -58,45 +67,17 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
             mData = new LinkedList<>();
         }
 
-        BlankViewDisplay.setBlank(mData.size(), this, true, blankLayout, null);
+        if(!readOnly&&dealblank)
+            BlankViewDisplay.setBlank(mData.size(), this, true, blankLayout, null);
 
         listView.setAdapter(adapter);
-
-        listView.setSwipeListViewListener(new BaseSwipeListViewListener() {
-
-            @Override
-            public void onStartOpen(int position, int action, boolean right) {
-
-                Log.d(TAG, "onStartOpen");
-            }
-
-            @Override
-            public void onStartClose(int position, boolean right) {
-
-                Log.d(TAG, "onStartClose");
-            }
-
-            @Override
-            public void onClickFrontView(int position) {
-                fillBillItem.show(mData.get(position));
-                Log.d(TAG, "onClickFrontView");
-            }
-
-            @Override
-            public void onClickBackView(int position) {
-
-                Log.d(TAG, "onClickBackView");
-            }
-
-            @Override
-            public void onDismiss(int[] reverseSortedPositions) {
-
-                Log.d(TAG, "onDismiss");
-            }
-        });
-
-
+        if(readOnly){
+            listView.setSwipeMode(SwipeListView.SWIPE_MODE_NONE);
+        }
+        listView.setSwipeListViewListener(baseSwipeListViewListener);
     }
+
+
 
     void setFillBillItem(AddMaterialToBillActivity.FillBillItem fillBillItem){
         this.fillBillItem = fillBillItem;
@@ -138,6 +119,11 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
                 viewHolder = new ViewHolder();
                 view = mInflater.inflate(R.layout.item_bill_row,parent,false);
 
+                if(readOnly){
+                    view.findViewById(R.id.layout_state).setVisibility(View.VISIBLE);
+                    viewHolder.item_state = (TextView) view.findViewById(R.id.item_state);
+                }
+
                 viewHolder.sp_m_name = (TextView) view.findViewById(R.id.sp_m_name);
                 viewHolder.sp_m_spec = (TextView) view.findViewById(R.id.sp_m_spec);
                 viewHolder.item_count = (TextView) view.findViewById(R.id.item_count);
@@ -152,18 +138,26 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
             final SpMaterial spMaterial = (SpMaterial) getItem(position);
+
+            if(readOnly){
+                viewHolder.item_state.setText(bill_detail_state[spMaterial.state]);
+            }
+
             viewHolder.sp_m_name.setText(spMaterial.mtName);
             viewHolder.sp_m_spec.setText(spMaterial.spec);
             viewHolder.sp_m_unit_name.setText(spMaterial.unitName);
             viewHolder.item_count.setText(spMaterial.item_count);
             viewHolder.item_remark.setText(spMaterial.item_remark);
+
             viewHolder.btnDel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
                     mData.remove(position);
                     notifyDataSetChanged();
                     listView.closeOpenedItems();
                     BlankViewDisplay.setBlank(mData.size(), ViewAndSubmitBillFragment.this, true, blankLayout, null);
+
                 }
             });
             if(spMaterial.itemImages==null || spMaterial.itemImages.size()==0){
@@ -178,7 +172,7 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         Intent intent = new Intent(getActivity(), ImagePagerActivity_.class);
                         ArrayList<String> arrayUri = new ArrayList<String>();
-                        for (FillBillItemFragment.PhotoData item : (List<FillBillItemFragment.PhotoData>)spMaterial.itemImages) {
+                        for (PhotoData item : (List<PhotoData>)spMaterial.itemImages) {
                             arrayUri.add(item.uri.toString());
                         }
                         intent.putExtra("mArrayUri", arrayUri);
@@ -195,13 +189,16 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
         }
     };
 
+
     class ViewHolder{
         TextView sp_m_name;
         TextView sp_m_spec;
         TextView item_count;
         TextView sp_m_unit_name;
         TextView item_remark;
+        TextView item_state;
         GridView grid_view;
+
         View   btnDel;
     }
 
@@ -210,9 +207,9 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
         int imageWidthPx;
         ImageSize mSize;
 
-        List<FillBillItemFragment.PhotoData> mData = new LinkedList<>();
+        List<PhotoData> mData = new LinkedList<>();
 
-        void setData(List<FillBillItemFragment.PhotoData> mData){
+        void setData(List<PhotoData> mData){
             imageWidthPx = Global.dpToPx(120);
             mSize = new ImageSize(imageWidthPx, imageWidthPx);
 
@@ -246,7 +243,7 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
             }
 
             holder.image.setImageResource(R.mipmap.ic_default_image);
-            FillBillItemFragment.PhotoData photoData = mData.get(position);
+            PhotoData photoData = mData.get(position);
             Uri data = photoData.uri;
             holder.uri = data.toString();
 
@@ -269,5 +266,42 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
             String uri = "";
         }
 
+    };
+
+    BaseSwipeListViewListener baseSwipeListViewListener = new BaseSwipeListViewListener() {
+
+        @Override
+        public void onStartOpen(int position, int action, boolean right) {
+
+            Log.d(TAG, "onStartOpen");
+        }
+
+        @Override
+        public void onStartClose(int position, boolean right) {
+
+            Log.d(TAG, "onStartClose");
+        }
+
+        @Override
+        public void onClickFrontView(int position) {
+            if(readOnly){
+
+            }else{
+                fillBillItem.show(mData.get(position));
+            }
+            Log.d(TAG, "onClickFrontView");
+        }
+
+        @Override
+        public void onClickBackView(int position) {
+
+            Log.d(TAG, "onClickBackView");
+        }
+
+        @Override
+        public void onDismiss(int[] reverseSortedPositions) {
+
+            Log.d(TAG, "onDismiss");
+        }
     };
 }

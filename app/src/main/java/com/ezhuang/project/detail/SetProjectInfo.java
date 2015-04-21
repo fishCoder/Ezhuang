@@ -11,6 +11,7 @@ import com.ezhuang.MyApp;
 import com.ezhuang.R;
 import com.ezhuang.common.Global;
 import com.ezhuang.model.StaffUser;
+import com.ezhuang.project.ViewBillDetailActivity;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
@@ -68,7 +69,7 @@ public class SetProjectInfo extends BaseActivity {
     }
 
     @OptionsItem
-    void action_add(){
+    void action_submit(){
         String itemValue = value.getText().toString();
 
         if(!verifyValue(itemValue)){
@@ -128,8 +129,13 @@ public class SetProjectInfo extends BaseActivity {
                     }
 
                     break;
+                case ViewBillDetailActivity.CHECK_BILL_PASS:
+                    flag = true;
+                    break;
 
-
+                case ViewBillDetailActivity.CHECK_BILL_REJEC:
+                    flag = emptyValue(itemValue);
+                    break;
         }
 
 

@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.ezhuang.common.Global;
 import com.ezhuang.common.network.BaseFragment;
+import com.ezhuang.model.AccountInfo;
 import com.ezhuang.model.Role;
 import com.ezhuang.model.StaffUser;
 import com.ezhuang.project.ProjectBillActivity_;
@@ -55,8 +56,10 @@ public class FragmentHome extends BaseFragment {
 
         if(list.size()==0){
             StaffUser staffUser = MyApp.currentUser;
-
-           for(Role role : staffUser.getRoles()){
+            if(staffUser == null){
+                staffUser = AccountInfo.loadAccount(getActionBarActivity());
+            }
+            for(Role role : staffUser.getRoles()){
                 groupkey.add(role.getRoleName());
                 list.add(new Object[]{role.getRoleName()});
                 list.addAll(getApps(role.getRoleId()));

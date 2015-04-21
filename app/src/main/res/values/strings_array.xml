@@ -63,10 +63,12 @@
         <item>主材</item>
     </string-array>
 
-    <string-array name="sexs">
-        <item>男</item>
-        <item>女</item>
-        <item>未知</item>
+    <string-array name="bill_detail_state">
+        <item>未下单</item>
+        <item>已下单</item>
+        <item>已发货</item>
+        <item>确认收货</item>
+        <item>线下下单</item>
     </string-array>
 
     <string-array name="task_titles">

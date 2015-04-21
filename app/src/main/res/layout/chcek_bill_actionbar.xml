@@ -1,0 +1,29 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_vertical|right">
+
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_weight="1"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        android:text="开单审核"/>
+    <com.gc.materialdesign.views.ButtonFlat
+        android:id="@+id/action_reject"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:background="#FFF"
+        android:text="驳回" />
+    <com.gc.materialdesign.views.ButtonFlat
+        android:id="@+id/action_pass"
+        android:layout_width="50dp"
+        android:layout_marginLeft="5dp"
+        android:layout_height="wrap_content"
+        android:background="#FFF"
+        android:text="通过" />
+</LinearLayout>

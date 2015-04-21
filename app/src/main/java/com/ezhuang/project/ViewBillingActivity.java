@@ -1,5 +1,6 @@
 package com.ezhuang.project;
 
+import android.content.Intent;
 import android.database.DataSetObserver;
 import android.support.v7.app.ActionBar;
 import android.text.Editable;
@@ -7,11 +8,9 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.EditText;
-import android.widget.ExpandableListAdapter;
-import android.widget.ImageView;
+import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -21,18 +20,21 @@ import com.ezhuang.R;
 import com.ezhuang.common.Global;
 import com.ezhuang.common.JsonUtil;
 import com.ezhuang.common.network.NetworkImpl;
+import com.ezhuang.model.BillDetail;
 import com.ezhuang.model.Project;
 import com.ezhuang.model.ProjectBill;
 import com.ezhuang.model.SpMaterial;
-import com.ezhuang.model.SpMtType;
 import com.ezhuang.model.StaffUser;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshExpandableListView;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Extra;
+import org.androidannotations.annotations.OnActivityResult;
 import org.androidannotations.annotations.OptionsItem;
+import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.res.StringArrayRes;
 import org.json.JSONArray;
@@ -59,9 +61,10 @@ public class ViewBillingActivity extends BaseActivity {
     @StringArrayRes
     String[] bill_state;
 
-    String QUERY_BILL = Global.HOST + "/app/project/queryBillings.do?global_key=%s&roleId=%s";
+    String QUERY_BILL = Global.HOST + "/app/project/queryBillings.do?global_key=%s&roleId=%s&keyword=%s";
 
-    String QUERY_BILL_MORE = Global.HOST + "/app/project/queryBillings.do?global_key=%s&roleId=%s&lastId=%s";
+    String QUERY_BILL_MORE = Global.HOST + "/app/project/queryBillings.do?global_key=%s&roleId=%s&lastId=%s&keyword=%s";
+
 
     List<Project> mType = new LinkedList<>();
 
@@ -77,6 +80,8 @@ public class ViewBillingActivity extends BaseActivity {
         listView.setMode(PullToRefreshBase.Mode.BOTH);
         listView.setOnRefreshListener(onRefreshListener);
         listView.getRefreshableView().setAdapter(adapter);
+        listView.getRefreshableView().setOnChildClickListener(onChildClickListener);
+        listView.getRefreshableView().setGroupIndicator(null);
         actionBar.setCustomView(R.layout.activity_search_project_actionbar);
         editText = (EditText) findViewById(R.id.editText);
         editText.addTextChangedListener(new TextWatcher() {
@@ -92,12 +97,18 @@ public class ViewBillingActivity extends BaseActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                //TODO 检索
+                StaffUser staffUser = MyApp.currentUser;
+                showDialogLoading();
+                getNetwork(String.format(QUERY_BILL,staffUser.getGlobal_key(),roleId,s.toString()),QUERY_BILL);
+                showDialogLoading();
             }
         });
+
+
+
         StaffUser staffUser = MyApp.currentUser;
         showDialogLoading();
-        getNetwork(String.format(QUERY_BILL,staffUser.getGlobal_key(),roleId),QUERY_BILL);
+        getNetwork(String.format(QUERY_BILL,staffUser.getGlobal_key(),roleId,""),QUERY_BILL);
     }
 
     BaseExpandableListAdapter adapter = new BaseExpandableListAdapter() {
@@ -193,7 +204,7 @@ public class ViewBillingActivity extends BaseActivity {
                 viewHolder.bill_create_time = (TextView) view.findViewById(R.id.bill_create_time);
                 viewHolder.bill_state = (TextView) view.findViewById(R.id.bill_state);
                 viewHolder.item_count = (TextView) view.findViewById(R.id.item_count);
-
+                viewHolder.item_remark = (TextView) view.findViewById(R.id.item_remark);
                 convertView = view;
                 convertView.setTag(viewHolder);
 
@@ -207,6 +218,8 @@ public class ViewBillingActivity extends BaseActivity {
             viewHolder.bill_create_time.setText(bill.getBillTime());
             viewHolder.bill_state.setText(bill_state[bill.getState()]);
             viewHolder.item_count.setText(""+bill.getBdCount());
+            viewHolder.item_remark.setText(bill.getRemark());
+
             return convertView;
         }
 
@@ -258,6 +271,7 @@ public class ViewBillingActivity extends BaseActivity {
             TextView bill_create_time;
             TextView bill_state;
             TextView item_count;
+            TextView item_remark;
         }
 
     };
@@ -270,50 +284,85 @@ public class ViewBillingActivity extends BaseActivity {
             if(code == NetworkImpl.REQ_SUCCESSS){
                 mType.clear();
                 mData.clear();
-                hideProgressDialog();
                 Log.i("json",respanse.getString("data"));
-                JSONArray jsonArray = respanse.getJSONArray("data");
-
-                for (int i=0 ; i<jsonArray.length();i++){
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    mType.add(JsonUtil.Json2Object(jsonObject.getString("project"),Project.class));
-
-                    List<ProjectBill> projectBills = new LinkedList<>();
-                    JSONArray jsonBills = jsonObject.getJSONArray("bills");
-                    for (int k=0; k < jsonBills.length();k++){
-                        projectBills.add(JsonUtil.Json2Object(jsonBills.getString(k),ProjectBill.class));
-                    }
-                    mData.add(projectBills);
-                }
-
-                adapter.notifyDataSetChanged();
+                toObject(respanse);
             }else{
-
                 showButtomToast("错误码:" + code);
             }
         }
 
         if(QUERY_BILL_MORE.equals(tag)){
             if(code == NetworkImpl.REQ_SUCCESSS){
-                hideProgressDialog();
+
                 Log.i("json",respanse.getString("data"));
-                JSONArray jsonArray = respanse.getJSONArray("data");
+                toObject(respanse);
 
-                for (int i=0 ; i<jsonArray.length();i++){
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    mType.add(JsonUtil.Json2Object(jsonObject.getString(""),Project.class));
-
-                    List<ProjectBill> projectBills = new LinkedList<>();
-                    JSONArray jsonBills = jsonObject.getJSONArray("bills");
-                    for (int k=0; k < jsonBills.length();i++){
-                        projectBills.add(JsonUtil.Json2Object(jsonBills.getString(i),ProjectBill.class));
-                    }
-                    mData.add(projectBills);
-                }
-
-                adapter.notifyDataSetChanged();
             }else{
                 showButtomToast("错误码:" + code);
+            }
+        }
+    }
+
+    @Background
+    void toObject(JSONObject respanse){
+
+        JSONArray jsonArray = null;
+        try {
+            jsonArray = respanse.getJSONArray("data");
+            for (int i=0 ; i<jsonArray.length();i++){
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                mType.add(JsonUtil.Json2Object(jsonObject.getString("project"),Project.class));
+
+                List<ProjectBill> projectBills = new LinkedList<>();
+                JSONArray jsonBills = jsonObject.getJSONArray("bills");
+                for (int k=0; k < jsonBills.length();k++){
+                    projectBills.add(JsonUtil.Json2Object(jsonBills.getString(k),ProjectBill.class));
+                }
+                mData.add(projectBills);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        toUI();
+    }
+
+    @UiThread
+    void toUI(){
+        listView.onRefreshComplete();
+        hideProgressDialog();
+        adapter.notifyDataSetChanged();
+        expandGroup();
+    }
+
+    ExpandableListView.OnChildClickListener onChildClickListener = new ExpandableListView.OnChildClickListener() {
+        @Override
+        public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+            ProjectBill bill = mData.get(groupPosition).get(childPosition);
+            ViewBillDetailActivity_.intent(ViewBillingActivity.this)
+                    .roleId(roleId)
+                    .staffId(MyApp.currentUser.getGlobal_key())
+                    .pjBillId(bill.getId())
+                    .billState(bill.getState())
+                    .startForResult(0);
+            return false;
+        }
+    };
+
+    @OnActivityResult(0)
+    void changeBillState(int resultCode,Intent data){
+        if(resultCode == RESULT_OK){
+            String pjBillId = data.getStringExtra("pjBillId");
+            int state = data.getIntExtra("state",0);
+
+            for(List<ProjectBill> list:mData){
+                for (ProjectBill bill:list){
+                    if(bill.getId().equals(pjBillId)){
+                        bill.setState(state);
+                        adapter.notifyDataSetChanged();
+                        return ;
+                    }
+
+                }
             }
         }
     }
@@ -324,15 +373,22 @@ public class ViewBillingActivity extends BaseActivity {
             StaffUser staffUser = MyApp.currentUser;
             if(PullToRefreshBase.Mode.PULL_FROM_START == listView.getCurrentMode()){
 
-                getNetwork(String.format(QUERY_BILL,staffUser.getGlobal_key(),roleId),QUERY_BILL);
+                getNetwork(String.format(QUERY_BILL,staffUser.getGlobal_key(),roleId,editText.getText().toString()),QUERY_BILL);
             }else{
                 int i = mData.size()-1;
                 int index = mData.get(i).size()-1;
                 String lastId = mData.get(i).get(index).getId();
-                getNetwork(String.format(QUERY_BILL_MORE,staffUser.getGlobal_key(),roleId,lastId),QUERY_BILL_MORE);
+                getNetwork(String.format(QUERY_BILL_MORE,staffUser.getGlobal_key(),roleId,lastId,editText.getText().toString()),QUERY_BILL_MORE);
             }
         }
     };
+
+
+    void expandGroup(){
+        for (int i=0; i<mData.size(); i++){
+            listView.getRefreshableView().expandGroup(i);
+        }
+    }
 
     @OptionsItem(android.R.id.home)
     void home() {

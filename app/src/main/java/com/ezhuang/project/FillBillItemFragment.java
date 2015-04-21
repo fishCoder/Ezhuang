@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.ezhuang.R;
 import com.ezhuang.common.Global;
+import com.ezhuang.model.PhotoData;
 import com.ezhuang.model.SpMaterial;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
@@ -147,30 +148,9 @@ public class FillBillItemFragment extends DialogFragment {
 
     int PHOTO_MAX_COUNT = 6;
 
-    public static class PhotoData {
-        Uri uri = Uri.parse("");
-        String serviceUri = "";
 
-        public PhotoData(File file) {
-            uri = Uri.fromFile(file);
-        }
 
-        public PhotoData(PhotoDataSerializable data) {
-            uri = Uri.parse(data.uriString);
-            serviceUri = data.serviceUri;
-        }
-    }
 
-    // 因为PhotoData包含Uri，不能直接序列化，所以有了这个类
-    public static class PhotoDataSerializable implements Serializable {
-        String uriString = "";
-        String serviceUri = "";
-
-        public PhotoDataSerializable(PhotoData data) {
-            uriString = data.uri.toString();
-            serviceUri = data.serviceUri;
-        }
-    }
 
     List<PhotoData> mData = new LinkedList<>();
 

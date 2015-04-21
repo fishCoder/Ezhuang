@@ -38,9 +38,9 @@ public class ProjectBillActivity extends BaseActivity {
     @Extra("pjId")
     String pjId;
 
-    String QUERY_BILL = Global.HOST + "/app/project/queryProjectBillings.do?pjId=%s";
+    String QUERY_BILL = Global.HOST + "/app/project/queryProjectBillings.do?pjId=%s&keyword=%s";
 
-    String QUERY_BILL_MORE = Global.HOST + "/app/project/queryProjectBillings.do?pjId=%s&last_pj_bill_id=%s";
+    String QUERY_BILL_MORE = Global.HOST + "/app/project/queryProjectBillings.do?pjId=%s&last_pj_bill_id=%s&keyword=%s";
 
     List<ProjectBill> bills;
 
@@ -67,7 +67,7 @@ public class ProjectBillActivity extends BaseActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                //TODO 检索
+                getNetwork(String.format(QUERY_BILL,pjId,s.toString()),QUERY_BILL);
             }
         });
 
@@ -75,16 +75,16 @@ public class ProjectBillActivity extends BaseActivity {
         fragment.setUpDownListListener(new ListListener() {
             @Override
             public void loadMore() {
-
+                getNetwork(String.format(QUERY_BILL,pjId,editText.getText().toString()),QUERY_BILL);
             }
 
             @Override
             public void refresh() {
-
+                getNetwork(String.format(QUERY_BILL_MORE,pjId,editText.getText().toString()),QUERY_BILL_MORE);
             }
         });
         showDialogLoading();
-        getNetwork(String.format(QUERY_BILL,pjId),QUERY_BILL);
+        getNetwork(String.format(QUERY_BILL,pjId,""),QUERY_BILL);
         getSupportFragmentManager().beginTransaction().add(R.id.container,fragment).commit();
     }
 

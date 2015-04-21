@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_reject"
+        android:title="驳回"
+        android:orderInCategory="100"
+        android:icon="@mipmap/ic_menu_move"
+        android:showAsAction="always" />
+    <item
+        android:id="@+id/action_pass"
+        android:title="通过"
+        android:orderInCategory="100"
+        android:icon="@mipmap/ic_menu_ok"
+        android:showAsAction="always" />
+</menu>

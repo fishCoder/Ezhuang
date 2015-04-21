@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
             android:singleLine="true"
-            android:textSize="20sp"
+            android:textSize="17sp"
             android:focusable="false"
             android:background="@android:color/transparent"
             android:text="这是一个项目" />

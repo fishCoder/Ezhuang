@@ -1,13 +1,17 @@
 package com.ezhuang.project;
 
 
+import android.content.Intent;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.ezhuang.MyApp;
 import com.ezhuang.R;
 import com.ezhuang.common.BlankViewDisplay;
 import com.ezhuang.common.Global;
@@ -19,6 +23,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.OnActivityResult;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.res.StringArrayRes;
 
@@ -51,6 +56,24 @@ public class ProjectBillFragment extends BaseFragment {
         listView.setAdapter(adapter);
         listView.setMode(PullToRefreshBase.Mode.BOTH);
         listView.setOnRefreshListener(onRefreshListener);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ProjectBill bill = mData.get(position-1);
+
+                if(bill.getState()!=5){
+                    ViewBillDetailActivity_.intent(getActivity())
+                            .roleId(Global.PROJECT_MANAGER)
+                            .staffId(MyApp.currentUser.getGlobal_key())
+                            .pjBillId(bill.getId())
+                            .billState(bill.getState())
+                            .startForResult(0);
+                }else{
+                    AddMaterialToBillActivity_.intent(getActivity()).projectId(bill.getPjId()).pjBillId(bill.getId()).startForResult(0);
+                }
+
+            }
+        });
 
     }
 
@@ -95,7 +118,7 @@ public class ProjectBillFragment extends BaseFragment {
                 viewHolder.bill_create_time = (TextView) view.findViewById(R.id.bill_create_time);
                 viewHolder.bill_state = (TextView) view.findViewById(R.id.bill_state);
                 viewHolder.item_count = (TextView) view.findViewById(R.id.item_count);
-
+                viewHolder.item_remark = (TextView) view.findViewById(R.id.item_remark);
                 convertView = view;
                 convertView.setTag(viewHolder);
 
@@ -109,6 +132,7 @@ public class ProjectBillFragment extends BaseFragment {
             viewHolder.bill_create_time.setText(bill.getBillTime());
             viewHolder.bill_state.setText(bill_state[bill.getState()]);
             viewHolder.item_count.setText(""+bill.getBdCount());
+            viewHolder.item_remark.setText(bill.getRemark());
             return convertView;
         }
     };
@@ -120,6 +144,7 @@ public class ProjectBillFragment extends BaseFragment {
         TextView bill_create_time;
         TextView bill_state;
         TextView item_count;
+        TextView item_remark;
     }
 
     PullToRefreshBase.OnRefreshListener onRefreshListener = new PullToRefreshBase.OnRefreshListener<ListView>() {
@@ -137,6 +162,24 @@ public class ProjectBillFragment extends BaseFragment {
             }
         }
     };
+
+    @OnActivityResult(0)
+    void reSubmitBill(int resultCode,Intent data){
+        if(resultCode==getActivity().RESULT_OK){
+            String pjBillId = data.getStringExtra("pjBillId");
+
+            Log.i("重新提交返回结果pjBillId",pjBillId);
+
+            for(ProjectBill bill:mData){
+                if(bill.getId().equals(pjBillId)){
+                    bill.setState(0);
+                    adapter.notifyDataSetChanged();
+                    return;
+                }
+            }
+
+        }
+    }
 
     private class StopPullTask extends AsyncTask<Void, Void, Object> {
 

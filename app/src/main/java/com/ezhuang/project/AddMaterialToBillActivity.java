@@ -27,6 +27,7 @@ import com.ezhuang.common.photopick.PhotoPickActivity;
 import com.ezhuang.model.BillDetail;
 import com.ezhuang.model.Billing;
 import com.ezhuang.model.BillingDetail;
+import com.ezhuang.model.PhotoData;
 import com.ezhuang.model.SpMaterial;
 import com.ezhuang.model.SpMtType;
 import com.ezhuang.project.detail.ListListener;
@@ -36,10 +37,12 @@ import com.qiniu.android.storage.UpCompletionHandler;
 import com.qiniu.android.storage.UploadManager;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.OnActivityResult;
 import org.androidannotations.annotations.OptionsItem;
+import org.androidannotations.annotations.UiThread;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -101,6 +104,11 @@ public class AddMaterialToBillActivity extends BaseActivity {
     @Extra
     String projectId;
 
+    @Extra
+    String pjBillId;
+
+    String QUERY_BILL_DETAIL = Global.HOST + "/app/project/queryBillingDetail.do?pjBillId=%s";
+
     @AfterViews
     void init(){
 
@@ -138,6 +146,11 @@ public class AddMaterialToBillActivity extends BaseActivity {
             }
         },fillBillItem);
 
+        if(pjBillId != null){
+            viewAndSubmitBillFragment.dealblank = false;
+            getNetwork(String.format(QUERY_BILL_DETAIL,pjBillId),QUERY_BILL_DETAIL);
+            showDialogLoading();
+        }
 
         getSupportFragmentManager().beginTransaction().replace(R.id.container, viewAndSubmitBillFragment).commit();
     }
@@ -149,6 +162,11 @@ public class AddMaterialToBillActivity extends BaseActivity {
         findViewById(R.id.action_submit).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(pjBillId != null){
+                    reSubmitBill();
+                    return;
+                }
 
                 if(billData.size()==0){
                     showButtomToast("没有可提交的内容");
@@ -237,6 +255,8 @@ public class AddMaterialToBillActivity extends BaseActivity {
 
         spinner.setAdapter(new SimpleAdapter(this, list, R.layout.spinner_sp_material, new String[]{"icon", "name"}, new int[]{R.id.imageView, R.id.textView}));
         spinner.setOnItemSelectedListener(onItemSelectedListener);
+        spinner.setSelection(Integer.parseInt(selectBigType)-1);
+
     }
 
     @OptionsItem(android.R.id.home)
@@ -395,7 +415,7 @@ public class AddMaterialToBillActivity extends BaseActivity {
                     detail.bill_d_img = "";
 
 
-                    for (FillBillItemFragment.PhotoData photoData : (List<FillBillItemFragment.PhotoData>) bill_item.itemImages){
+                    for (PhotoData photoData : (List<PhotoData>) bill_item.itemImages){
                         Log.i("上传图片本地路径",photoData.uri.toString());
                         String url = photoData.uri.toString();
 
@@ -433,6 +453,58 @@ public class AddMaterialToBillActivity extends BaseActivity {
                 showButtomToast("错误码:"+code);
             }
         }
+        if(QUERY_BILL_DETAIL.equals(tag)){
+            if(code == NetworkImpl.REQ_SUCCESSS){
+                Log.i("json",respanse.getString("data"));
+                jsonToObject(respanse);
+
+            }else{
+                showButtomToast("错误码 "+code);
+            }
+        }
+    }
+
+
+    @Background
+    public void jsonToObject(JSONObject respanse){
+        try {
+            JSONArray jsonArray = respanse.getJSONArray("data");
+
+            for (int i=0 ; i<jsonArray.length() ; i++){
+
+                JSONArray jsonBillDetails = jsonArray.getJSONObject(i).getJSONArray("billDetails");
+                for(int k=0; k<jsonBillDetails.length() ;k++){
+                    JSONObject jsonObject = jsonBillDetails.getJSONObject(k);
+                    SpMaterial spMaterial = JsonUtil.Json2Object(jsonObject.getString("matl"),SpMaterial.class);
+                    spMaterial.item_count = String.valueOf(jsonObject.getInt("dosage"));
+                    spMaterial.item_remark = jsonObject.getString("remark");
+                    spMaterial.mgBillId = jsonObject.getString("mgBillId");
+                    spMaterial.itemImages = new LinkedList();
+                    String img = jsonObject.getString("img");
+                    if(!img.isEmpty()){
+                        String[] imgs = img.split("&");
+                        for (String url:imgs){
+                            PhotoData photoData = new PhotoData(url);
+                            Log.i("图片路径",url);
+                            spMaterial.itemImages.add(photoData);
+                        }
+                    }
+                    billData.add(spMaterial);
+
+                }
+            }
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        toUI();
+    }
+
+    @UiThread
+    public void toUI(){
+        hideProgressDialog();
+        viewAndSubmitBillFragment.updateData(billData);
     }
 
     class BillUpCompletionHandler implements UpCompletionHandler{
@@ -566,13 +638,13 @@ public class AddMaterialToBillActivity extends BaseActivity {
     void result_pick_photo(int resultCode, Intent data){
         if (resultCode == Activity.RESULT_OK) {
             try {
-                List<FillBillItemFragment.PhotoData> photoDataList = new LinkedList<>();
+                List<PhotoData> photoDataList = new LinkedList<>();
                 List<PhotoPickActivity.ImageInfo> pickPhots = (List<PhotoPickActivity.ImageInfo>) data.getSerializableExtra("data");
                 for (PhotoPickActivity.ImageInfo item : pickPhots) {
                     Uri uri = Uri.parse(item.path);
                     File outputFile = photoOperate.scal(uri);
 
-                    photoDataList.add(new FillBillItemFragment.PhotoData(outputFile));
+                    photoDataList.add(new PhotoData(outputFile));
 
                 }
                 fillBillItemFragment.updateData(photoDataList);
@@ -598,6 +670,10 @@ public class AddMaterialToBillActivity extends BaseActivity {
 //
 //        }
 //    }
+
+    void reSubmitBill(){
+        //TODO 重新提交订单
+    }
 
     void addBillRow(){
         if(Global.isFloat(spMaterial.item_count)){

@@ -62,9 +62,13 @@ public class SpMaterial extends Model{
     @Column(name = "unitName")
     public String unitName;
 
+    public String mgBillId;
+
     public String item_count;
 
     public String item_remark;
+
+    public int state;
 
     public List   itemImages;
 
