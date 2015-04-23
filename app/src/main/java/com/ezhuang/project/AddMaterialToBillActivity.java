@@ -307,6 +307,8 @@ public class AddMaterialToBillActivity extends BaseActivity {
             }
         }
     }
+    //上传失败图片总数
+    int failCount = 0;
     //待上传图片总数
     int imgCount = 0;
     //已上传图片数量
@@ -400,13 +402,13 @@ public class AddMaterialToBillActivity extends BaseActivity {
 
                 imgCount = 0;
                 hasUpImgCount = 0;
+                failCount = 0;
 
                 String token = respanse.getString("data");
                 Log.i("七牛上传凭证", token);
                 projectBilling.pj_bill_remark = billRemarkEdit.getText().toString();
                 UploadManager uploadManager = new UploadManager();
                 for (SpMaterial bill_item : billData){
-
 
                     BillingDetail detail = new BillingDetail();
                     detail.bill_d_dosage = bill_item.item_count;
@@ -424,11 +426,13 @@ public class AddMaterialToBillActivity extends BaseActivity {
                                 .append("/bill/")
                                 .append(UUID.randomUUID().toString())
                                 .append(fileType).toString();
+
+                        imgCount++;
                         if(hasUpPic.get(url)==null||hasUpPic.get(url).isEmpty()){
-                            uploadManager.put(new File(Global.getPath(this, photoData.uri)),key, token,new BillUpCompletionHandler(detail,url),null);
-                            imgCount++;
+                            hasUpImgCount++;
                         }
 
+                        uploadManager.put(new File(Global.getPath(this, photoData.uri)),key, token,new BillUpCompletionHandler(detail,url),null);
                     }
 
 
@@ -538,9 +542,12 @@ public class AddMaterialToBillActivity extends BaseActivity {
                     submitBilling();
                 }
 
+                if (failCount != 0 && imgCount == (hasUpImgCount + failCount)){
+                    showProgressBar(false);
+                    showButtomToast(String.format("上传%d张 失败%d张",hasUpImgCount,failCount));
+                }
             }else{
-                showProgressBar(false);
-                showMiddleToast("图片上传出错");
+                failCount ++;
             }
         }
     }

@@ -1,0 +1,68 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+
+    <LinearLayout
+        android:id="@+id/layout_spinner"
+        android:orientation="vertical"
+        android:layout_below="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="14dp"
+            android:background="@color/divide"
+            />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:hint="填写进度描述..."
+            android:gravity="start"
+            android:padding="14dp"
+            android:textColor="@color/font_black_2"
+            android:textSize="15sp"
+            android:background="@color/stand_bg"
+            android:lines="5"
+            android:maxLines="5"
+            android:id="@+id/message"
+            android:layout_height="wrap_content"/>
+
+        <include layout="@layout/divide_15_top_bottom" />
+
+        <include layout="@layout/progress_node_item" android:id="@+id/item_node"/>
+
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@mipmap/divide_15_top" />
+
+        <include layout="@layout/progress_deal_item" android:id="@+id/item_deal"/>
+
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@mipmap/divide_15_top" />
+
+        <include layout="@layout/divide_15_top_bottom" />
+
+    </LinearLayout>
+
+
+    <com.ezhuang.common.AutoHeightGridView
+        android:id="@+id/gridView"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/layout_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnWidth="@dimen/image_add_maopao_width"
+        android:numColumns="4"
+        android:horizontalSpacing="8dp"
+        android:verticalSpacing="8dp"
+        android:stretchMode="none"
+        android:gravity="center" />
+
+
+
+
+</RelativeLayout>

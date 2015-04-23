@@ -116,6 +116,19 @@
         </activity>
 
         <activity
+            android:name=".quality.AddProjectProgressActivity_"
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait"
+            android:label="@string/add_pg" >
+        </activity>
+
+        <activity
+            android:name=".quality.SelectNodeAndUserActivity_"
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait" >
+        </activity>
+
+        <activity
             android:name=".EntranceActivity_"
             android:theme="@style/AppThemeNoActionbar"
             android:label="entrance">

@@ -14,6 +14,7 @@ import com.ezhuang.common.network.BaseFragment;
 import com.ezhuang.model.Project;
 import com.ezhuang.project.AddMaterialToBillActivity_;
 import com.ezhuang.project.ProjectBillActivity_;
+import com.ezhuang.quality.AddProjectProgressActivity_;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
@@ -144,7 +145,7 @@ public class FragmentProjectList extends BaseFragment {
                 viewHolder.layoutPjBtn.findViewById(R.id.add_pg).setOnClickListener(new View.OnClickListener(){
                     @Override
                     public void onClick(View v) {
-
+                        AddProjectProgressActivity_.intent(getActivity()).projectId(project.getPjId()).start();
                     }
                 });
             }

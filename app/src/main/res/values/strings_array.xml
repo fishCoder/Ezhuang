@@ -71,18 +71,23 @@
         <item>线下下单</item>
     </string-array>
 
-    <string-array name="task_titles">
-        <item>进行中</item>
-        <item>已完成</item>
-    </string-array>
 
-    <string-array name="dynamic_type">
-        <item>全部</item>
-        <item>任务</item>
-        <item>讨论</item>
-        <item>文档</item>
-        <item>代码</item>
-        <item>其它</item>
+    <string-array name="progress_node">
+        <item>材料到场</item>
+        <item>水电</item>
+        <item>木作</item>
+        <item>油漆</item>
+        <item>橱柜安装</item>
+        <item>砌墙</item>
+        <item>贴砖</item>
+        <item>固装安装</item>
+        <item>洁具安装</item>
+        <item>灯具安装</item>
+        <item>家具安装</item>
+        <item>橱柜安装</item>
+        <item>软装安装</item>
+        <item>保洁</item>
+        <item>竣工</item>
     </string-array>
 
     <string-array name="dynamic_type_params">

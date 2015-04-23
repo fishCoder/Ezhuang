@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:background="@drawable/list_item_selector"
+
+    android:padding="14dp"
+    android:id="@+id/projectPrivate"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="私有"
+        android:textSize="16sp"
+        android:textColor="#555"
+        android:id="@+id/textView"
+        />
+
+
+    <ImageView android:layout_width="20dp"
+        android:id="@+id/imageView"
+        android:src="@drawable/pick_photo_list_checked"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_height="20dp"/>
+</RelativeLayout>
