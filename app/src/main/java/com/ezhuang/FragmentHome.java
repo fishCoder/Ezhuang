@@ -18,6 +18,7 @@ import com.ezhuang.project.ProjectBillActivity_;
 import com.ezhuang.project.ViewBillingActivity_;
 import com.ezhuang.project.detail.CreatProjectActivity_;
 import com.ezhuang.project.detail.ViewProjectActivity_;
+import com.ezhuang.quality.ViewProgressActivity_;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
@@ -72,6 +73,9 @@ public class FragmentHome extends BaseFragment {
         listRoleFunction.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(list.get(position)[0].equals("采购")){
+                    ViewBillingActivity_.intent(getActivity()).roleId(Global.BUYER).start();
+                }else
                 if(list.get(position)[0].equals("查看项目")){
                     ViewProjectActivity_.intent(getActivity()).roleId(Global.STAFF).staffId(MyApp.currentUser.getGlobal_key()).start();
                 }else
@@ -80,6 +84,9 @@ public class FragmentHome extends BaseFragment {
                 }else
                 if(list.get(position)[0].equals("我的项目")){
                     ViewProjectActivity_.intent(getActivity()).roleId(Global.PROJECT_MANAGER).staffId(MyApp.currentUser.getGlobal_key()).start();
+                }else
+                if(list.get(position)[0].equals("质检")){
+                    ViewProgressActivity_.intent(getActivity()).start();
                 }else
                 {
                     Intent intent = new Intent(getActivity(),CreatProjectActivity_.class);

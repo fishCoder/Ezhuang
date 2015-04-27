@@ -407,6 +407,7 @@ public class AddMaterialToBillActivity extends BaseActivity {
                 String token = respanse.getString("data");
                 Log.i("七牛上传凭证", token);
                 projectBilling.pj_bill_remark = billRemarkEdit.getText().toString();
+                projectBilling.pj_bill_details.clear();
                 UploadManager uploadManager = new UploadManager();
                 for (SpMaterial bill_item : billData){
 
@@ -428,14 +429,19 @@ public class AddMaterialToBillActivity extends BaseActivity {
                                 .append(fileType).toString();
 
                         imgCount++;
-                        if(hasUpPic.get(url)==null||hasUpPic.get(url).isEmpty()){
+                        String upKey = hasUpPic.get(url);
+                        if(upKey!=null&&!upKey.isEmpty()){
+                            if(detail.bill_d_img.isEmpty()){
+                                detail.bill_d_img = upKey;
+                            }else {
+                                detail.bill_d_img += "&" + upKey;
+                            }
                             hasUpImgCount++;
+                            continue;
                         }
 
                         uploadManager.put(new File(Global.getPath(this, photoData.uri)),key, token,new BillUpCompletionHandler(detail,url),null);
                     }
-
-
 
                     projectBilling.pj_bill_details.add(detail);
                 }

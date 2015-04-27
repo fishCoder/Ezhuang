@@ -67,4 +67,8 @@
 
     <color name="menu_item_text_disable">#84878c</color>
 
+    <color name="undo">#10A0EA</color>
+    <color name="pass">#5eb95e</color>
+    <color name="reject">#dd514c</color>
+
 </resources>

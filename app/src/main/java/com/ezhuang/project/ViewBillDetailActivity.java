@@ -11,6 +11,7 @@ import com.ezhuang.common.Global;
 import com.ezhuang.common.JsonUtil;
 import com.ezhuang.common.network.NetworkImpl;
 import com.ezhuang.model.PhotoData;
+import com.ezhuang.model.ProjectBill;
 import com.ezhuang.model.SpMaterial;
 import com.ezhuang.project.detail.SetProjectInfo_;
 import com.loopj.android.http.RequestParams;
@@ -19,6 +20,7 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Extra;
+import org.androidannotations.annotations.OnActivityResult;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.UiThread;
 import org.json.JSONArray;
@@ -84,6 +86,7 @@ public class ViewBillDetailActivity extends BaseActivity {
 
         fragment = ViewAndSubmitBillFragment_.builder().build();
         fragment.readOnly = true;
+        fragment.roleId = roleId;
         getSupportFragmentManager().beginTransaction().add(R.id.container,fragment).commit();
         showDialogLoading();
 
@@ -130,6 +133,8 @@ public class ViewBillDetailActivity extends BaseActivity {
                     spMaterial.item_remark = jsonObject.getString("remark");
                     spMaterial.mgBillId = jsonObject.getString("mgBillId");
                     spMaterial.itemImages = new LinkedList();
+                    spMaterial.item_id =  jsonObject.getString("id");
+
                     String img = jsonObject.getString("img");
                     if(!img.isEmpty()){
                         String[] imgs = img.split("&");
@@ -176,7 +181,6 @@ public class ViewBillDetailActivity extends BaseActivity {
     }
 
 
-
     void action_pass(){
         SetProjectInfo_.intent(this).row(CHECK_BILL_PASS).title("审核意见").startForResult(CHECK_BILL_PASS);
     }
@@ -190,16 +194,35 @@ public class ViewBillDetailActivity extends BaseActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == CHECK_BILL_PASS || requestCode == CHECK_BILL_REJEC){
+            if(resultCode == RESULT_OK){
+                int row = data.getIntExtra("row",100);
+                String value = data.getStringExtra("itemValue");
+                RequestParams params = new RequestParams();
+                params.put("pjBillId",pjBillId);
+                params.put("result",row-100);
+                params.put("remark",value);
+                postNetwork(OPARE_BILL,params,OPARE_BILL);
+                showProgressBar(true,"提交操作");
+                billState = ((row-100)==0?5:1);
+            }
+        }
+    }
+
+    @OnActivityResult(16)
+    void bindBillItem(int resultCode,Intent data){
         if(resultCode == RESULT_OK){
-            int row = data.getIntExtra("row",100);
-            String value = data.getStringExtra("itemValue");
-            RequestParams params = new RequestParams();
-            params.put("pjBillId",pjBillId);
-            params.put("result",row-100);
-            params.put("remark",value);
-            postNetwork(OPARE_BILL,params,OPARE_BILL);
-            showProgressBar(true,"提交操作");
-            billState = ((row-100)==0?5:1);
+            SpMaterial spMaterial = (SpMaterial) data.getSerializableExtra("sp");
+            for(int i=0 ; i< mData.size();i++){
+                SpMaterial sp = mData.get(i);
+
+                if(sp.item_id.equals(spMaterial.item_id)){
+                    sp.bmb_name = spMaterial.bmb_name;
+                    sp.bmb_m_name = spMaterial.bmb_m_name;
+                    sp.bmb_price = spMaterial.bmb_price;
+                }
+            }
+            fragment.updateData(mData);
         }
     }
 }

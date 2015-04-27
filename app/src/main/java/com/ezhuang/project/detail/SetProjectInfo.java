@@ -12,6 +12,8 @@ import com.ezhuang.R;
 import com.ezhuang.common.Global;
 import com.ezhuang.model.StaffUser;
 import com.ezhuang.project.ViewBillDetailActivity;
+import com.ezhuang.purchase.SelfBuyFragment;
+import com.ezhuang.quality.ProgressDetailActivity;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
@@ -103,7 +105,6 @@ public class SetProjectInfo extends BaseActivity {
                     flag = emptyValue(itemValue);
                     break;
                 case CreatProjectActivity.AREA:
-                    flag = emptyValue(itemValue);
                     if(Global.isFloat(itemValue)){
                         flag = true;
                     }else{
@@ -120,7 +121,6 @@ public class SetProjectInfo extends BaseActivity {
                     flag = true;
                     break;
                 case CreatProjectActivity.O_PHONE:
-                    flag = !itemValue.isEmpty();
                     if(Global.isMoblie(itemValue)){
                         flag = true;
                     }else{
@@ -135,6 +135,28 @@ public class SetProjectInfo extends BaseActivity {
 
                 case ViewBillDetailActivity.CHECK_BILL_REJEC:
                     flag = emptyValue(itemValue);
+                    break;
+
+                case ProgressDetailActivity.PG_PASS:
+                    flag = emptyValue(itemValue);
+                    break;
+
+                case ProgressDetailActivity.PG_REJECT:
+                    flag = emptyValue(itemValue);
+                    break;
+                case SelfBuyFragment.BMB_NAME:
+                    flag = emptyValue(itemValue);
+                    break;
+                case SelfBuyFragment.BMB_TITLE:
+                    flag = emptyValue(itemValue);
+                    break;
+                case SelfBuyFragment.BMB_PRICE:
+                    if(Global.isFloat(itemValue)){
+                        flag = true;
+                    }else{
+                        flag = false;
+                        showMiddleToast("请输入数字");
+                    }
                     break;
         }
 

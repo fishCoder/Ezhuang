@@ -10,13 +10,14 @@ import com.activeandroid.query.Select;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by Administrator on 2015/4/14 0014.
  */
 @Table(name="SpMaterial")
-public class SpMaterial extends Model{
+public class SpMaterial extends Model implements Serializable{
 
 
     public SpMaterial(){
@@ -64,6 +65,8 @@ public class SpMaterial extends Model{
 
     public String mgBillId;
 
+    public String item_id;
+
     public String item_count;
 
     public String item_remark;
@@ -71,6 +74,13 @@ public class SpMaterial extends Model{
     public int state;
 
     public List   itemImages;
+
+    public String bmb_name = "";
+
+    public String bmb_m_name = "";
+
+    public String bmb_price = "";
+
 
 
     static public void clear(){

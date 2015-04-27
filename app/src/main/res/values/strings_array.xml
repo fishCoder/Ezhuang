@@ -90,13 +90,11 @@
         <item>竣工</item>
     </string-array>
 
-    <string-array name="dynamic_type_params">
-        <item>all</item>
-        <item>task</item>
-        <item>topic</item>
-        <item>file</item>
-        <item>code</item>
-        <item>other</item>
+    <string-array name="pg_state">
+        <item>然而并没有什么卵用</item>
+        <item>未审核</item>
+        <item>通过</item>
+        <item>未通过</item>
     </string-array>
 
     <string-array name="dynamic_type_public">
@@ -174,17 +172,12 @@
         <item>个性标签</item>
     </string-array>
 
-    <string-array name="user_detail_more_list_first">
-        <item>加入时间</item>
-        <item>最后活动</item>
-        <item>个性后缀</item>
-        <item>性别</item>
-        <item>生日</item>
-        <item>所在地</item>
-        <item>座右铭</item>
-        <item>公司</item>
-        <item>职位</item>
-        <item>个性标签</item>
+    <string-array name="self_buy">
+        <item>名称</item>
+        <item>用量</item>
+        <item>建材商</item>
+        <item>品牌</item>
+        <item>价格</item>
     </string-array>
 
 

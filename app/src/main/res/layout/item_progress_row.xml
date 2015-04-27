@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent">
+
+    <LinearLayout
+        android:id="@+id/id_front"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#eee"
+        android:orientation="vertical"
+        android:gravity="right|center_vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingTop="10dp"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:gravity="left">
+
+            <TextView
+                android:id="@+id/pg_name"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="材料到场"
+                android:textColor="#1AAE8A"
+                android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/pg_time"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:singleLine="false"
+                    android:paddingRight="20dp"
+                    android:text="8888-88-88 88:88:88"
+                    android:textColor="#aaa"
+                    android:textSize="15sp" />
+
+
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:orientation="horizontal"
+            android:paddingBottom="5dp"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            >
+
+            <LinearLayout
+                android:id="@+id/layout_quality"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="质检员"
+                    android:textColor="#333"
+                    android:textSize="15sp" />
+
+
+
+                <TextView
+                    android:id="@+id/quality_state"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="未审核"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="#555555"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_owner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="业主"
+                    android:textColor="#333"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/owner_state"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="未审核"
+                    android:layout_marginLeft="5dp"
+                    android:textSize="15sp" />
+
+
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            android:paddingLeft="30dp"
+            android:gravity="left">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="备注"
+                android:textColor="#333"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/pg_remark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="8888-88-88 88:88:88"
+                android:textColor="#555"
+                android:textSize="15sp" />
+
+        </LinearLayout>
+
+        <!--<com.ezhuang.common.AutoHeightGridView-->
+            <!--android:layout_marginLeft="30dp"-->
+            <!--android:layout_marginRight="20dp"-->
+            <!--android:layout_marginBottom="10dp"-->
+            <!--android:id="@+id/gridView"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:columnWidth="@dimen/image_display_width"-->
+            <!--android:numColumns="3"-->
+            <!--android:horizontalSpacing="8dp"-->
+            <!--android:verticalSpacing="8dp"-->
+            <!--android:stretchMode="columnWidth"-->
+            <!--android:gravity="center" />-->
+    </LinearLayout>
+
+</FrameLayout>

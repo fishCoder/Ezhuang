@@ -19,7 +19,10 @@ import com.ezhuang.common.BlankViewDisplay;
 import com.ezhuang.common.Global;
 import com.ezhuang.common.network.BaseFragment;
 import com.ezhuang.model.PhotoData;
+import com.ezhuang.model.ProjectBill;
 import com.ezhuang.model.SpMaterial;
+import com.ezhuang.purchase.PurchaseActivity_;
+import com.ezhuang.quality.ProgressDetailActivity_;
 import com.fortysevendeg.swipelistview.BaseSwipeListViewListener;
 import com.fortysevendeg.swipelistview.SwipeListView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -50,6 +53,8 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
 
     public boolean readOnly = false;
 
+    public String roleId = "";
+
     @ViewById
     SwipeListView listView;
 
@@ -74,7 +79,13 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
         if(readOnly){
             listView.setSwipeMode(SwipeListView.SWIPE_MODE_NONE);
         }
-        listView.setSwipeListViewListener(baseSwipeListViewListener);
+
+        if (readOnly){
+
+        }else{
+            listView.setSwipeListViewListener(baseSwipeListViewListener);
+        }
+
     }
 
 
@@ -118,12 +129,11 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
             if(convertView == null){
                 viewHolder = new ViewHolder();
                 view = mInflater.inflate(R.layout.item_bill_row,parent,false);
-
                 if(readOnly){
                     view.findViewById(R.id.layout_state).setVisibility(View.VISIBLE);
                     viewHolder.item_state = (TextView) view.findViewById(R.id.item_state);
                 }
-
+                viewHolder.layout_bill_item = view.findViewById(R.id.layout_bill_item);
                 viewHolder.sp_m_name = (TextView) view.findViewById(R.id.sp_m_name);
                 viewHolder.sp_m_spec = (TextView) view.findViewById(R.id.sp_m_spec);
                 viewHolder.item_count = (TextView) view.findViewById(R.id.item_count);
@@ -132,6 +142,13 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
                 viewHolder.grid_view = (GridView) view.findViewById(R.id.gridView);
                 viewHolder.btnDel =  view.findViewById(R.id.btnDel);
                 viewHolder.grid_view.setAdapter(new MyAdapter());
+
+                viewHolder.bmb = view.findViewById(R.id.bmb);
+                viewHolder.bmb_name = (TextView) view.findViewById(R.id.bmb_name);
+                viewHolder.bmb_m_name = (TextView) view.findViewById(R.id.bmb_m_name);
+                viewHolder.bmb_m_price = (TextView) view.findViewById(R.id.bmb_m_price);
+                viewHolder.bmb_m_total = (TextView) view.findViewById(R.id.bmb_m_total);
+
                 convertView = view;
                 convertView.setTag(viewHolder);
             }else{
@@ -143,6 +160,31 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
                 viewHolder.item_state.setText(bill_detail_state[spMaterial.state]);
             }
 
+            viewHolder.layout_bill_item.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(Global.BUYER.equals(roleId)){
+                        SpMaterial sp = mData.get(position);
+                        SpMaterial tmp = new SpMaterial();
+                        tmp.bigTypeId = sp.bigTypeId;
+                        tmp.bigTypeName = sp.bigTypeName;
+                        tmp.mtId = sp.mtId;
+                        tmp.mtName = sp.mtName;
+                        tmp.sTypeId = sp.sTypeId;
+                        tmp.sTypeName = sp.sTypeName;
+                        tmp.spec = sp.spec;
+                        tmp.unitId = sp.unitId;
+                        tmp.unitName = sp.unitName;
+                        tmp.item_count = sp.item_count;
+                        tmp.item_id = sp.item_id;
+                        tmp.bmb_name = sp.bmb_name;
+                        tmp.bmb_m_name = sp.bmb_m_name;
+                        tmp.bmb_price = sp.bmb_price;
+
+                        PurchaseActivity_.intent(getActivity()).spMaterial(tmp).startForResult(16);
+                    }
+                }
+            });
             viewHolder.sp_m_name.setText(spMaterial.mtName);
             viewHolder.sp_m_spec.setText(spMaterial.spec);
             viewHolder.sp_m_unit_name.setText(spMaterial.unitName);
@@ -152,7 +194,6 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
             viewHolder.btnDel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
                     mData.remove(position);
                     notifyDataSetChanged();
                     listView.closeOpenedItems();
@@ -166,24 +207,18 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
                 viewHolder.grid_view.setVisibility(View.VISIBLE);
                 MyAdapter myAdapter = (MyAdapter) viewHolder.grid_view.getAdapter();
                 myAdapter.setData(spMaterial.itemImages);
-                adapter.notifyDataSetChanged();
-                viewHolder.grid_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Intent intent = new Intent(getActivity(), ImagePagerActivity_.class);
-                        ArrayList<String> arrayUri = new ArrayList<String>();
-                        for (PhotoData item : (List<PhotoData>)spMaterial.itemImages) {
-                            arrayUri.add(item.uri.toString());
-                        }
-                        intent.putExtra("mArrayUri", arrayUri);
-                        intent.putExtra("mPagerPosition", position);
-                        intent.putExtra("needEdit", false);
-                        startActivityForResult(intent, FillBillItemFragment.RESULT_REQUEST_IMAGE);
-                    }
-                });
-
+                myAdapter.notifyDataSetChanged();
             }
 
+            if(!spMaterial.bmb_name.isEmpty()) {
+                viewHolder.bmb.setVisibility(View.VISIBLE);
+                viewHolder.bmb_name.setText(spMaterial.bmb_name);
+                viewHolder.bmb_m_name.setText(spMaterial.bmb_m_name);
+                viewHolder.bmb_m_price.setText(spMaterial.bmb_price);
+                viewHolder.bmb_m_total.setText(""+(Float.parseFloat(spMaterial.bmb_price)*Float.parseFloat(spMaterial.item_count)));
+            }else{
+                viewHolder.bmb.setVisibility(View.GONE);
+            }
 
             return convertView;
         }
@@ -191,6 +226,7 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
 
 
     class ViewHolder{
+        View layout_bill_item;
         TextView sp_m_name;
         TextView sp_m_spec;
         TextView item_count;
@@ -198,9 +234,39 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
         TextView item_remark;
         TextView item_state;
         GridView grid_view;
-
         View   btnDel;
+
+        View   bmb;
+        TextView bmb_name;
+        TextView bmb_m_name;
+        TextView bmb_m_price;
+        TextView bmb_m_total;
     }
+
+    class ImageClick implements View.OnClickListener{
+
+        int position;
+        List<PhotoData> mData;
+        void setData(int position,List<PhotoData> mData){
+            this.position = position;
+            this.mData = mData;
+        }
+
+        @Override
+        public void onClick(View v) {
+            Log.i("position",""+position);
+            Intent intent = new Intent(getActivity(), ImagePagerActivity_.class);
+            ArrayList<String> arrayUri = new ArrayList<String>();
+            for (PhotoData item : mData) {
+                arrayUri.add(item.uri.toString());
+            }
+            intent.putExtra("mArrayUri", arrayUri);
+            intent.putExtra("mPagerPosition", position);
+            intent.putExtra("needEdit", false);
+            startActivityForResult(intent, FillBillItemFragment.RESULT_REQUEST_IMAGE);
+        }
+    };
+
 
     class MyAdapter extends  BaseAdapter {
 
@@ -241,7 +307,9 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-
+            ImageClick imageClick = new ImageClick();
+            imageClick.setData(position,mData);
+            holder.image.setOnClickListener(imageClick);
             holder.image.setImageResource(R.mipmap.ic_default_image);
             PhotoData photoData = mData.get(position);
             Uri data = photoData.uri;
@@ -284,11 +352,8 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
 
         @Override
         public void onClickFrontView(int position) {
-            if(readOnly){
 
-            }else{
-                fillBillItem.show(mData.get(position));
-            }
+            fillBillItem.show(mData.get(position));
             Log.d(TAG, "onClickFrontView");
         }
 

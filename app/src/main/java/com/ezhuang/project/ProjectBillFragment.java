@@ -85,7 +85,9 @@ public class ProjectBillFragment extends BaseFragment {
         this.mData = mData;
         adapter.notifyDataSetChanged();
         listView.onRefreshComplete();
-
+        if(mData.size()<Global.PAGE_SIZE){
+            listView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+        }
         BlankViewDisplay.setBlank(mData.size(), this, true, blankLayout, null);
     }
 

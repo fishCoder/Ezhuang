@@ -20,6 +20,7 @@ import com.ezhuang.R;
 import com.ezhuang.common.Global;
 import com.ezhuang.common.JsonUtil;
 import com.ezhuang.common.network.NetworkImpl;
+import com.ezhuang.model.AccountInfo;
 import com.ezhuang.model.BillDetail;
 import com.ezhuang.model.Project;
 import com.ezhuang.model.ProjectBill;
@@ -76,7 +77,6 @@ public class ViewBillingActivity extends BaseActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowCustomEnabled(true);
 
-
         listView.setMode(PullToRefreshBase.Mode.BOTH);
         listView.setOnRefreshListener(onRefreshListener);
         listView.getRefreshableView().setAdapter(adapter);
@@ -104,9 +104,7 @@ public class ViewBillingActivity extends BaseActivity {
             }
         });
 
-
-
-        StaffUser staffUser = MyApp.currentUser;
+        StaffUser staffUser = AccountInfo.loadAccount(this);
         showDialogLoading();
         getNetwork(String.format(QUERY_BILL,staffUser.getGlobal_key(),roleId,""),QUERY_BILL);
     }
@@ -140,7 +138,6 @@ public class ViewBillingActivity extends BaseActivity {
 
         @Override
         public Object getChild(int groupPosition, int childPosition) {
-
             return mData.get(groupPosition).get(childPosition);
         }
 
@@ -366,6 +363,8 @@ public class ViewBillingActivity extends BaseActivity {
             }
         }
     }
+
+
 
     PullToRefreshBase.OnRefreshListener onRefreshListener = new PullToRefreshBase.OnRefreshListener<ListView>() {
         @Override

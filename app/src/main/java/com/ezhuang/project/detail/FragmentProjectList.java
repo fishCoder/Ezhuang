@@ -15,6 +15,7 @@ import com.ezhuang.model.Project;
 import com.ezhuang.project.AddMaterialToBillActivity_;
 import com.ezhuang.project.ProjectBillActivity_;
 import com.ezhuang.quality.AddProjectProgressActivity_;
+import com.ezhuang.quality.ViewProjectProgressActivity_;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
@@ -150,7 +151,8 @@ public class FragmentProjectList extends BaseFragment {
                 });
             }
 
-            viewHolder.layoutBillCount.setOnClickListener(new BillListener(project.getPjId()));
+            viewHolder.layoutBillCount.setOnClickListener(new ViewListener(project.getPjId(),"bill"));
+            viewHolder.layoutPgCount.setOnClickListener(new ViewListener(project.getPjId(),"pg"));
 
             return convertView;
         }
@@ -177,18 +179,25 @@ public class FragmentProjectList extends BaseFragment {
         View layoutPjBtn;
     }
 
-    class BillListener implements   View.OnClickListener {
+    class ViewListener implements   View.OnClickListener {
 
         String pjId = null;
+        String type = "";
 
-        public BillListener(String pjId){
+        public ViewListener(String pjId,String type){
             this.pjId = pjId;
+            this.type = type;
         }
 
         @Override
         public void onClick(View v) {
-            ProjectBillActivity_.intent(getActivity()).pjId(pjId).start();
-            getActivity().overridePendingTransition(R.anim.alpha_in,R.anim.left_slide_out);
+            if("pg".equals(type)){
+                ViewProjectProgressActivity_.intent(getActivity()).pjId(pjId).roleId(roleId).start();
+            }else{
+                ProjectBillActivity_.intent(getActivity()).pjId(pjId).start();
+                getActivity().overridePendingTransition(R.anim.alpha_in,R.anim.left_slide_out);
+            }
+
         }
     }
 

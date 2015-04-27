@@ -59,12 +59,10 @@ public class CreatProjectActivity extends BaseActivity {
 
     String QUERY_STAFF_BY_ROLE =   Global.HOST + "/app/stf/queryStaffs.do?";
 
-
     @AfterViews
     void init(){
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
 
         if(pm==null){
             pm = new LinkedList<>();

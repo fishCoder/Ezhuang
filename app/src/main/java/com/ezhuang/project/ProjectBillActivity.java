@@ -75,12 +75,13 @@ public class ProjectBillActivity extends BaseActivity {
         fragment.setUpDownListListener(new ListListener() {
             @Override
             public void loadMore() {
-                getNetwork(String.format(QUERY_BILL,pjId,editText.getText().toString()),QUERY_BILL);
+                String keyword = editText.getText().toString();
+                getNetwork(String.format(QUERY_BILL_MORE,pjId,keyword,bills.get(bills.size()-1).getId()),QUERY_BILL_MORE);
             }
 
             @Override
             public void refresh() {
-                getNetwork(String.format(QUERY_BILL_MORE,pjId,editText.getText().toString()),QUERY_BILL_MORE);
+                getNetwork(String.format(QUERY_BILL,pjId,editText.getText().toString()),QUERY_BILL);
             }
         });
         showDialogLoading();

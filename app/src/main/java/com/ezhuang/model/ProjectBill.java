@@ -1,7 +1,9 @@
 package com.ezhuang.model;
 
 
-public class ProjectBill {
+import java.io.Serializable;
+
+public class ProjectBill implements Serializable{
 
     private String id;
     private String billCode;

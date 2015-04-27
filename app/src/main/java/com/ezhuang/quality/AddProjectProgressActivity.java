@@ -305,8 +305,9 @@ public class AddProjectProgressActivity extends BaseActivity {
                             .append(fileType).toString();
 
                     imgCount++;
-                    if(hasUpPic.get(url)==null||hasUpPic.get(url).isEmpty()){
+                    if(hasUpPic.get(url)!=null&&!hasUpPic.get(url).isEmpty()){
                         hasUpImgCount++;
+                        continue;
                     }
 
                     uploadManager.put(new File(Global.getPath(this, photoData.uri)), key, token, new UpCompletionHandler() {
@@ -317,6 +318,12 @@ public class AddProjectProgressActivity extends BaseActivity {
 
                                 hasUpImgCount++;
                                 showProgressBar(true, String.format("上传图片[%d/%d]", hasUpImgCount, imgCount));
+
+                                if(pgPtUrl.isEmpty()){
+                                    pgPtUrl = s;
+                                }else{
+                                    pgPtUrl += "&"+s;
+                                }
 
                                 if (hasUpImgCount == imgCount) {
                                     add_progress();
@@ -332,7 +339,6 @@ public class AddProjectProgressActivity extends BaseActivity {
                         }
 
                     }, null);
-                    imgCount++;
 
                 }
                 showProgressBar(true, String.format("上传图片[%d/%d]", hasUpImgCount, imgCount));
@@ -387,7 +393,7 @@ public class AddProjectProgressActivity extends BaseActivity {
         }
 
         if(mData.size() == 0){
-            add_progress();
+            showMiddleToast("没有上传图片");
         }else{
             getNetwork(QINIU_TOKEN,QINIU_TOKEN);
             showProgressBar(true,"请求TOKEN");

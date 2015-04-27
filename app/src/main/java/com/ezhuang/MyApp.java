@@ -15,11 +15,13 @@ import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
+
+import cn.jpush.android.api.JPushInterface;
+
 /**
  * Created by Administrator on 2015/4/3 0003.
  */
 public class MyApp extends Application {
-
 
     public static float sScale;
     public static int sWidthDp;
@@ -68,6 +70,8 @@ public class MyApp extends Application {
         sEmojiNormal = getResources().getDimensionPixelSize(R.dimen.emoji_normal);
         sEmojiMonkey = getResources().getDimensionPixelSize(R.dimen.emoji_monkey);
 
+        JPushInterface.setDebugMode(true);
+        JPushInterface.init(this);
         //sUserObject = AccountInfo.loadAccount(this);
         sUnread = new Unread();
     }
