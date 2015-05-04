@@ -60,11 +60,15 @@ public class BaseFragment extends Fragment implements NetworkCallback, FootUpdat
 
     @Override
     public void refreshSession() {
-
         RequestParams params = new RequestParams();
         params.put("phone", MyApp.currentUser.getPhone());
         params.put("password", MyApp.currentUser.getPassword());
         postNetwork(REFRESH_SESSION,params,REFRESH_SESSION);
+    }
+
+    @Override
+    public String getSessionUrl() {
+        return REFRESH_SESSION;
     }
 
     protected void showProgressBar(boolean show, String message) {
@@ -160,6 +164,8 @@ public class BaseFragment extends Fragment implements NetworkCallback, FootUpdat
 
     @Override
     public void showError(String msg) {
+        hideProgressDialog();
+        showProgressBar(false);
         showButtomToast(msg);
     }
 

@@ -1,15 +1,31 @@
 package com.ezhuang;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTabHost;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TextView;
 
+import com.ezhuang.common.Global;
+import com.ezhuang.common.JsonUtil;
 import com.ezhuang.common.LoginBackground;
+import com.ezhuang.common.network.NetworkImpl;
+import com.ezhuang.model.AccountInfo;
+import com.ezhuang.model.StaffUser;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import cn.jpush.android.api.JPushInterface;
+import cn.jpush.android.data.JPushLocalNotification;
+import me.leolin.shortcutbadger.ShortcutBadgeException;
+import me.leolin.shortcutbadger.ShortcutBadger;
 
 public class MainActivity extends BaseActivity {
     //定义FragmentTabHost对象
@@ -28,6 +44,8 @@ public class MainActivity extends BaseActivity {
             R.drawable.tab_set_btn
     };
 
+    String HOST_LOGIN = Global.HOST + "/app/stf/login.do";
+
     //Tab选项卡的文字
     private String mTextviewArray[] = {"首页", "消息", "设置"};
 
@@ -39,10 +57,27 @@ public class MainActivity extends BaseActivity {
         initView();
     }
 
+
+
+
     /**
      * 初始化组件
      */
     private void initView(){
+
+        int badgeCount = 10;
+        try {
+            ShortcutBadger.setBadge(getApplicationContext(), badgeCount);
+        } catch (ShortcutBadgeException e) {
+            Log.i("badge", "手机类型不支持badge");
+        }
+
+        StaffUser staffUser = AccountInfo.loadAccount(this);
+        MyApp.currentUser = staffUser;
+        RequestParams params = new RequestParams();
+        params.put("phone", staffUser.getPhone());
+        params.put("password", staffUser.getPassword());
+        postNetwork(HOST_LOGIN, params, HOST_LOGIN);
 
         LoginBackground loginBackground = new LoginBackground(this);
         loginBackground.update();
@@ -82,4 +117,30 @@ public class MainActivity extends BaseActivity {
         return view;
     }
 
+    @Override
+    public void parseJson(int code, JSONObject respanse, String tag, int pos, Object data) throws JSONException {
+
+        if(tag.equals(HOST_LOGIN)){
+            if(code == NetworkImpl.REQ_SUCCESSS){
+                StaffUser currentUser = JsonUtil.Json2Object(respanse.getString("data"), StaffUser.class);
+                MyApp.currentUser = currentUser;
+                AccountInfo.saveAccount(MainActivity.this, currentUser);
+
+            }else{
+                toLoginActivity();
+            }
+
+        }
+
+    }
+
+
+    void toLoginActivity(){
+        Intent intent;
+        intent = new Intent(this,LoginActivity_.class);
+        startActivity(intent);
+        finish();
+
+        overridePendingTransition(R.anim.alpha_in, R.anim.alpha_out);
+    }
 }

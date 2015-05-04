@@ -56,26 +56,45 @@ public class ViewBillingActivity extends BaseActivity {
     @Extra
     String roleId;
 
+    @Extra
+    boolean isRecord = false;
+
     @ViewById
     PullToRefreshExpandableListView listView;
 
     @StringArrayRes
     String[] bill_state;
 
-    String QUERY_BILL = Global.HOST + "/app/project/queryBillings.do?global_key=%s&roleId=%s&keyword=%s";
+    String QUERY_BILL = Global.HOST + "/app/project/queryBillings.do?global_key=%s&roleId=%s&state=%s&keyword=%s";
 
-    String QUERY_BILL_MORE = Global.HOST + "/app/project/queryBillings.do?global_key=%s&roleId=%s&lastId=%s&keyword=%s";
+    String QUERY_BILL_MORE = Global.HOST + "/app/project/queryBillings.do?global_key=%s&roleId=%s&state=%s&lastId=%s&keyword=%s";
 
 
     List<Project> mType = new LinkedList<>();
 
     List<List<ProjectBill>> mData = new LinkedList<>();
 
+    String state = "";
+
     @AfterViews
     void init(){
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowCustomEnabled(true);
+
+        if(Global.CEHCK.equals(roleId)){
+            if(!isRecord){
+                state = "0";
+            }else{
+                state = "1,2,3,4,5";
+            }
+        }else if(Global.BUYER.equals(roleId)){
+            if(!isRecord){
+                state = "1,2";
+            }else{
+                state = "3,4";
+            }
+        }
 
         listView.setMode(PullToRefreshBase.Mode.BOTH);
         listView.setOnRefreshListener(onRefreshListener);
@@ -99,14 +118,15 @@ public class ViewBillingActivity extends BaseActivity {
             public void afterTextChanged(Editable s) {
                 StaffUser staffUser = MyApp.currentUser;
                 showDialogLoading();
-                getNetwork(String.format(QUERY_BILL,staffUser.getGlobal_key(),roleId,s.toString()),QUERY_BILL);
+
+                getNetwork(String.format(QUERY_BILL,staffUser.getGlobal_key(),roleId,state,s.toString()),QUERY_BILL);
                 showDialogLoading();
             }
         });
 
         StaffUser staffUser = AccountInfo.loadAccount(this);
         showDialogLoading();
-        getNetwork(String.format(QUERY_BILL,staffUser.getGlobal_key(),roleId,""),QUERY_BILL);
+        getNetwork(String.format(QUERY_BILL,staffUser.getGlobal_key(),roleId,state,""),QUERY_BILL);
     }
 
     BaseExpandableListAdapter adapter = new BaseExpandableListAdapter() {
@@ -281,7 +301,12 @@ public class ViewBillingActivity extends BaseActivity {
             if(code == NetworkImpl.REQ_SUCCESSS){
                 mType.clear();
                 mData.clear();
-                Log.i("json",respanse.getString("data"));
+                try{
+                    Log.i("json",respanse.getString("data"));
+                }catch (Exception e){
+                    showButtomToast("没有待采购");
+                    return;
+                }
                 toObject(respanse);
             }else{
                 showButtomToast("错误码:" + code);
@@ -290,8 +315,14 @@ public class ViewBillingActivity extends BaseActivity {
 
         if(QUERY_BILL_MORE.equals(tag)){
             if(code == NetworkImpl.REQ_SUCCESSS){
+                try{
+                    Log.i("json",respanse.getString("data"));
+                }catch (Exception e){
+                    showButtomToast("没有更多");
+                    listView.onRefreshComplete();
+                    return;
+                }
 
-                Log.i("json",respanse.getString("data"));
                 toObject(respanse);
 
             }else{
@@ -336,10 +367,12 @@ public class ViewBillingActivity extends BaseActivity {
         public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
             ProjectBill bill = mData.get(groupPosition).get(childPosition);
             ViewBillDetailActivity_.intent(ViewBillingActivity.this)
+                    .pjId(mType.get(groupPosition).getPjId())
                     .roleId(roleId)
                     .staffId(MyApp.currentUser.getGlobal_key())
                     .pjBillId(bill.getId())
                     .billState(bill.getState())
+                    .isRecord(isRecord)
                     .startForResult(0);
             return false;
         }
@@ -372,12 +405,12 @@ public class ViewBillingActivity extends BaseActivity {
             StaffUser staffUser = MyApp.currentUser;
             if(PullToRefreshBase.Mode.PULL_FROM_START == listView.getCurrentMode()){
 
-                getNetwork(String.format(QUERY_BILL,staffUser.getGlobal_key(),roleId,editText.getText().toString()),QUERY_BILL);
+                getNetwork(String.format(QUERY_BILL,staffUser.getGlobal_key(),roleId,state,editText.getText().toString()),QUERY_BILL);
             }else{
                 int i = mData.size()-1;
                 int index = mData.get(i).size()-1;
                 String lastId = mData.get(i).get(index).getId();
-                getNetwork(String.format(QUERY_BILL_MORE,staffUser.getGlobal_key(),roleId,lastId,editText.getText().toString()),QUERY_BILL_MORE);
+                getNetwork(String.format(QUERY_BILL_MORE,staffUser.getGlobal_key(),roleId,state,lastId,editText.getText().toString()),QUERY_BILL_MORE);
             }
         }
     };

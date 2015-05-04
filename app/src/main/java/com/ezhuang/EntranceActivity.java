@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.ezhuang.common.Global;
 import com.ezhuang.common.JsonUtil;
 import com.ezhuang.common.LoginBackground;
+import com.ezhuang.common.network.NetworkImpl;
 import com.ezhuang.model.AccountInfo;
 import com.ezhuang.model.StaffUser;
 import com.loopj.android.http.RequestParams;
@@ -50,8 +51,6 @@ public class EntranceActivity extends BaseActivity {
 
     boolean isLogin = false;
 
-    String HOST_LOGIN = Global.HOST + "/app/stf/login.do";
-
     @AfterViews
     void init() {
 
@@ -68,13 +67,7 @@ public class EntranceActivity extends BaseActivity {
         }
 
         if(AccountInfo.isLogin(this)){
-            StaffUser staffUser = AccountInfo.loadAccount(this);
-            MyApp.currentUser = staffUser;
             isLogin = true;
-            RequestParams params = new RequestParams();
-            params.put("phone", staffUser.getPhone());
-            params.put("password", staffUser.getPassword());
-            postNetwork(HOST_LOGIN, params, HOST_LOGIN);
         }
 
         entrance.setAnimationListener(new Animation.AnimationListener() {
@@ -122,20 +115,4 @@ public class EntranceActivity extends BaseActivity {
         overridePendingTransition(R.anim.alpha_in, R.anim.alpha_out);
     }
 
-    @Override
-    public void parseJson(int code, JSONObject respanse, String tag, int pos, Object data) throws JSONException {
-
-        if(tag.equals(HOST_LOGIN)){
-            if(code==10001){
-                StaffUser currentUser = JsonUtil.Json2Object(respanse.getString("data"), StaffUser.class);
-                MyApp.currentUser = currentUser;
-                AccountInfo.saveAccount(EntranceActivity.this,currentUser);
-
-            }else{
-                toLoginActivity();
-            }
-
-        }
-
-    }
 }

@@ -1,11 +1,14 @@
 package com.ezhuang.model;
 
+import android.util.Log;
+
 import com.activeandroid.ActiveAndroid;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
+import com.ezhuang.common.JsonUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,7 +20,7 @@ import java.util.List;
  * Created by Administrator on 2015/4/14 0014.
  */
 @Table(name="SpMaterial")
-public class SpMaterial extends Model implements Serializable{
+public class SpMaterial extends Model implements Serializable,IPcMt{
 
 
     public SpMaterial(){
@@ -75,13 +78,93 @@ public class SpMaterial extends Model implements Serializable{
 
     public List   itemImages;
 
+    public String bmb_m_id = "";
+
     public String bmb_name = "";
 
     public String bmb_m_name = "";
 
     public String bmb_price = "";
 
+    public String bmb_m_spec = "";
 
+    @Override
+    public String getBigTypeId() {
+        return bigTypeId;
+    }
+
+    @Override
+    public String getBigTypeName() {
+        return bigTypeName;
+    }
+
+    @Override
+    public String getMtId() {
+        return bmb_m_id;
+    }
+
+    @Override
+    public String getMtName() {
+        return bmb_m_name;
+    }
+
+    @Override
+    public String getPrice() {
+        return String.format("%.2f",Float.parseFloat(bmb_price));
+    }
+
+    @Override
+    public String getSTypeId() {
+        return sTypeId;
+    }
+
+    @Override
+    public String getSTypeName() {
+        return sTypeName;
+    }
+
+    @Override
+    public String getSpec() {
+        return bmb_m_spec;
+    }
+
+    @Override
+    public String getUnitName() {
+        return unitName;
+    }
+
+    @Override
+    public String getMtImg() {
+        return "";
+    }
+
+    @Override
+    public String getCount() {
+        return item_count;
+    }
+
+    @Override
+    public String getCompanyName() {
+        return bmb_name;
+    }
+
+    @Override
+    public void toLoadData(JSONObject jsonObject) {
+        try {
+            bigTypeId = jsonObject.getString("bigTypeId");
+            bigTypeName = jsonObject.getString("bigTypeName");
+            bmb_m_id = jsonObject.getString("mtId");
+            bmb_m_name = jsonObject.getString("mtName");
+            bmb_price = jsonObject.getString("price");
+            bmb_m_spec = jsonObject.getString("spec");
+            sTypeId = jsonObject.getString("sTypeId");
+            sTypeName = jsonObject.getString("sTypeName");
+            unitName = jsonObject.getString("unitName");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     static public void clear(){
         new Delete().from(SpMaterial.class).execute();

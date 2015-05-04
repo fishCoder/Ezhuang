@@ -14,17 +14,18 @@
         android:textColor="@color/white"
         android:textSize="20dp"
         android:text="开单审核"/>
-    <com.gc.materialdesign.views.ButtonFlat
+    <TextView
         android:id="@+id/action_reject"
         android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:background="#FFF"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:background="@drawable/actionbar_item_selector"
         android:text="驳回" />
-    <com.gc.materialdesign.views.ButtonFlat
+    <TextView
         android:id="@+id/action_pass"
         android:layout_width="50dp"
-        android:layout_marginLeft="5dp"
-        android:layout_height="wrap_content"
-        android:background="#FFF"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:background="@drawable/actionbar_item_selector"
         android:text="通过" />
 </LinearLayout>

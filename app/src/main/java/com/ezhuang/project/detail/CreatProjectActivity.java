@@ -157,7 +157,7 @@ public class CreatProjectActivity extends BaseActivity {
     String CREATE_PROJECT = Global.HOST + "/app/project/addProject.do";
 
     @OptionsItem
-    void action_add() {
+    void action_submit() {
         RequestParams params = new RequestParams();
 
         //不需要检查的字段

@@ -3,6 +3,7 @@ package com.ezhuang.common;
 import android.view.View;
 import android.widget.TextView;
 
+import com.ezhuang.FragmentMessage;
 import com.ezhuang.R;
 import com.ezhuang.project.ProjectBillFragment;
 import com.ezhuang.project.ViewAndSubmitBillFragment;
@@ -60,6 +61,10 @@ public class BlankViewDisplay {
             if (fragment instanceof ViewProjectProgressActivity){
                 iconId = R.mipmap.ic_exception_blank_task;
                 text = "没有上传进度";
+            }
+            if (fragment instanceof FragmentMessage){
+                iconId = R.mipmap.ic_exception_blank_task;
+                text = "没有消息";
             }
         } else {
             iconId = R.mipmap.ic_exception_no_network;

@@ -3,13 +3,13 @@ package com.ezhuang;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 
 import java.util.List;
 
 import com.activeandroid.ActiveAndroid;
 import com.ezhuang.common.Unread;
 import com.ezhuang.common.third.MyImageDownloader;
-import com.ezhuang.model.CurrentUser;
 import com.ezhuang.model.StaffUser;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -17,6 +17,8 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 
 import cn.jpush.android.api.JPushInterface;
+import me.leolin.shortcutbadger.ShortcutBadgeException;
+import me.leolin.shortcutbadger.ShortcutBadger;
 
 /**
  * Created by Administrator on 2015/4/3 0003.
@@ -72,7 +74,7 @@ public class MyApp extends Application {
 
         JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
-        //sUserObject = AccountInfo.loadAccount(this);
+
         sUnread = new Unread();
     }
 

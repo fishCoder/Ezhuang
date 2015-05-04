@@ -25,6 +25,8 @@ import org.androidannotations.annotations.ViewById;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import cn.jpush.android.api.JPushInterface;
+
 /**
  * Created by Administrator on 2015/4/3 0003.
  */
@@ -70,8 +72,8 @@ public class LoginActivity extends BaseActivity {
         editPassword.addTextChangedListener(textWatcher);
         editValify.addTextChangedListener(textWatcher);
         upateLoginButton();
-
         editName.addTextChangedListener(textWatcherName);
+
     }
 
     @Override
@@ -99,6 +101,7 @@ public class LoginActivity extends BaseActivity {
             RequestParams params = new RequestParams();
             params.put("phone", name);
             params.put("password", password);
+            params.put("registerid",JPushInterface.getRegistrationID(this));
             if (captchaLayout.getVisibility() == View.VISIBLE) {
                 params.put("j_captcha", captcha);
             }

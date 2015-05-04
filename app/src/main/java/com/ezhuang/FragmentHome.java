@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -18,7 +19,10 @@ import com.ezhuang.project.ProjectBillActivity_;
 import com.ezhuang.project.ViewBillingActivity_;
 import com.ezhuang.project.detail.CreatProjectActivity_;
 import com.ezhuang.project.detail.ViewProjectActivity_;
+import com.ezhuang.purchase.PurchaseActivity;
+import com.ezhuang.purchase.PurchaseRecordActivity_;
 import com.ezhuang.quality.ViewProgressActivity_;
+import com.readystatesoftware.viewbadger.BadgeView;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
@@ -37,16 +41,26 @@ public class FragmentHome extends BaseFragment {
     List<Object[]> list       =   new LinkedList<Object[]>();
     List<String> groupkey   =   new LinkedList<String>();
 
+
     @StringArrayRes
     String[] staff_apps;
+    int[] staff_apps_icon = new int[]{R.mipmap.ic_project,R.mipmap.ic_project,R.mipmap.ic_project};
+
     @StringArrayRes
     String[] project_manager_apps;
+    int[] project_manager_apps_icon = new int[]{R.mipmap.bill,R.mipmap.bill,R.mipmap.bill};
+
     @StringArrayRes
     String[] check_apps;
+    int[] check_apps_icon = new int[]{R.mipmap.ic_check,R.mipmap.ic_check};
+
     @StringArrayRes
     String[] buyer_apps;
+    int[] buyer_apps_icon = new int[]{R.mipmap.ic_purchase,R.mipmap.ic_purchase};
+
     @StringArrayRes
     String[] quality_apps;
+    int[] quality_apps_icon = new int[]{R.mipmap.ic_quality};
 
     @ViewById
     ListView listRoleFunction;
@@ -76,14 +90,24 @@ public class FragmentHome extends BaseFragment {
                 if(list.get(position)[0].equals("采购")){
                     ViewBillingActivity_.intent(getActivity()).roleId(Global.BUYER).start();
                 }else
+                if(list.get(position)[0].equals("采购记录")){
+                    PurchaseRecordActivity_.intent(getActivity()).start();
+                }else
                 if(list.get(position)[0].equals("查看项目")){
                     ViewProjectActivity_.intent(getActivity()).roleId(Global.STAFF).staffId(MyApp.currentUser.getGlobal_key()).start();
                 }else
                 if(list.get(position)[0].equals("审核")){
                     ViewBillingActivity_.intent(getActivity()).roleId(Global.CEHCK).start();
                 }else
+                if(list.get(position)[0].equals("审核记录")){
+                    ViewBillingActivity_.intent(getActivity()).roleId(Global.CEHCK).isRecord(true).start();
+                }
+                else
                 if(list.get(position)[0].equals("我的项目")){
                     ViewProjectActivity_.intent(getActivity()).roleId(Global.PROJECT_MANAGER).staffId(MyApp.currentUser.getGlobal_key()).start();
+                }else
+                if(list.get(position)[0].equals("开单记录")){
+                    ViewBillingActivity_.intent(getActivity()).roleId(Global.PROJECT_MANAGER).isRecord(true).start();
                 }else
                 if(list.get(position)[0].equals("质检")){
                     ViewProgressActivity_.intent(getActivity()).start();
@@ -100,24 +124,29 @@ public class FragmentHome extends BaseFragment {
     }
 
     List<Object[]> getApps(String roleId){
+
         List<Object[]> list    =new LinkedList<>();
-
         String[] apps = {};
-
+        int[]    icons = {};
         if(Global.PROJECT_MANAGER.equals(roleId)) {
             apps = project_manager_apps;
+            icons = project_manager_apps_icon;
         }else if(Global.BUYER.equals(roleId)){
             apps = buyer_apps;
+            icons = buyer_apps_icon;
         }else if(Global.STAFF.equals(roleId)){
             apps = staff_apps;
+            icons = staff_apps_icon;
         }else if(Global.CEHCK.equals(roleId)){
             apps = check_apps;
+            icons = check_apps_icon;
         }else if(Global.QUALITY.equals(roleId)){
             apps = quality_apps;
+            icons = quality_apps_icon;
         }
 
-        for (String name:apps){
-            list.add(new Object[]{name});
+        for (int i=0;i<apps.length;i++){
+            list.add(new Object[]{apps[i],icons[i]});
         }
 
         return list;
@@ -157,6 +186,10 @@ public class FragmentHome extends BaseFragment {
                 view = LayoutInflater.from(getActivity().getApplicationContext()).inflate(R.layout.role_function_divider, null);
             }else{
                 view = LayoutInflater.from(getActivity().getApplicationContext()).inflate(R.layout.role_function_item,null);
+                view.findViewById(R.id.icon_function).setBackgroundResource((Integer)item[1]);
+
+                BadgeView badge = (BadgeView) view.findViewById(R.id.badge);
+                badge.setText("2");
             }
             TextView text=(TextView) view.findViewById(R.id.name_function);
             text.setText((CharSequence) item[0]);

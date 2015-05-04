@@ -16,6 +16,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class NetworkImpl {
     public static final int NETWORK_ERROR = -1;
@@ -45,7 +47,18 @@ public class NetworkImpl {
         return info == null || info.isNewRequest;
     }
 
-    public void loadData(String url, RequestParams params, final String tag, final int dataPos, final Object data, Request type) {
+    class FunctionParams{
+        String url;
+        RequestParams params;
+        String tag;
+        int dataPos;
+        Object data;
+        Request type;
+    }
+
+    Queue<FunctionParams> queueRequest = new LinkedList<>();
+
+    public void loadData(final String url, final RequestParams params, final String tag, final int dataPos, final Object data, final Request type) {
         Log.d("", "url " + type + " " + url);
 
         if (mUpdateing.containsKey(tag) && mUpdateing.get(tag).booleanValue()) {
@@ -65,23 +78,53 @@ public class NetworkImpl {
                 try {
                     int code = response.getInt("code");
 
-                    if (code == 10003 && !(appContext instanceof LoginActivity_)) {
-                        appContext.startActivity(new Intent(appContext, LoginActivity_.class));
-                    }
 
+                    if (callback.getSessionUrl().equals(tag)){
+                        if (code == 10003 && !(appContext instanceof LoginActivity_)) {
+                            appContext.startActivity(new Intent(appContext, LoginActivity_.class));
+
+                        }
+
+                        if (code == REQ_SUCCESSS) {
+
+                            while (true){
+                                FunctionParams params = queueRequest.poll();
+                                if(params == null){
+                                    break;
+                                }else{
+                                    loadData(params.url,params.params,params.tag,params.dataPos,params.data,params.type);
+                                }
+                            }
+
+                        }
+
+                        return;
+                    }
                     if (code == SERVICE_SYS_ERROR){
                         callback.showError("服务器内部错误");
                     }
 
                     if (code == SESSION_TIME_OUT){
+                        Log.e("Response","session 失效");
                         callback.refreshSession();
+                        FunctionParams tmpParams = new FunctionParams();
+                        tmpParams.url = url;
+                        tmpParams.params = params;
+                        tmpParams.tag = tag;
+                        tmpParams.dataPos = dataPos;
+                        tmpParams.data = data;
+                        tmpParams.type = type;
+                        queueRequest.add(tmpParams);
+
+                    }else{
+                        callback.parseJson(code, response, tag, dataPos, data);
                     }
 
                     try {
                         updatePage(response, tag);
                     } catch (Exception e) {
                     }
-                    callback.parseJson(code, response, tag, dataPos, data);
+
 
                     try {
                         updateRequest(response, tag);
@@ -99,9 +142,9 @@ public class NetworkImpl {
                 try {
                     callback.showError("网络出错了，请检查网络连接");
                     callback.parseJson(NETWORK_ERROR, errorResponse, tag, dataPos, data);
+
                     if (isPageRequest(tag)) {
 //                        callback.setPageBottom(NetworkCallback.PageStyle.LoadingFail);
-
                     }
 
                 } catch (Exception e) {

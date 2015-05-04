@@ -35,7 +35,7 @@ public class SelfBuyFragment extends BaseFragment {
 
     @AfterViews
     void init(){
-        item_value = new String[]{spMaterial.mtName,spMaterial.item_count,spMaterial.bmb_name,spMaterial.bmb_m_name,spMaterial.bmb_price};
+        item_value = new String[]{spMaterial.mtName,spMaterial.item_count,spMaterial.bmb_name,spMaterial.bmb_m_name,spMaterial.bmb_price,spMaterial.bmb_m_spec};
         listView.setOnItemClickListener(onItemClickListener);
         listView.setAdapter(adapter);
     }
@@ -66,7 +66,7 @@ public class SelfBuyFragment extends BaseFragment {
         spMaterial.bmb_name = item_value[2];
         spMaterial.bmb_m_name = item_value[3];
         spMaterial.bmb_price = item_value[4];
-
+        spMaterial.bmb_m_spec = item_value[5];
         return true;
     }
 
@@ -125,8 +125,9 @@ public class SelfBuyFragment extends BaseFragment {
     public final static int BMB_NAME = 14;
     public final static int BMB_TITLE = 15;
     public final static int BMB_PRICE = 16;
+    public final static int BMB_SPEC  = 17;
 
-    int[] row = new int[]{0,0,BMB_NAME,BMB_TITLE,BMB_PRICE};
+    int[] row = new int[]{0,0,BMB_NAME,BMB_TITLE,BMB_PRICE,BMB_SPEC};
     AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

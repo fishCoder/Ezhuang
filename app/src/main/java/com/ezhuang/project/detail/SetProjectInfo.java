@@ -157,6 +157,8 @@ public class SetProjectInfo extends BaseActivity {
                         flag = false;
                         showMiddleToast("请输入数字");
                     }
+                case SelfBuyFragment.BMB_SPEC:
+                    flag = true;
                     break;
         }
 

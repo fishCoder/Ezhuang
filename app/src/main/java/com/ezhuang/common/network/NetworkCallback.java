@@ -15,4 +15,6 @@ public interface NetworkCallback {
     void showError(String msg);
 
     void refreshSession();
+
+    String getSessionUrl();
 }

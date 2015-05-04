@@ -11,6 +11,7 @@
     <string name="add_pg">装修进度</string>
     <string name="view_pg">查看装修进度</string>
     <string name="detail">详情</string>
+    <string name="purchase_record">采购记录</string>
 
     <string name="action_settings">设置</string>
     <string name="action_refrush">刷新</string>

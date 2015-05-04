@@ -13,11 +13,14 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.activeandroid.query.Delete;
 import com.ezhuang.ImagePagerActivity_;
 import com.ezhuang.R;
 import com.ezhuang.common.BlankViewDisplay;
 import com.ezhuang.common.Global;
 import com.ezhuang.common.network.BaseFragment;
+import com.ezhuang.model.BillDetail;
+import com.ezhuang.model.BillDetailState;
 import com.ezhuang.model.PhotoData;
 import com.ezhuang.model.ProjectBill;
 import com.ezhuang.model.SpMaterial;
@@ -55,6 +58,8 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
 
     public String roleId = "";
 
+    public boolean isRecord = false;
+
     @ViewById
     SwipeListView listView;
 
@@ -76,14 +81,8 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
             BlankViewDisplay.setBlank(mData.size(), this, true, blankLayout, null);
 
         listView.setAdapter(adapter);
-        if(readOnly){
+        if(Global.CEHCK.equals(roleId)||isRecord){
             listView.setSwipeMode(SwipeListView.SWIPE_MODE_NONE);
-        }
-
-        if (readOnly){
-
-        }else{
-            listView.setSwipeListViewListener(baseSwipeListViewListener);
         }
 
     }
@@ -96,7 +95,6 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
 
     void updateData(List<SpMaterial> mData){
         this.mData = mData;
-//        listView.setAdapter(adapter);
         Log.i(this.getClass().getSimpleName()+""," listview 刷新");
         adapter.notifyDataSetChanged();
         BlankViewDisplay.setBlank(mData.size(), this, true, blankLayout, null);
@@ -158,31 +156,50 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
 
             if(readOnly){
                 viewHolder.item_state.setText(bill_detail_state[spMaterial.state]);
+                if(Global.BUYER.equals(roleId)&&spMaterial.state==BillDetailState.UNBUY.state){
+                    viewHolder.item_state.setTextColor(getResources().getColor(R.color.undo));
+                }
             }
 
             viewHolder.layout_bill_item.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(Global.BUYER.equals(roleId)){
-                        SpMaterial sp = mData.get(position);
-                        SpMaterial tmp = new SpMaterial();
-                        tmp.bigTypeId = sp.bigTypeId;
-                        tmp.bigTypeName = sp.bigTypeName;
-                        tmp.mtId = sp.mtId;
-                        tmp.mtName = sp.mtName;
-                        tmp.sTypeId = sp.sTypeId;
-                        tmp.sTypeName = sp.sTypeName;
-                        tmp.spec = sp.spec;
-                        tmp.unitId = sp.unitId;
-                        tmp.unitName = sp.unitName;
-                        tmp.item_count = sp.item_count;
-                        tmp.item_id = sp.item_id;
-                        tmp.bmb_name = sp.bmb_name;
-                        tmp.bmb_m_name = sp.bmb_m_name;
-                        tmp.bmb_price = sp.bmb_price;
+                    //是采购员并且给项目为未采购
 
-                        PurchaseActivity_.intent(getActivity()).spMaterial(tmp).startForResult(16);
+                    if(Global.BUYER.equals(roleId)){
+                        if(!isRecord){
+                            if(spMaterial.state == BillDetailState.UNBUY.state){
+                                SpMaterial sp = mData.get(position);
+                                SpMaterial tmp = new SpMaterial();
+                                tmp.bigTypeId = sp.bigTypeId;
+                                tmp.bigTypeName = sp.bigTypeName;
+                                tmp.mtId = sp.mtId;
+                                tmp.mtName = sp.mtName;
+                                tmp.sTypeId = sp.sTypeId;
+                                tmp.sTypeName = sp.sTypeName;
+                                tmp.spec = sp.spec;
+                                tmp.unitId = sp.unitId;
+                                tmp.unitName = sp.unitName;
+                                tmp.item_count = sp.item_count;
+                                tmp.item_id = sp.item_id;
+                                tmp.bmb_name = sp.bmb_name;
+                                tmp.bmb_m_name = sp.bmb_m_name;
+                                tmp.bmb_price = sp.bmb_price;
+                                tmp.bmb_m_spec = sp.bmb_m_spec;
+                                PurchaseActivity_.intent(getActivity()).spMaterial(tmp).startForResult(16);
+                            }else{
+                                showButtomToast("已经采购过了");
+                            }
+                        }
+                    }else if(Global.PROJECT_MANAGER.equals(roleId)){
+                        if(isRecord){
+
+                        }else{
+                            fillBillItem.show(mData.get(position));
+                        }
                     }
+
+
                 }
             });
             viewHolder.sp_m_name.setText(spMaterial.mtName);
@@ -191,13 +208,28 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
             viewHolder.item_count.setText(spMaterial.item_count);
             viewHolder.item_remark.setText(spMaterial.item_remark);
 
+            if(Global.BUYER.equals(roleId)&&spMaterial.state!=BillDetailState.UNBUY.state){
+                viewHolder.btnDel.setVisibility(View.GONE);
+            }
             viewHolder.btnDel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mData.remove(position);
-                    notifyDataSetChanged();
-                    listView.closeOpenedItems();
-                    BlankViewDisplay.setBlank(mData.size(), ViewAndSubmitBillFragment.this, true, blankLayout, null);
+
+                    if(Global.PROJECT_MANAGER.equals(roleId)){
+                        mData.remove(position);
+                        notifyDataSetChanged();
+                        listView.closeOpenedItems();
+                        BlankViewDisplay.setBlank(mData.size(), ViewAndSubmitBillFragment.this, true, blankLayout, null);
+
+                    }
+
+                    if(Global.BUYER.equals(roleId)){
+                        mData.get(position).bmb_name = "";
+                        notifyDataSetChanged();
+                        listView.closeOpenedItems();
+                        ((ViewBillDetailActivity)getActivity()).reflashBottom();
+
+                    }
 
                 }
             });
@@ -214,8 +246,8 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
                 viewHolder.bmb.setVisibility(View.VISIBLE);
                 viewHolder.bmb_name.setText(spMaterial.bmb_name);
                 viewHolder.bmb_m_name.setText(spMaterial.bmb_m_name);
-                viewHolder.bmb_m_price.setText(spMaterial.bmb_price);
-                viewHolder.bmb_m_total.setText(""+(Float.parseFloat(spMaterial.bmb_price)*Float.parseFloat(spMaterial.item_count)));
+                viewHolder.bmb_m_price.setText(spMaterial.getPrice());
+                viewHolder.bmb_m_total.setText(String.format("%.2f",(Float.parseFloat(spMaterial.bmb_price)*Float.parseFloat(spMaterial.item_count))));
             }else{
                 viewHolder.bmb.setVisibility(View.GONE);
             }
@@ -278,7 +310,6 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
         void setData(List<PhotoData> mData){
             imageWidthPx = Global.dpToPx(120);
             mSize = new ImageSize(imageWidthPx, imageWidthPx);
-
             this.mData = mData;
         }
 
@@ -336,37 +367,4 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
 
     };
 
-    BaseSwipeListViewListener baseSwipeListViewListener = new BaseSwipeListViewListener() {
-
-        @Override
-        public void onStartOpen(int position, int action, boolean right) {
-
-            Log.d(TAG, "onStartOpen");
-        }
-
-        @Override
-        public void onStartClose(int position, boolean right) {
-
-            Log.d(TAG, "onStartClose");
-        }
-
-        @Override
-        public void onClickFrontView(int position) {
-
-            fillBillItem.show(mData.get(position));
-            Log.d(TAG, "onClickFrontView");
-        }
-
-        @Override
-        public void onClickBackView(int position) {
-
-            Log.d(TAG, "onClickBackView");
-        }
-
-        @Override
-        public void onDismiss(int[] reverseSortedPositions) {
-
-            Log.d(TAG, "onDismiss");
-        }
-    };
 }

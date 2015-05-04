@@ -32,6 +32,8 @@
             android:id="@+id/layout_bill_item"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/list_item_selector_2"
+            android:paddingRight="20dp"
             android:orientation="vertical">
 
             <LinearLayout
@@ -221,7 +223,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="红星美凯龙尚都精品瓷砖店"
-                    android:textColor="#1AAE8A"
+                    android:textColor="@color/bmb_name"
                     android:textSize="15sp" />
             </LinearLayout>
 
@@ -245,6 +247,31 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:text="精品瓷砖300*300"
+                    android:textColor="#555"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="5dp"
+                android:paddingLeft="30dp"
+                android:gravity="left">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="规格"
+                    android:textColor="#333"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/bmb_m_spec"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:text="300*300"
                     android:textColor="#555"
                     android:textSize="15sp" />
 

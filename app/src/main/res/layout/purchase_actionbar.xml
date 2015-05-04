@@ -1,0 +1,25 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_vertical|right">
+
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_weight="1"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        android:text="采购订单"/>
+    <TextView
+        android:id="@+id/action_view"
+        android:layout_height="match_parent"
+        android:layout_width="60dp"
+        android:gravity="center"
+        android:background="@drawable/actionbar_item_selector"
+        android:textColor="@color/white"
+        android:text="预览"
+        />
+</LinearLayout>

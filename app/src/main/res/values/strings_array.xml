@@ -27,6 +27,7 @@
 
     <string-array name="buyer_apps">
         <item>采购</item>
+        <item>采购记录</item>
     </string-array>
 
     <string-array name="quality_apps">
@@ -52,8 +53,8 @@
     <string-array name="bill_state">
         <item>未审核</item>
         <item>未采购</item>
-        <item>已下单</item>
-        <item>部分发货</item>
+        <item>部分采购</item>
+        <item>全部采购</item>
         <item>完成</item>
         <item>驳回</item>
     </string-array>
@@ -65,10 +66,11 @@
 
     <string-array name="bill_detail_state">
         <item>未下单</item>
+        <item>未下单</item>
         <item>已下单</item>
         <item>已发货</item>
         <item>确认收货</item>
-        <item>线下下单</item>
+        <item>公司自购</item>
     </string-array>
 
 
@@ -118,9 +120,10 @@
         <item>十万火急</item>
     </string-array>
 
-    <string-array name="dialog_login_fail_help">
-        <item>找回密码</item>
-        <item>重发激活邮件</item>
+    <string-array name="self_order_state">
+        <item>未完成</item>
+        <item>未完成</item>
+        <item>完成</item>
     </string-array>
 
     <string-array name="project_item_name">
@@ -178,6 +181,7 @@
         <item>建材商</item>
         <item>品牌</item>
         <item>价格</item>
+        <item>规格</item>
     </string-array>
 
 

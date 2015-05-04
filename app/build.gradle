@@ -42,6 +42,7 @@ dependencies {
     compile 'com.github.lzyzsd:circleprogress:1.1.0@aar'
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.+'
     compile 'com.github.chrisbanes.photoview:library:1.2.3'
+    compile 'me.leolin:ShortcutBadger:1.0.10@aar'
     compile files('libs/fastjson-1.1.36.jar')
     compile 'com.github.navasmdc:MaterialDesign:1.+@aar'
     compile files('libs/qiniu-android-sdk-7.0.3.jar')

@@ -1,6 +1,7 @@
 package com.ezhuang.common.network;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.PersistentCookieStore;
@@ -24,6 +25,9 @@ public class MyAsyncHttpClient {
         AsyncHttpClient client = new AsyncHttpClient();
         PersistentCookieStore cookieStore = new PersistentCookieStore(context);
         client.setCookieStore(cookieStore);
+        String userAgent = "Android "+android.os.Build.MODEL+" sdk "+android.os.Build.VERSION.SDK+" version "+android.os.Build.VERSION.RELEASE;
+        client.setUserAgent(userAgent);
+//        Log.i("UserAgent",userAgent);
 //        try {
 //            SSLContext sslContext = SSLContext.getInstance("TLS");
 //            sslContext.init(null, new TrustManager[]{new CustomX509TrustManager()},

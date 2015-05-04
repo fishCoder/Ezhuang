@@ -71,4 +71,11 @@
     <color name="pass">#5eb95e</color>
     <color name="reject">#dd514c</color>
 
+    <color name="bmb_name">#1AAE8A</color>
+    <color name="bmb_m_name">#0099FF</color>
+
+    <color name="purchase_press">#C00000</color>
+    <color name="purchase">#FF4400</color>
+
+    <color name="item_press">#555</color>
 </resources>

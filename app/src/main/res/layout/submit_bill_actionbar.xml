@@ -13,17 +13,18 @@
         android:textColor="@color/white"
         android:textSize="20dp"
         android:text="项目开单"/>
-    <Button
+    <ImageView
         android:id="@+id/action_submit"
-        android:layout_height="40dp"
-        android:layout_width="40dp"
-        android:background="@mipmap/ic_menu_ok"
+        android:layout_height="match_parent"
+        android:layout_width="50dp"
+        android:background="@drawable/actionbar_item_selector"
+        android:src="@mipmap/ic_menu_ok"
         />
-    <Button
+    <ImageView
         android:id="@+id/action_add"
-        android:layout_height="40dp"
-        android:layout_width="40dp"
-        android:layout_marginLeft="10dp"
-        android:background="@mipmap/ic_menu_add"
+        android:layout_height="match_parent"
+        android:layout_width="50dp"
+        android:background="@drawable/actionbar_item_selector"
+        android:src="@mipmap/ic_menu_add"
         />
 </LinearLayout>

@@ -24,7 +24,6 @@ import com.ezhuang.common.DialogUtil;
 import com.loopj.android.http.RequestParams;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-import com.qiniu.android.storage.UploadManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -115,7 +114,6 @@ public class BaseActivity extends ActionBarActivity implements NetworkCallback {
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setIndeterminate(true);
         mProgressDialog.setCancelable(false);
-
         mInflater = getLayoutInflater();
         initSetting();
 
@@ -142,7 +140,14 @@ public class BaseActivity extends ActionBarActivity implements NetworkCallback {
     }
 
     @Override
+    public String getSessionUrl() {
+        return REFRESH_SESSION;
+    }
+
+    @Override
     public void showError(String msg) {
+        hideProgressDialog();
+        showProgressBar(false);
         showButtomToast(msg);
     }
 
@@ -262,4 +267,6 @@ public class BaseActivity extends ActionBarActivity implements NetworkCallback {
             DialogUtil.hideDialog(mDialogProgressPopWindow);
         }
     }
+
+
 }

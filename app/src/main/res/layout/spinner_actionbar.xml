@@ -13,8 +13,10 @@
         android:id="@+id/spinner" />
 
     <ImageView
+        android:id="@+id/action_add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@mipmap/ic_menu_add"
-        android:layout_marginLeft="10dp"/>
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"/>
 </LinearLayout>

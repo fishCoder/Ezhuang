@@ -131,6 +131,7 @@ public class AddMaterialToBillActivity extends BaseActivity {
 
         fillBillItemFragment = new FillBillItemFragment();
         viewAndSubmitBillFragment = ViewAndSubmitBillFragment_.builder().build();
+        viewAndSubmitBillFragment.roleId = Global.PROJECT_MANAGER;
         viewAndSubmitBillFragment.setFillBillItem(fillBillItem);
         searchSpMaterialFragment = SearchSpMaterialFragment_.builder().build();
         searchSpMaterialFragment.setFillBillItem(fillBillItem);
