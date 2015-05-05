@@ -67,6 +67,7 @@ public class ProjectBillFragment extends BaseFragment {
                             .staffId(MyApp.currentUser.getGlobal_key())
                             .pjBillId(bill.getId())
                             .billState(bill.getState())
+                            .isRecord(true)
                             .startForResult(0);
                 }else{
                     AddMaterialToBillActivity_.intent(getActivity()).projectId(bill.getPjId()).pjBillId(bill.getId()).startForResult(0);

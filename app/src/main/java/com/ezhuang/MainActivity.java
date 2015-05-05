@@ -4,7 +4,6 @@ package com.ezhuang;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTabHost;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -22,10 +21,6 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import cn.jpush.android.api.JPushInterface;
-import cn.jpush.android.data.JPushLocalNotification;
-import me.leolin.shortcutbadger.ShortcutBadgeException;
-import me.leolin.shortcutbadger.ShortcutBadger;
 
 public class MainActivity extends BaseActivity {
     //定义FragmentTabHost对象
@@ -65,12 +60,7 @@ public class MainActivity extends BaseActivity {
      */
     private void initView(){
 
-        int badgeCount = 10;
-        try {
-            ShortcutBadger.setBadge(getApplicationContext(), badgeCount);
-        } catch (ShortcutBadgeException e) {
-            Log.i("badge", "手机类型不支持badge");
-        }
+
 
         StaffUser staffUser = AccountInfo.loadAccount(this);
         MyApp.currentUser = staffUser;

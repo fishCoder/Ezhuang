@@ -34,6 +34,7 @@
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
         android:gravity="center"
+        android:visibility="gone"
         android:background="@drawable/ic_notify_txt"/>
 
     <View

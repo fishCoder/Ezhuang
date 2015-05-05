@@ -112,6 +112,9 @@ public class FragmentHome extends BaseFragment {
                 if(list.get(position)[0].equals("质检")){
                     ViewProgressActivity_.intent(getActivity()).start();
                 }else
+                if(list.get(position)[0].equals("投诉/报修")){
+                    ProblemActicity_.intent(getActivity()).start();
+                }else
                 {
                     Intent intent = new Intent(getActivity(),CreatProjectActivity_.class);
                     getActivity().startActivity(intent);
@@ -190,6 +193,7 @@ public class FragmentHome extends BaseFragment {
 
                 BadgeView badge = (BadgeView) view.findViewById(R.id.badge);
                 badge.setText("2");
+                badge.setVisibility(View.GONE);
             }
             TextView text=(TextView) view.findViewById(R.id.name_function);
             text.setText((CharSequence) item[0]);

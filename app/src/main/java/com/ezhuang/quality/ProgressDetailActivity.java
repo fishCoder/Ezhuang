@@ -116,6 +116,7 @@ public class ProgressDetailActivity extends BaseActivity {
             layout_owner.setVisibility(View.VISIBLE);
             owner_state.setText(pg_state[pg.owerCheckResult]);
             owner_state.setTextColor(pg_state_color[pg.owerCheckResult]);
+            pgOwnerEmeExplain.setText(pg.owerRemark==null?"":pg.owerRemark);
         } else {
             layout_owner.setVisibility(View.GONE);
         }
@@ -124,6 +125,7 @@ public class ProgressDetailActivity extends BaseActivity {
             layout_quality.setVisibility(View.VISIBLE);
             quality_state.setText(pg_state[pg.quoCheckResult]);
             quality_state.setTextColor(pg_state_color[pg.quoCheckResult]);
+            pgQtEmeExplain.setText(pg.quoRemark==null?"":pg.quoRemark);
         } else {
             layout_quality.setVisibility(View.GONE);
         }

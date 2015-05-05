@@ -14,10 +14,13 @@ import com.ezhuang.common.Global;
 import com.ezhuang.common.JsonUtil;
 import com.ezhuang.common.network.BaseFragment;
 import com.ezhuang.common.network.NetworkImpl;
+import com.ezhuang.model.BillState;
 import com.ezhuang.model.Message;
 import com.ezhuang.model.NewsTypeEnum;
 import com.ezhuang.project.ViewBillDetailActivity;
 import com.ezhuang.project.ViewBillDetailActivity_;
+import com.ezhuang.project.detail.ViewProjectActivity_;
+import com.ezhuang.quality.ViewProgressActivity_;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
@@ -154,31 +157,42 @@ public class FragmentMessage extends BaseFragment {
     };
 
     void jumpToDealActivity(Message msg){
-       switch (msg.newsType){
-           case 7:
-               ViewBillDetailActivity_.intent(getActivity())
-                       .pjBillId(msg.sourceId)
-                       .roleId(Global.PROJECT_MANAGER)
-                       .billState(1)
-                       .isRecord(true)
-                       .start();
-               break;
-           case 8:
-               ViewBillDetailActivity_.intent(getActivity())
-                       .pjBillId(msg.sourceId)
-                       .roleId(Global.BUYER)
-                       .billState(1)
-                       .start();
-               break;
-           case 9:
-               ViewBillDetailActivity_.intent(getActivity())
-                       .pjBillId(msg.sourceId)
-                       .roleId(Global.PROJECT_MANAGER)
-                       .billState(2)
-                       .isRecord(true)
-                       .start();
-               break;
-       }
+        int newsType = msg.newsType;
+        if(newsType==NewsTypeEnum.NewPrijectNoticeToManager.newsType){
+            ViewProjectActivity_
+                    .intent(getActivity())
+                    .roleId(Global.PROJECT_MANAGER)
+                    .staffId(MyApp.currentUser.getGlobal_key())
+                    .start();
+        }else
+        if(newsType==NewsTypeEnum.ProjectOrderCheckResultNoticeToManager.newsType){
+            ViewBillDetailActivity_.intent(getActivity())
+                    .pjBillId(msg.sourceId)
+                    .roleId(Global.PROJECT_MANAGER)
+                    .billState(BillState.UNBUY.state)
+                    .isRecord(true)
+                    .start();
+        }else
+        if(newsType==NewsTypeEnum.ProjectOrderCheckResultNoticeToBuyer.newsType){
+            ViewBillDetailActivity_.intent(getActivity())
+                    .pjBillId(msg.sourceId)
+                    .roleId(Global.BUYER)
+                    .billState(1)
+                    .start();
+        }else
+        if(newsType==NewsTypeEnum.NewPurchaseOrderNotice.newsType){
+            ViewBillDetailActivity_.intent(getActivity())
+                    .pjBillId(msg.sourceId)
+                    .roleId(Global.PROJECT_MANAGER)
+                    .billState(2)
+                    .isRecord(true)
+                    .start();
+        }else
+        if(newsType==NewsTypeEnum.NewPrijectProgressNoticeToQuality.newsType){
+            ViewProgressActivity_.intent(getActivity()).start();
+        }
+
+
 
     }
 }

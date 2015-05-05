@@ -107,6 +107,7 @@ public class AddMaterialToBillActivity extends BaseActivity {
     @Extra
     String pjBillId;
 
+
     String QUERY_BILL_DETAIL = Global.HOST + "/app/project/queryBillingDetail.do?pjBillId=%s";
 
     @AfterViews
@@ -127,11 +128,11 @@ public class AddMaterialToBillActivity extends BaseActivity {
         actionBar.setDisplayShowCustomEnabled(true);
         changeToSubmitActionBar();
 
-
-
         fillBillItemFragment = new FillBillItemFragment();
         viewAndSubmitBillFragment = ViewAndSubmitBillFragment_.builder().build();
         viewAndSubmitBillFragment.roleId = Global.PROJECT_MANAGER;
+
+
         viewAndSubmitBillFragment.setFillBillItem(fillBillItem);
         searchSpMaterialFragment = SearchSpMaterialFragment_.builder().build();
         searchSpMaterialFragment.setFillBillItem(fillBillItem);

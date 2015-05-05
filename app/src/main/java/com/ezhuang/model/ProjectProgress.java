@@ -18,6 +18,9 @@ public class ProjectProgress implements Serializable {
     public String  pgRemark;
     public String  nodeName;
     public String  pgDeal;
+    public String  quoRemark;
+    public String  owerRemark;
+
 
     public boolean isNeedQualityCheck(){
         return '1'==pgDeal.charAt(1);

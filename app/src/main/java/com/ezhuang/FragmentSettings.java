@@ -1,7 +1,10 @@
 package com.ezhuang;
 
+
+
 import com.ezhuang.common.network.BaseFragment;
 
+import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
 
 /**
@@ -9,4 +12,10 @@ import org.androidannotations.annotations.EFragment;
  */
 @EFragment(R.layout.tab_bar_settings)
 public class FragmentSettings extends BaseFragment {
+
+    @AfterViews
+    void init(){
+
+    }
+
 }
