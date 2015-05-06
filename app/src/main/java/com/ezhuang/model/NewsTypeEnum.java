@@ -42,7 +42,7 @@ public enum NewsTypeEnum {
 	 * 审核后通知项目经理
 	 * 
 	 */
-	ProjectOrderCheckResultNoticeToManager(7, "您的订单已经审核完成"),
+    ProjectOrderCheckPassNoticeToManager(7, "您的订单已经通过审核"),
 
 	/**
 	 * 审核后通知采购员
@@ -78,9 +78,15 @@ public enum NewsTypeEnum {
 	 * 质检员审核家装进度
 	 * 
 	 */
-	QualityCheckPrijectProgressNotice(13, "质检员已经完成了家装进度的审核");
+	QualityCheckPrijectProgressNotice(13, "质检员已经完成了家装进度的审核"),
 
-	public int newsType;
+    /**
+     *
+     */
+    ProjectOrderCheckNotPassNoticeToManager(14, "您的订单已经未通过审核");
+
+
+    public int newsType;
 	public String newsContent;
 
 	private NewsTypeEnum(Integer newsType, String newsContent) {

@@ -265,6 +265,14 @@
             android:label="@string/problem"
             android:windowSoftInputMode="adjustPan" >
         </activity>
+
+        <activity
+            android:name=".project.ProjectDetailActivity_"
+            android:screenOrientation="portrait"
+            android:label="@string/project_detail"
+            android:windowSoftInputMode="adjustPan" >
+        </activity>
+
         <activity
             android:name=".EntranceActivity_"
             android:label="entrance"

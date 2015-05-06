@@ -16,10 +16,9 @@
 
         <TextView
             android:id="@+id/pg_name"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="材料到场"
+            android:text="进度节点"
             android:textColor="#1AAE8A"
             android:textSize="17sp" />
 
@@ -30,7 +29,8 @@
             android:layout_height="wrap_content"
             android:singleLine="false"
             android:paddingRight="20dp"
-            android:text="8888-88-88 88:88:88"
+            android:gravity="right"
+            android:text="0000-00-00 00:00:00"
             android:textColor="#aaa"
             android:textSize="15sp" />
 
@@ -40,6 +40,7 @@
 
 
     <LinearLayout
+        android:id="@+id/layout_owner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="left"
@@ -56,7 +57,7 @@
             android:background="#c5c5c5"/>
 
         <LinearLayout
-            android:id="@+id/layout_owner"
+
             android:layout_marginBottom="5dp"
             android:paddingLeft="10dp"
             android:layout_width="match_parent"
@@ -108,7 +109,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:text="bala bala"
+                android:text=""
                 android:layout_marginLeft="5dp"
                 android:textColor="#555555"
                 android:textSize="15sp" />
@@ -185,7 +186,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:text="bala bala"
+                android:text=""
                 android:layout_marginLeft="5dp"
                 android:textColor="#555555"
                 android:textSize="15sp" />
@@ -224,7 +225,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
-            android:text="8888-88-88 88:88:88"
+            android:text=""
             android:textColor="#555"
             android:textSize="15sp" />
 

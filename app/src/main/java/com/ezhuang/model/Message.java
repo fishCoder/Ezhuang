@@ -12,7 +12,7 @@ public class Message {
     public String sender;
     public int    newsType;
     public String state; // 1开始
-    public String sourceId;
+    public String source;
 
     public String getTitle(){
         return  getValue(newsTitle);

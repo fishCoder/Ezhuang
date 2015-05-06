@@ -1,6 +1,6 @@
 package com.ezhuang;
 
-import android.content.Intent;
+
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +17,10 @@ import com.ezhuang.common.network.NetworkImpl;
 import com.ezhuang.model.BillState;
 import com.ezhuang.model.Message;
 import com.ezhuang.model.NewsTypeEnum;
-import com.ezhuang.project.ViewBillDetailActivity;
+
+import com.ezhuang.project.ProjectDetailActivity_;
 import com.ezhuang.project.ViewBillDetailActivity_;
-import com.ezhuang.project.detail.ViewProjectActivity_;
+import com.ezhuang.quality.ProgressDetailActivity_;
 import com.ezhuang.quality.ViewProgressActivity_;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
@@ -70,7 +71,7 @@ public class FragmentMessage extends BaseFragment {
         if(MESSAGE_LIST.equals(tag)){
             if(code == NetworkImpl.REQ_SUCCESSS){
                 mData.clear();
-                JSONArray jsonArray = respanse.getJSONArray("data");
+                JSONArray jsonArray = respanse.getJSONObject("data").getJSONArray("news");
                 Log.d("data",jsonArray.toString());
                 for (int i=0 ; i<jsonArray.length() ; i++){
                     mData.add(JsonUtil.Json2Object(jsonArray.getString(i),Message.class));
@@ -157,39 +158,69 @@ public class FragmentMessage extends BaseFragment {
     };
 
     void jumpToDealActivity(Message msg){
+
         int newsType = msg.newsType;
         if(newsType==NewsTypeEnum.NewPrijectNoticeToManager.newsType){
-            ViewProjectActivity_
-                    .intent(getActivity())
+            ProjectDetailActivity_
+                    .intent(this)
+                    .projectId(msg.source)
                     .roleId(Global.PROJECT_MANAGER)
-                    .staffId(MyApp.currentUser.getGlobal_key())
+                    .global_key(MyApp.currentUser.getGlobal_key())
                     .start();
         }else
-        if(newsType==NewsTypeEnum.ProjectOrderCheckResultNoticeToManager.newsType){
+        if(newsType==NewsTypeEnum.NewPrijectNoticeToBuyer.newsType){
+            ProjectDetailActivity_
+                    .intent(this)
+                    .projectId(msg.source)
+                    .roleId(Global.BUYER)
+                    .global_key(MyApp.currentUser.getGlobal_key())
+                    .start();
+        }else
+        if(newsType==NewsTypeEnum.NewPrijectNoticeToChecker.newsType){
+            ProjectDetailActivity_
+                    .intent(this)
+                    .projectId(msg.source)
+                    .roleId(Global.CEHCK)
+                    .global_key(MyApp.currentUser.getGlobal_key())
+                    .start();
+        }else
+        if(newsType==NewsTypeEnum.NewPrijectNoticeToQuality.newsType){
+            ProjectDetailActivity_
+                    .intent(this)
+                    .projectId(msg.source)
+                    .roleId(Global.QUALITY)
+                    .global_key(MyApp.currentUser.getGlobal_key())
+                    .start();
+        }else
+        if(newsType==NewsTypeEnum.ProjectOrderCheckPassNoticeToManager.newsType){
+            //开单通过
             ViewBillDetailActivity_.intent(getActivity())
-                    .pjBillId(msg.sourceId)
+                    .pjBillId(msg.source)
                     .roleId(Global.PROJECT_MANAGER)
                     .billState(BillState.UNBUY.state)
                     .isRecord(true)
                     .start();
         }else
+        if(newsType==NewsTypeEnum.ProjectOrderCheckNotPassNoticeToManager.newsType){
+            //开单驳回
+        }else
         if(newsType==NewsTypeEnum.ProjectOrderCheckResultNoticeToBuyer.newsType){
             ViewBillDetailActivity_.intent(getActivity())
-                    .pjBillId(msg.sourceId)
+                    .pjBillId(msg.source)
                     .roleId(Global.BUYER)
                     .billState(1)
                     .start();
         }else
         if(newsType==NewsTypeEnum.NewPurchaseOrderNotice.newsType){
             ViewBillDetailActivity_.intent(getActivity())
-                    .pjBillId(msg.sourceId)
+                    .pjBillId(msg.source)
                     .roleId(Global.PROJECT_MANAGER)
                     .billState(2)
                     .isRecord(true)
                     .start();
         }else
         if(newsType==NewsTypeEnum.NewPrijectProgressNoticeToQuality.newsType){
-            ViewProgressActivity_.intent(getActivity()).start();
+            ProgressDetailActivity_.intent(getActivity()).pgId(msg.source).roleId(Global.QUALITY).start();
         }
 
 

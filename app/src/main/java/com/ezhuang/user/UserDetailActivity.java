@@ -83,6 +83,7 @@ public class UserDetailActivity extends BaseActivity {
     @AfterViews
     void init() {
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         initListFirst();
 
@@ -140,17 +141,17 @@ public class UserDetailActivity extends BaseActivity {
         ((TextView) findViewById(R.id.titleProject)).setText("我的项目");
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        if (isMe) {
-            inflater.inflate(R.menu.user_detail_me, menu);
-        } else {
-            inflater.inflate(R.menu.user_detail, menu);
-        }
-
-        return super.onCreateOptionsMenu(menu);
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        MenuInflater inflater = getMenuInflater();
+//        if (isMe) {
+//            inflater.inflate(R.menu.user_detail_me, menu);
+//        } else {
+//            inflater.inflate(R.menu.user_detail, menu);
+//        }
+//
+//        return super.onCreateOptionsMenu(menu);
+//    }
 
     @OptionsItem
     void action_edit() {
@@ -336,4 +337,9 @@ public class UserDetailActivity extends BaseActivity {
             }
         }
     }
+//
+//    @OptionsItem(android.R.id.home)
+//    void home() {
+//        onBackPressed();
+//    }
 }

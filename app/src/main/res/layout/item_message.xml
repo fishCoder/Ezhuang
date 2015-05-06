@@ -1,65 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="5dp"
-    android:gravity="center_vertical"
-    android:orientation="horizontal">
+    android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/msg_img"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:src="@mipmap/ic_default_image"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="6dp">
 
+        <ImageView
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="10dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:id="@+id/msg_img"
+            android:scaleType="centerCrop"
+            android:padding="1dp"
+            android:src="@mipmap/ic_default_image" />
 
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        android:paddingRight="10dp"
-        android:orientation="vertical">
+        <com.readystatesoftware.viewbadger.BadgeView
+            android:id="@+id/badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_notify_txt"
+            android:gravity="center"
+            android:layout_alignTop="@id/msg_img"
+            android:layout_alignRight="@id/msg_img"
+            android:layout_marginRight="-9dp"
+            android:layout_marginTop="-6dp" />
 
         <TextView
-            android:id="@+id/msg_title"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/msg_img"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="2dp"
-            android:textSize="13dp"
+            android:text="Medium Text"
             android:singleLine="true"
-            android:text="马可波罗经典地中海马赛克瓷砖"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="2dp"
-            android:gravity="left">
-
-            <TextView
-                android:id="@+id/msg_content"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="苏27的AL-31涡扇发动机最大"
-                android:textColor="#555"
-                android:textSize="11sp" />
-
-        </LinearLayout>
+            android:layout_alignTop="@id/msg_img"
+            android:textSize="16sp"
+            android:textColor="@color/font_black_content"
+            android:id="@+id/msg_title" />
 
         <TextView
-            android:id="@+id/msg_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="2dp"
-            android:textSize="10dp"
+            android:layout_below="@id/msg_title"
+            android:layout_marginTop="3dp"
+            android:textColor="@color/font_black_comment"
+            android:text="chenchao"
             android:singleLine="true"
-            android:paddingRight="40dp"
-            android:gravity="right|center_vertical"
-            android:text="2015-05-04 03:21"/>
+            android:layout_alignLeft="@+id/msg_title"
+            android:textSize="14sp"
+            android:id="@+id/msg_content" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/msg_content"
+            android:textColor="@color/font_gray"
+            android:text="2015-05-06 10:00"
+            android:singleLine="true"
+            android:layout_alignLeft="@+id/msg_title"
+            android:textSize="13sp"
+            android:gravity="right"
+            android:paddingRight="30dp"
+            android:id="@+id/msg_time" />
 
-    </LinearLayout>
-</LinearLayout>
+    </RelativeLayout>
+</FrameLayout>

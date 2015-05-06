@@ -13,8 +13,10 @@ import com.ezhuang.ImagePagerActivity_;
 import com.ezhuang.R;
 import com.ezhuang.adapter.GridImageAdapter;
 import com.ezhuang.common.Global;
+import com.ezhuang.common.JsonUtil;
 import com.ezhuang.common.network.NetworkImpl;
 import com.ezhuang.model.PhotoData;
+import com.ezhuang.model.Project;
 import com.ezhuang.model.ProjectProgress;
 import com.ezhuang.project.FillBillItemFragment;
 import com.ezhuang.project.detail.SetProjectInfo_;
@@ -66,6 +68,7 @@ public class ProgressDetailActivity extends BaseActivity {
 
     @Extra("projectProgress")
     ProjectProgress pg;
+    Project project;
 
     @Extra("roleId")
     String roleId;
@@ -83,12 +86,24 @@ public class ProgressDetailActivity extends BaseActivity {
 
     String PG_NODE_EXAMIE = Global.HOST + "/app/progress/addNodeExamine.do";
 
+    String QUERY_PG_DETAIL = Global.HOST + "/app/progress/queryProgressDetail.do?pgId=%s";
+
+    ActionBar actionBar;
+
     @AfterViews
     void init() {
-        ActionBar actionBar = getSupportActionBar();
+        actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowCustomEnabled(true);
 
+        if(pg!=null){
+            fill_progress();
+        }else{
+            getNetwork(String.format(QUERY_PG_DETAIL,pgId),QUERY_PG_DETAIL);
+        }
+    }
+
+    void fill_progress(){
         if (Global.QUALITY.equals(roleId)&&pg.quoCheckResult==1) {
             actionBar.setCustomView(R.layout.chcek_bill_actionbar);
             TextView textView = (TextView) findViewById(R.id.title);
@@ -112,7 +127,7 @@ public class ProgressDetailActivity extends BaseActivity {
         pg_name.setText(pg.nodeName);
         pg_time.setText(pg.time);
         pg_remark.setText(pg.pgRemark);
-        if (pg.isNeedOwnerCheck()) {
+        if (pg.isNeedOwnerCheck()&&Global.PROJECT_MANAGER.equals(roleId)) {
             layout_owner.setVisibility(View.VISIBLE);
             owner_state.setText(pg_state[pg.owerCheckResult]);
             owner_state.setTextColor(pg_state_color[pg.owerCheckResult]);
@@ -162,7 +177,6 @@ public class ProgressDetailActivity extends BaseActivity {
         }
     }
 
-
     @OptionsItem(android.R.id.home)
     void home() {
         if(isOperatOk){
@@ -192,6 +206,7 @@ public class ProgressDetailActivity extends BaseActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         if(resultCode == RESULT_OK){
             int row = data.getIntExtra("row",2003);
             String value = data.getStringExtra("itemValue");
@@ -210,7 +225,7 @@ public class ProgressDetailActivity extends BaseActivity {
 
     @Override
     public void parseJson(int code, JSONObject respanse, String tag, int pos, Object data) throws JSONException {
-        if(PG_NODE_EXAMIE.equals(PG_NODE_EXAMIE)){
+        if(PG_NODE_EXAMIE.equals(tag)){
             showProgressBar(false);
             if(code == NetworkImpl.REQ_SUCCESSS){
                 isOperatOk = true;
@@ -218,6 +233,17 @@ public class ProgressDetailActivity extends BaseActivity {
                 action_reject.setVisibility(View.GONE);
             }else{
                 showButtomToast("错误码 "+code);
+            }
+        }else
+        if(QUERY_PG_DETAIL.equals(tag)){
+            if(code == NetworkImpl.REQ_SUCCESSS){
+                Log.d("data",respanse.getString("data"));
+                pg = JsonUtil.Json2Object(respanse.getJSONObject("data").getString("progress"),ProjectProgress.class);
+                project = JsonUtil.Json2Object(respanse.getJSONObject("data").getString("project"),Project.class);
+                pjId = project.getPjId();
+                fill_progress();
+            }else{
+
             }
         }
     }
