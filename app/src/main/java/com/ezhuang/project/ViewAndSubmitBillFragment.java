@@ -21,7 +21,10 @@ import com.ezhuang.common.Global;
 import com.ezhuang.common.network.BaseFragment;
 import com.ezhuang.model.BillDetail;
 import com.ezhuang.model.BillDetailState;
+import com.ezhuang.model.BillExamines;
+import com.ezhuang.model.BillState;
 import com.ezhuang.model.PhotoData;
+import com.ezhuang.model.Project;
 import com.ezhuang.model.ProjectBill;
 import com.ezhuang.model.SpMaterial;
 import com.ezhuang.purchase.PurchaseActivity_;
@@ -71,14 +74,38 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
 
     public boolean dealblank = true;
 
+    Project project;
+
+    BillExamines billExamines;
+
+    int billState;
+
+    View header;
+
     @AfterViews
     void init(){
         if(mData == null){
             mData = new LinkedList<>();
         }
 
+
         if(!readOnly&&dealblank)
             BlankViewDisplay.setBlank(mData.size(), this, true, blankLayout, null);
+
+        if(project != null){
+            if(header==null){
+                header = mInflater.inflate(R.layout.header_bill_examine,null);
+                TextView pj_name = (TextView) header.findViewById(R.id.pj_name);
+                pj_name.setText(project.getPjName());
+                header.findViewById(R.id.layout).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ProjectDetailActivity_.intent(getActivity()).project(project).start();
+                    }
+                });
+                listView.addHeaderView(header);
+            }
+        }
 
         listView.setAdapter(adapter);
         if(Global.CEHCK.equals(roleId)||isRecord){
@@ -88,6 +115,29 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
     }
 
 
+    public void setMessageData(final Project project,BillExamines billExamines,int billState){
+        this.project = project;
+        this.billExamines = billExamines;
+        this.billState = billState;
+
+
+        if(project==null||billExamines==null){
+            return;
+        }
+
+
+        header.findViewById(R.id.layout_explain).setVisibility(View.VISIBLE);
+
+        TextView check_name = (TextView) header.findViewById(R.id.check_name);
+        check_name.setText(billExamines.name);
+        TextView billExeExplain = (TextView) header.findViewById(R.id.billExeExplain);
+        billExeExplain.setText(billExamines.billExeExplain);
+
+        if(billState != BillState.REJECT.state)
+            listView.setSwipeMode(SwipeListView.SWIPE_MODE_NONE);
+
+
+    }
 
     void setFillBillItem(AddMaterialToBillActivity.FillBillItem fillBillItem){
         this.fillBillItem = fillBillItem;
@@ -165,7 +215,6 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
                 @Override
                 public void onClick(View v) {
                     //是采购员并且给项目为未采购
-
                     if(Global.BUYER.equals(roleId)){
                         if(!isRecord){
                             if(spMaterial.state == BillDetailState.UNBUY.state){

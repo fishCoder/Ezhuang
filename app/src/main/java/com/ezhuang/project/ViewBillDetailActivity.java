@@ -14,11 +14,13 @@ import com.ezhuang.common.network.NetworkImpl;
 import com.ezhuang.model.BillDetailState;
 import com.ezhuang.model.IPcMt;
 import com.ezhuang.model.PhotoData;
+import com.ezhuang.model.Project;
 import com.ezhuang.model.SpMaterial;
 import com.ezhuang.model.SpOdDetail;
 import com.ezhuang.project.detail.SetProjectInfo_;
 import com.ezhuang.purchase.SelectPcMtFragment;
 import com.ezhuang.purchase.SelectPcMtFragment_;
+import com.ezhuang.quality.ProgressDetailActivity;
 import com.loopj.android.http.RequestParams;
 
 import org.androidannotations.annotations.AfterViews;
@@ -58,6 +60,9 @@ public class ViewBillDetailActivity extends BaseActivity {
     @Extra
     boolean isRecord = false;
 
+    @Extra
+    Project project;
+
     View action_pass;
     View action_reject;
 
@@ -81,6 +86,8 @@ public class ViewBillDetailActivity extends BaseActivity {
     TextView purchase;
 
     List<SpMaterial> mData = new LinkedList<>();
+
+    int msg_state = 1;
 
     @AfterViews
     void init(){
@@ -130,6 +137,8 @@ public class ViewBillDetailActivity extends BaseActivity {
             reflashBottom();
         }
 
+
+
         viewOrderFragment = SelectPcMtFragment_.builder().build();
         viewOrderFragment.viewOrder = true;
 
@@ -137,6 +146,7 @@ public class ViewBillDetailActivity extends BaseActivity {
         fragment.readOnly = true;
         fragment.isRecord = isRecord;
         fragment.roleId = roleId;
+        fragment.project = project;
         getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
         showDialogLoading();
 
@@ -166,6 +176,8 @@ public class ViewBillDetailActivity extends BaseActivity {
                 isOperatOk = true;
                 action_pass.setVisibility(View.GONE);
                 action_reject.setVisibility(View.GONE);
+
+                msg_state = 4;
             }else{
                 showButtomToast("错误码 "+code);
             }
@@ -181,6 +193,7 @@ public class ViewBillDetailActivity extends BaseActivity {
                         spMaterial.state = BillDetailState.SELF.state;
                     }
                 }
+
                 fragment.updateData(mData);
                 reflashBottom();
                 showButtomToast("提交订单成功");
@@ -251,6 +264,7 @@ public class ViewBillDetailActivity extends BaseActivity {
             Intent intent = getIntent();
             intent.putExtra("state",billState);
             intent.putExtra("pjBillId",pjBillId);
+            intent.putExtra("msg_state",msg_state);
             setResult(RESULT_OK,intent);
             finish();
         }else{
@@ -380,6 +394,8 @@ public class ViewBillDetailActivity extends BaseActivity {
         if(billState!=1&&billState!=2){
             findViewById(R.id.action_view).setVisibility(View.GONE);
             findViewById(R.id.layout_parchase).setVisibility(View.GONE);
+
+            msg_state = 4;
         }
         total_price.setText(String.format("￥%.2f",fTotalPrice));
         purchase.setText(String.format("购买 (%d)",count));

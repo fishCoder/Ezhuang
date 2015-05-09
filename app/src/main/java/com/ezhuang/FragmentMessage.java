@@ -1,6 +1,11 @@
 package com.ezhuang;
 
 
+import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +23,11 @@ import com.ezhuang.model.BillState;
 import com.ezhuang.model.Message;
 import com.ezhuang.model.NewsTypeEnum;
 
+import com.ezhuang.model.Project;
+import com.ezhuang.project.AddMaterialToBillActivity_;
 import com.ezhuang.project.ProjectDetailActivity_;
 import com.ezhuang.project.ViewBillDetailActivity_;
 import com.ezhuang.quality.ProgressDetailActivity_;
-import com.ezhuang.quality.ViewProgressActivity_;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
@@ -32,8 +38,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Administrator on 2015/4/7 0007.
@@ -49,7 +57,10 @@ public class FragmentMessage extends BaseFragment {
 
     List<Message> mData = new LinkedList<>();
 
+    Map<String,Project> mProject = new HashMap<>();
+
     String MESSAGE_LIST = Global.HOST + "/app/news/queryNews.do";
+    String MESSAGE_LIST_MORE = Global.HOST + "/app/news/queryNews.do?lastId=%s";
 
     @AfterViews
     void init(){
@@ -68,20 +79,38 @@ public class FragmentMessage extends BaseFragment {
     @Override
     public void parseJson(int code, JSONObject respanse, String tag, int pos, Object data) throws JSONException {
         hideProgressDialog();
-        if(MESSAGE_LIST.equals(tag)){
+        listView.onRefreshComplete();
+        if(MESSAGE_LIST.equals(tag)||MESSAGE_LIST_MORE.equals(tag)){
             if(code == NetworkImpl.REQ_SUCCESSS){
-                mData.clear();
+                if(MESSAGE_LIST.equals(tag))
+                    mData.clear();
+
                 JSONArray jsonArray = respanse.getJSONObject("data").getJSONArray("news");
-                Log.d("data",jsonArray.toString());
-                for (int i=0 ; i<jsonArray.length() ; i++){
+                int len = jsonArray.length();
+
+                for (int i=0 ; i< len ; i++){
                     mData.add(JsonUtil.Json2Object(jsonArray.getString(i),Message.class));
+                }
+
+                if(len==Global.PAGE_SIZE){
+                    listView.setMode(PullToRefreshBase.Mode.BOTH);
+                }else{
+                    listView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+                }
+
+                jsonArray = respanse.getJSONObject("data").getJSONArray("projects");
+                for (int i=0 ; i<jsonArray.length() ; i++){
+                    Project project = JsonUtil.Json2Object(jsonArray.getString(i),Project.class);
+                    if(mProject.get(project.getPjId())==null){
+                        mProject.put(project.getPjId(),project);
+                    }
                 }
                 adapter.notifyDataSetChanged();
             }else{
 
             }
         }
-        listView.onRefreshComplete();
+
         BlankViewDisplay.setBlank(mData.size(), this, true, blankLayout, null);
     }
 
@@ -116,6 +145,7 @@ public class FragmentMessage extends BaseFragment {
                 viewHolder.msg_title = (TextView) view.findViewById(R.id.msg_title);
                 viewHolder.msg_content = (TextView) view.findViewById(R.id.msg_content);
                 viewHolder.msg_time = (TextView) view.findViewById(R.id.msg_time);
+                viewHolder.msg_badge = view.findViewById(R.id.badge);
                 convertView = view;
                 convertView.setTag(viewHolder);
             }else{
@@ -126,6 +156,12 @@ public class FragmentMessage extends BaseFragment {
             viewHolder.msg_content.setText(msg.getContent());
             viewHolder.msg_time.setText(msg.getTime());
 
+            if(msg.state==2 || msg.state==4){
+                viewHolder.msg_badge.setVisibility(View.GONE);
+            }else{
+                viewHolder.msg_badge.setVisibility(View.VISIBLE);
+            }
+
             return convertView;
         }
 
@@ -134,6 +170,7 @@ public class FragmentMessage extends BaseFragment {
             TextView msg_title;
             TextView msg_content;
             TextView msg_time;
+            View     msg_badge;
         }
     };
 
@@ -144,7 +181,7 @@ public class FragmentMessage extends BaseFragment {
             if(PullToRefreshBase.Mode.PULL_FROM_START == listView.getCurrentMode()){
                 getNetwork(MESSAGE_LIST,MESSAGE_LIST);
             }else{
-
+                getNetwork(String.format(MESSAGE_LIST_MORE,mData.get(mData.size()-1).newsId),MESSAGE_LIST_MORE);
             }
         }
     };
@@ -153,11 +190,12 @@ public class FragmentMessage extends BaseFragment {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Log.i("position",""+position);
-            jumpToDealActivity(mData.get(position-1));
+            int i = position-1;
+            jumpToDealActivity(mData.get(i),i);
         }
     };
 
-    void jumpToDealActivity(Message msg){
+    void jumpToDealActivity(Message msg,int index){
 
         int newsType = msg.newsType;
         if(newsType==NewsTypeEnum.NewPrijectNoticeToManager.newsType){
@@ -167,6 +205,7 @@ public class FragmentMessage extends BaseFragment {
                     .roleId(Global.PROJECT_MANAGER)
                     .global_key(MyApp.currentUser.getGlobal_key())
                     .start();
+            msg.state = 2;
         }else
         if(newsType==NewsTypeEnum.NewPrijectNoticeToBuyer.newsType){
             ProjectDetailActivity_
@@ -175,6 +214,7 @@ public class FragmentMessage extends BaseFragment {
                     .roleId(Global.BUYER)
                     .global_key(MyApp.currentUser.getGlobal_key())
                     .start();
+            msg.state = 2;
         }else
         if(newsType==NewsTypeEnum.NewPrijectNoticeToChecker.newsType){
             ProjectDetailActivity_
@@ -183,6 +223,24 @@ public class FragmentMessage extends BaseFragment {
                     .roleId(Global.CEHCK)
                     .global_key(MyApp.currentUser.getGlobal_key())
                     .start();
+            msg.state = 2;
+        }else
+        if(newsType==NewsTypeEnum.NewPrijectOrderNotice.newsType){
+            //通知审核员审核
+            int billState = BillState.UNCHECK.state;
+            if(msg.state == 4){
+                billState = BillState.UNBUY.state;
+            }
+            ViewBillDetailActivity_.intent(getActivity())
+                    .pjId(msg.newsPjId)
+                    .roleId(Global.CEHCK)
+                    .staffId(MyApp.currentUser.getGlobal_key())
+                    .pjBillId(msg.source)
+                    .billState(billState)
+                    .project(mProject.get(msg.newsPjId))
+                    .isRecord(true)
+                    .startForResult(index);
+
         }else
         if(newsType==NewsTypeEnum.NewPrijectNoticeToQuality.newsType){
             ProjectDetailActivity_
@@ -191,6 +249,7 @@ public class FragmentMessage extends BaseFragment {
                     .roleId(Global.QUALITY)
                     .global_key(MyApp.currentUser.getGlobal_key())
                     .start();
+            msg.state = 2;
         }else
         if(newsType==NewsTypeEnum.ProjectOrderCheckPassNoticeToManager.newsType){
             //开单通过
@@ -200,30 +259,65 @@ public class FragmentMessage extends BaseFragment {
                     .billState(BillState.UNBUY.state)
                     .isRecord(true)
                     .start();
+            msg.state = 2;
         }else
         if(newsType==NewsTypeEnum.ProjectOrderCheckNotPassNoticeToManager.newsType){
             //开单驳回
+            AddMaterialToBillActivity_.intent(getActivity())
+                    .project(mProject.get(msg.newsPjId))
+                    .newsId(msg.newsId)
+                    .pjBillId(msg.source)
+                    .start();
         }else
         if(newsType==NewsTypeEnum.ProjectOrderCheckResultNoticeToBuyer.newsType){
+
+            int billState = BillState.UNBUY.state;
+            if(msg.state == 4){
+                billState = BillState.BUYALL.state;
+            }
+
             ViewBillDetailActivity_.intent(getActivity())
                     .pjBillId(msg.source)
                     .roleId(Global.BUYER)
-                    .billState(1)
-                    .start();
+                    .pjId(msg.newsPjId)
+                    .billState(billState)
+                    .startForResult(index);
+
         }else
         if(newsType==NewsTypeEnum.NewPurchaseOrderNotice.newsType){
+            int billState = BillState.BUYALL.state;
+
             ViewBillDetailActivity_.intent(getActivity())
+                    .pjId(msg.newsPjId)
                     .pjBillId(msg.source)
                     .roleId(Global.PROJECT_MANAGER)
-                    .billState(2)
+                    .billState(billState)
                     .isRecord(true)
                     .start();
+            msg.state = 2;
         }else
         if(newsType==NewsTypeEnum.NewPrijectProgressNoticeToQuality.newsType){
-            ProgressDetailActivity_.intent(getActivity()).pgId(msg.source).roleId(Global.QUALITY).start();
+            ProgressDetailActivity_
+                    .intent(getActivity())
+                    .project(mProject.get(msg.newsPjId))
+                    .pgId(msg.source)
+                    .roleId(Global.QUALITY)
+                    .startForResult(index);
+        }else
+        if(newsType==NewsTypeEnum.QualityCheckPrijectProgressNotice.newsType){
+            ProgressDetailActivity_.intent(getActivity()).project(mProject.get(msg.newsPjId)).pgId(msg.source).roleId(Global.PROJECT_MANAGER).start();
+            msg.state = 2;
         }
 
+        adapter.notifyDataSetChanged();
+    }
 
+
+    public void updateMsgState(int index,int msg_state){
+        mData.get(index).state = msg_state;
+        adapter.notifyDataSetChanged();
 
     }
+
+
 }

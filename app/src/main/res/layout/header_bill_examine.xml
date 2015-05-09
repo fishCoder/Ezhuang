@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/layout"
+        android:layout_width="match_parent"
+        android:background="@drawable/list_item_selector"
+        android:clickable="true"
+        android:padding="14dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/pj"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="项目"
+            android:textSize="18sp"
+            android:textColor="#555"
+            android:layout_centerVertical="true"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="查看项目"
+            android:layout_toRightOf="@+id/pj"
+            android:textSize="18sp"
+            android:textColor="#555"
+            android:id="@+id/pj_name"
+            android:layout_centerVertical="true"
+            />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentRight="true"
+            android:gravity="center"
+            android:layout_centerVertical="true"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text=""
+                android:textSize="18sp"
+                android:layout_marginRight="5dp"
+                android:id="@+id/user_name"
+                android:layout_height="wrap_content"/>
+
+            <ImageView
+                android:layout_width="20dp"
+                android:id="@+id/iconRight"
+                android:src="@mipmap/ic_list_right_arr"
+                android:layout_alignParentRight="true"
+                android:layout_height="20dp"/>
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:padding="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/divide_15_top"
+        android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/layout_explain"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="审核人"/>
+                    <TextView
+                        android:id="@+id/check_name"
+                        android:paddingLeft="5dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""/>
+            </LinearLayout>
+            <TextView
+                android:text="审核意见"
+                android:layout_marginTop="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/billExeExplain"
+                android:text=""
+                android:layout_marginTop="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

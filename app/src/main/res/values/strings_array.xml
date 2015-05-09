@@ -17,7 +17,6 @@
     <string-array name="project_manager_apps">
         <item>我的项目</item>
         <item>开单记录</item>
-        <item>汇报进度</item>
     </string-array>
 
     <string-array name="check_apps">

@@ -25,9 +25,12 @@ import com.ezhuang.common.PhotoOperate;
 import com.ezhuang.common.network.NetworkImpl;
 import com.ezhuang.common.photopick.PhotoPickActivity;
 import com.ezhuang.model.BillDetail;
+import com.ezhuang.model.BillExamines;
+import com.ezhuang.model.BillState;
 import com.ezhuang.model.Billing;
 import com.ezhuang.model.BillingDetail;
 import com.ezhuang.model.PhotoData;
+import com.ezhuang.model.Project;
 import com.ezhuang.model.SpMaterial;
 import com.ezhuang.model.SpMtType;
 import com.ezhuang.project.detail.ListListener;
@@ -107,8 +110,17 @@ public class AddMaterialToBillActivity extends BaseActivity {
     @Extra
     String pjBillId;
 
+    //是否从消息界面进入
+    @Extra
+    Project project;
+    @Extra
+    String newsId;
+    BillExamines billExamines;
+    int billState;
 
     String QUERY_BILL_DETAIL = Global.HOST + "/app/project/queryBillingDetail.do?pjBillId=%s";
+
+    String QUERY_BILL_DETAIL_BY_NEWS = Global.HOST + "/app/project/queryBillingByNews.do?pjBillId=%s&newsId=%s&state=1,2,3,4,5";
 
     @AfterViews
     void init(){
@@ -126,12 +138,12 @@ public class AddMaterialToBillActivity extends BaseActivity {
         actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowCustomEnabled(true);
-        changeToSubmitActionBar();
+
 
         fillBillItemFragment = new FillBillItemFragment();
         viewAndSubmitBillFragment = ViewAndSubmitBillFragment_.builder().build();
         viewAndSubmitBillFragment.roleId = Global.PROJECT_MANAGER;
-
+        viewAndSubmitBillFragment.project = project;
 
         viewAndSubmitBillFragment.setFillBillItem(fillBillItem);
         searchSpMaterialFragment = SearchSpMaterialFragment_.builder().build();
@@ -148,11 +160,21 @@ public class AddMaterialToBillActivity extends BaseActivity {
             }
         },fillBillItem);
 
-        if(pjBillId != null){
+
+        if(project == null){
+            if(pjBillId != null){
+                viewAndSubmitBillFragment.dealblank = false;
+                getNetwork(String.format(QUERY_BILL_DETAIL,pjBillId),QUERY_BILL_DETAIL);
+                showDialogLoading();
+            }
+            changeToSubmitActionBar();
+        }else{
             viewAndSubmitBillFragment.dealblank = false;
-            getNetwork(String.format(QUERY_BILL_DETAIL,pjBillId),QUERY_BILL_DETAIL);
+
+            getNetwork(String.format(QUERY_BILL_DETAIL_BY_NEWS,pjBillId,newsId),QUERY_BILL_DETAIL_BY_NEWS);
             showDialogLoading();
         }
+
 
         getSupportFragmentManager().beginTransaction().replace(R.id.container, viewAndSubmitBillFragment).commit();
     }
@@ -186,6 +208,10 @@ public class AddMaterialToBillActivity extends BaseActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         boolean isNeedUploadPic = false;
                         int imageCount = 0;
+
+                        projectBilling.pj_bill_details.clear();
+                        projectBilling.pj_bill_remark = billRemarkEdit.getText().toString();
+
                         for(SpMaterial item : billData){
                             if(item.itemImages.size()>0){
                                 isNeedUploadPic = true;
@@ -468,8 +494,24 @@ public class AddMaterialToBillActivity extends BaseActivity {
         if(QUERY_BILL_DETAIL.equals(tag)){
             if(code == NetworkImpl.REQ_SUCCESSS){
                 Log.i("json",respanse.getString("data"));
-                jsonToObject(respanse);
+                jsonToObject(respanse.getJSONArray("data"));
 
+            }else{
+                showButtomToast("错误码 "+code);
+            }
+        }
+        if(QUERY_BILL_DETAIL_BY_NEWS.equals(tag)){
+            if(code == NetworkImpl.REQ_SUCCESSS){
+                JSONObject jsonObject = respanse.getJSONObject("data");
+                Log.d("data",jsonObject.toString());
+                billExamines = JsonUtil.Json2Object(jsonObject.getString("billExamine"),BillExamines.class);
+                billState = jsonObject.getInt("billState");
+                if(billState == BillState.REJECT.state){
+                    changeToSubmitActionBar();
+                }else{
+                    viewAndSubmitBillFragment.isRecord = true;
+                }
+                jsonToObject(jsonObject.getJSONArray("details"));
             }else{
                 showButtomToast("错误码 "+code);
             }
@@ -478,9 +520,8 @@ public class AddMaterialToBillActivity extends BaseActivity {
 
 
     @Background
-    public void jsonToObject(JSONObject respanse){
+    public void jsonToObject(JSONArray jsonArray){
         try {
-            JSONArray jsonArray = respanse.getJSONArray("data");
 
             for (int i=0 ; i<jsonArray.length() ; i++){
 
@@ -516,6 +557,8 @@ public class AddMaterialToBillActivity extends BaseActivity {
     @UiThread
     public void toUI(){
         hideProgressDialog();
+
+        viewAndSubmitBillFragment.setMessageData(project,billExamines,billState);
         viewAndSubmitBillFragment.updateData(billData);
     }
 

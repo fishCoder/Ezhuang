@@ -11,8 +11,9 @@ public class Message {
     public String createTime;
     public String sender;
     public int    newsType;
-    public String state; // 1开始
+    public int    state; // 1开始
     public String source;
+    public String newsPjId;
 
     public String getTitle(){
         return  getValue(newsTitle);

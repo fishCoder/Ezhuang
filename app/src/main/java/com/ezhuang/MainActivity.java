@@ -1,9 +1,11 @@
 package com.ezhuang;
 
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTabHost;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -60,8 +62,6 @@ public class MainActivity extends BaseActivity {
      */
     private void initView(){
 
-
-
         StaffUser staffUser = AccountInfo.loadAccount(this);
         MyApp.currentUser = staffUser;
         RequestParams params = new RequestParams();
@@ -87,6 +87,7 @@ public class MainActivity extends BaseActivity {
             TabHost.TabSpec tabSpec = mTabHost.newTabSpec(mTextviewArray[i]).setIndicator(getTabItemView(i));
             //将Tab按钮添加进Tab选项卡中
             mTabHost.addTab(tabSpec, fragmentArray[i], null);
+
             //设置Tab按钮的背景
             mTabHost.getTabWidget().getChildAt(i).setBackgroundResource(R.drawable.selector_tab_background);
         }
@@ -124,6 +125,14 @@ public class MainActivity extends BaseActivity {
 
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == Activity.RESULT_OK){
+            FragmentMessage fragmentMessage = (FragmentMessage) getSupportFragmentManager()
+                    .findFragmentByTag("消息");
+            fragmentMessage.updateMsgState(requestCode,data.getIntExtra("msg_state",1));
+        }
+    }
 
     void toLoginActivity(){
         Intent intent;
@@ -132,5 +141,21 @@ public class MainActivity extends BaseActivity {
         finish();
 
         overridePendingTransition(R.anim.alpha_in, R.anim.alpha_out);
+    }
+
+    @Override
+    public void onBackPressed() {
+        exitApp();
+    }
+
+    private long exitTime = 0;
+
+    private void exitApp() {
+        if ((System.currentTimeMillis() - exitTime) > 2000) {
+            showButtomToast("再按一次退出");
+            exitTime = System.currentTimeMillis();
+        } else {
+            finish();
+        }
     }
 }

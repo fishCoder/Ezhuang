@@ -1,11 +1,12 @@
 package com.ezhuang.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by Administrator on 2015/4/7 0007.
  */
-public class    Project {
+public class Project implements Serializable {
     private String pjId;
     private String pjName; // 项目名称
     private String pjCpId; // 所属公司

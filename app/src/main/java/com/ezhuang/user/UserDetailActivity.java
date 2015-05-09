@@ -5,8 +5,6 @@ import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -16,8 +14,10 @@ import android.widget.TextView;
 
 import com.ezhuang.common.ClickSmallImage;
 import com.ezhuang.common.JsonUtil;
+import com.ezhuang.common.network.NetworkImpl;
 import com.ezhuang.model.Role;
 import com.ezhuang.model.StaffUser;
+import com.ezhuang.project.detail.ViewProjectActivity_;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
@@ -84,6 +84,7 @@ public class UserDetailActivity extends BaseActivity {
     void init() {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        findViewById(R.id.sendMessageLayout).setVisibility(View.GONE);
 
         initListFirst();
 
@@ -92,6 +93,8 @@ public class UserDetailActivity extends BaseActivity {
                 isMe = true;
                 setTitleMyPage();
                 resizeHead();
+
+
             }
 
             getNetwork(HOST_USER_INFO + "?global_key=" + globalKey + "&companyType=" + companyType, HOST_USER_INFO);
@@ -186,7 +189,7 @@ public class UserDetailActivity extends BaseActivity {
         invalidateOptionsMenu();
 
         followCheckbox.setVisibility(View.GONE);
-        findViewById(R.id.sendMessageLayout).setVisibility(View.GONE);
+
     }
 
 
@@ -282,23 +285,16 @@ public class UserDetailActivity extends BaseActivity {
         return itemContent;
     }
 
-    @Click
-    void sendMessage() {
-//        Intent intent = new Intent(this, MessageListActivity_.class);
-//        intent.putExtra("mUserObject", mUserObject);
-//        startActivity(intent);
-    }
+
 
     final String HOST_USER_INFO = Global.HOST + "/app/stf/queryInfo.do";
-    public static final String HOST_FOLLOW = Global.HOST + "/api/user/follow?";
-    public static final String HOST_UNFOLLOW = Global.HOST + "/api/user/unfollow?";
 
     boolean mNeedUpdate = false;
 
     @Override
     public void parseJson(int code, JSONObject respanse, String tag, int pos, Object data) throws JSONException {
         if (tag.equals(HOST_USER_INFO)) {
-            if (code == 10001) {
+            if (code == NetworkImpl.REQ_SUCCESSS) {
                 staffUser = JsonUtil.Json2Object(respanse.getString("data"),StaffUser.class);
                 displayUserinfo();
             } else {
@@ -321,7 +317,11 @@ public class UserDetailActivity extends BaseActivity {
 
     @Click
     public void clickProject() {
-    //    UserProjectActivity_.intent(this).mUserObject(mUserObject).start();
+        if(isMe){
+            ViewProjectActivity_.intent(UserDetailActivity.this).roleId(Global.PROJECT_MANAGER).staffId(MyApp.currentUser.getGlobal_key()).start();
+        }else{
+//            ViewProjectActivity_.intent(UserDetailActivity.this).roleId(Global.STAFF).staffId(MyApp.currentUser.getGlobal_key()).start();
+        }
     }
 
 
@@ -337,9 +337,5 @@ public class UserDetailActivity extends BaseActivity {
             }
         }
     }
-//
-//    @OptionsItem(android.R.id.home)
-//    void home() {
-//        onBackPressed();
-//    }
+
 }

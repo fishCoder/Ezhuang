@@ -40,7 +40,7 @@ public class ProjectBillActivity extends BaseActivity {
 
     String QUERY_BILL = Global.HOST + "/app/project/queryProjectBillings.do?pjId=%s&keyword=%s";
 
-    String QUERY_BILL_MORE = Global.HOST + "/app/project/queryProjectBillings.do?pjId=%s&last_pj_bill_id=%s&keyword=%s";
+    String QUERY_BILL_MORE = Global.HOST + "/app/project/queryProjectBillings.do?pjId=%s&lastId=%s&keyword=%s";
 
     List<ProjectBill> bills;
 
@@ -76,7 +76,7 @@ public class ProjectBillActivity extends BaseActivity {
             @Override
             public void loadMore() {
                 String keyword = editText.getText().toString();
-                getNetwork(String.format(QUERY_BILL_MORE,pjId,keyword,bills.get(bills.size()-1).getId()),QUERY_BILL_MORE);
+                getNetwork(String.format(QUERY_BILL_MORE,pjId,bills.get(bills.size()-1).getId(),keyword),QUERY_BILL_MORE);
             }
 
             @Override

@@ -100,6 +100,9 @@ public class EntranceActivity extends BaseActivity {
             toLoginActivity();
         }else{
             Intent intent = new Intent(EntranceActivity.this,MainActivity.class);
+            if (background != null) {
+                intent.putExtra("background", background);
+            }
             startActivity(intent);
             finish();
         }

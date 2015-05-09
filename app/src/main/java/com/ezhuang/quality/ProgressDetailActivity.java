@@ -19,6 +19,8 @@ import com.ezhuang.model.PhotoData;
 import com.ezhuang.model.Project;
 import com.ezhuang.model.ProjectProgress;
 import com.ezhuang.project.FillBillItemFragment;
+import com.ezhuang.project.ProjectDetailActivity;
+import com.ezhuang.project.ProjectDetailActivity_;
 import com.ezhuang.project.detail.SetProjectInfo_;
 import com.loopj.android.http.RequestParams;
 
@@ -68,7 +70,6 @@ public class ProgressDetailActivity extends BaseActivity {
 
     @Extra("projectProgress")
     ProjectProgress pg;
-    Project project;
 
     @Extra("roleId")
     String roleId;
@@ -76,7 +77,8 @@ public class ProgressDetailActivity extends BaseActivity {
     String pjId;
     @Extra("pgId")
     String pgId;
-
+    @Extra
+    Project project;
 
     boolean isOperatOk = false;
     int state;
@@ -100,6 +102,20 @@ public class ProgressDetailActivity extends BaseActivity {
             fill_progress();
         }else{
             getNetwork(String.format(QUERY_PG_DETAIL,pgId),QUERY_PG_DETAIL);
+        }
+
+        if(project!=null){
+            findViewById(R.id.item_project).setVisibility(View.VISIBLE);
+            TextView pj_name = (TextView) findViewById(R.id.pj_name);
+            pj_name.setText(project.getPjName());
+            findViewById(R.id.layout_item).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ProjectDetailActivity_.intent(ProgressDetailActivity.this).project(project).start();
+                }
+            });
+        }else{
+            findViewById(R.id.item_project).setVisibility(View.GONE);
         }
     }
 
@@ -184,6 +200,7 @@ public class ProgressDetailActivity extends BaseActivity {
             intent.putExtra("state",state);
             intent.putExtra("roleId",roleId);
             intent.putExtra("pgId",pgId);
+            intent.putExtra("msg_state",4);
             setResult(RESULT_OK, intent);
             finish();
         }else{
@@ -212,10 +229,12 @@ public class ProgressDetailActivity extends BaseActivity {
             String value = data.getStringExtra("itemValue");
             RequestParams params = new RequestParams();
             state = (row-2000);
+
             params.put("pgId",pg.pgId);
             params.put("pjId",pjId);
             params.put("quoCheckResult",state);
             params.put("quoRemark", value);
+
             pg.quoCheckResult = state;
             pgQtEmeExplain.setText(value);
             postNetwork(PG_NODE_EXAMIE, params, PG_NODE_EXAMIE);

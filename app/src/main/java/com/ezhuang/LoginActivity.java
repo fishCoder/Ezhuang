@@ -1,6 +1,9 @@
 package com.ezhuang;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -10,10 +13,15 @@ import android.widget.ImageView;
 
 import com.ezhuang.common.Global;
 import com.ezhuang.common.JsonUtil;
+import com.ezhuang.common.LoginBackground;
 import com.ezhuang.common.enter.SimpleTextWatcher;
+import com.ezhuang.common.third.FastBlur;
 import com.ezhuang.model.AccountInfo;
 import com.ezhuang.model.StaffUser;
 import com.loopj.android.http.RequestParams;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 
 import org.androidannotations.annotations.AfterViews;
@@ -24,6 +32,8 @@ import org.androidannotations.annotations.FocusChange;
 import org.androidannotations.annotations.ViewById;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.File;
 
 import cn.jpush.android.api.JPushInterface;
 
@@ -68,12 +78,72 @@ public class LoginActivity extends BaseActivity {
     @AfterViews
     void init(){
 
+        if (background == null) {
+            LoginBackground.PhotoItem photoItem = new LoginBackground(this).getPhoto();
+            File file = photoItem.getCacheFile(this);
+            if (file.exists()) {
+                background = Uri.fromFile(file);
+            }
+        }
+
+        try { // TODO 图片载入可能失败，因为图片没有下载完
+            BitmapDrawable bitmapDrawable;
+            if (background == null) {
+                bitmapDrawable = createBlur();
+            } else {
+                bitmapDrawable = createBlur(background);
+            }
+            backgroundImage.setImageDrawable(bitmapDrawable);
+        } catch (Exception e) {}
+
         editName.addTextChangedListener(textWatcher);
         editPassword.addTextChangedListener(textWatcher);
         editValify.addTextChangedListener(textWatcher);
         upateLoginButton();
         editName.addTextChangedListener(textWatcherName);
 
+    }
+
+    private BitmapDrawable createBlur() {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(getResources(), R.mipmap.entrance1, options);
+        int height = options.outHeight;
+        int width = options.outWidth;
+
+        options.outHeight = (int) (height / scaleFactor);
+        options.outWidth = (int) (width / scaleFactor);
+        options.inSampleSize = (int) (scaleFactor + 0.5);
+        options.inJustDecodeBounds = false;
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        options.inMutable = true;
+
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.entrance1, options);
+        Bitmap blurBitmap = FastBlur.doBlur(bitmap, (int) radius, true);
+
+        return new BitmapDrawable(getResources(), blurBitmap);
+    }
+
+    private BitmapDrawable createBlur(Uri uri) {
+        String path = Global.getPath(this, uri);
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(path, options);
+        int height = options.outHeight;
+        int width = options.outWidth;
+
+        options.outHeight = (int) (height / scaleFactor);
+        options.outWidth = (int) (width / scaleFactor);
+        options.inSampleSize = (int) (scaleFactor + 0.5);
+        options.inJustDecodeBounds = false;
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        options.inMutable = true;
+
+        Bitmap bitmap = BitmapFactory.decodeFile(path, options);
+
+        Bitmap blurBitmap = FastBlur.doBlur(bitmap, (int) radius, true);
+
+        return new BitmapDrawable(getResources(), blurBitmap);
     }
 
     @Override

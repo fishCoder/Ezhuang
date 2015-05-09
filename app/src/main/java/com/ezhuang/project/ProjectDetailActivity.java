@@ -47,6 +47,7 @@ public class ProjectDetailActivity extends BaseActivity {
     @ViewById
     ListView listView;
 
+    @Extra
     Project project;
 
     @AfterViews

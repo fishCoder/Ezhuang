@@ -44,18 +44,18 @@ public class LoginBackground {
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    Log.d("", "getDataFail1");
-                    if (response.optInt("code", -1) == 0) {
-                        ArrayList<PhotoItem> photoItems = new ArrayList();
-                        JSONArray data = response.optJSONArray("data");
-                        for (int i = 0; i < data.length(); ++i) {
-                            PhotoItem item = new PhotoItem(data.optJSONObject(i));
-                            photoItems.add(item);
-                        }
 
-                        AccountInfo.saveBackgrounds(context, photoItems);
-                        downloadPhotos();
+                    ArrayList<PhotoItem> photoItems = new ArrayList();
+                    JSONArray data = response.optJSONArray("data");
+                    Log.d("data", data.toString());
+                    for (int i = 0; i < data.length(); ++i) {
+                        PhotoItem item = new PhotoItem(data.optJSONObject(i));
+                        photoItems.add(item);
                     }
+
+                    AccountInfo.saveBackgrounds(context, photoItems);
+                    downloadPhotos();
+
                 }
 
                 @Override
@@ -109,6 +109,7 @@ public class LoginBackground {
             if (!file.exists()) {
                 AsyncHttpClient client = MyAsyncHttpClient.createClient(context);
                 String url = String.format("%s?imageMogr2/thumbnail/!%d", item.getUrl(), MyApp.sWidthPix);
+                Log.d("file url",file.toString());
                 client.get(context, url, new FileAsyncHttpResponseHandler(file) {
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, File file) {
@@ -131,7 +132,7 @@ public class LoginBackground {
         String url = "";
 
         public PhotoItem(JSONObject json) {
-            group = new Group(json.optJSONObject("group"));
+            group = new Group(json);
             url = json.optString("url");
         }
 
@@ -150,7 +151,7 @@ public class LoginBackground {
                 author = json.optString("author");
                 link = json.optString("link");
                 description = json.optString("description");
-                id = json.optInt("id");
+                id = json.optInt("lch_id");
             }
 
             Group() {
