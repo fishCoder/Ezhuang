@@ -56,6 +56,7 @@
         <item>全部采购</item>
         <item>完成</item>
         <item>驳回</item>
+        <item>已撤销</item>
     </string-array>
 
     <string-array name="material_kind">
@@ -64,7 +65,7 @@
     </string-array>
 
     <string-array name="bill_detail_state">
-        <item>未下单</item>
+        <item>已撤销</item>
         <item>未下单</item>
         <item>已下单</item>
         <item>已发货</item>
@@ -74,6 +75,7 @@
 
 
     <string-array name="progress_node">
+        <item>开工</item>
         <item>材料到场</item>
         <item>水电</item>
         <item>木作</item>
@@ -85,9 +87,17 @@
         <item>洁具安装</item>
         <item>灯具安装</item>
         <item>家具安装</item>
-        <item>橱柜安装</item>
         <item>软装安装</item>
         <item>保洁</item>
+        <item>结构整改</item>
+        <item>打墙</item>
+        <item>粉刷</item>
+        <item>找平</item>
+        <item>安装石材</item>
+        <item>养护</item>
+        <item>修复</item>
+        <item>电器安装</item>
+        <item>验收完成</item>
         <item>竣工</item>
     </string-array>
 
@@ -133,7 +143,7 @@
         <item>合同编号</item>
         <item>备注</item>
         <item>业主姓名</item>
-        <item>业主地址</item>
+        <item>生日</item>
         <item>业主电话</item>
         <item>设计师</item>
         <item>项目经理</item>

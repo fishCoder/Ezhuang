@@ -6,7 +6,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.ezhuang.MainActivity;
+import com.ezhuang.MyApp;
+import com.ezhuang.common.Global;
+
 import cn.jpush.android.api.JPushInterface;
+import cn.jpush.android.data.JPushLocalNotification;
 
 public class JpushReceiver extends BroadcastReceiver {
     public JpushReceiver() {
@@ -21,8 +26,20 @@ public class JpushReceiver extends BroadcastReceiver {
         if (JPushInterface.ACTION_REGISTRATION_ID.equals(intent.getAction())) {
 
         }else if (JPushInterface.ACTION_MESSAGE_RECEIVED.equals(intent.getAction())) {
-            Log.d(TAG,"收到了自定义消息。消息内容是：" + bundle.getString(JPushInterface.EXTRA_MESSAGE));
+            String title = bundle.getString(JPushInterface.EXTRA_TITLE);
+            String message = bundle.getString(JPushInterface.EXTRA_MESSAGE);
 
+            JPushLocalNotification ln = new JPushLocalNotification();
+            ln.setBuilderId(0);
+            ln.setTitle(message);
+            ln.setContent(title);
+            ln.setNotificationId(11111111) ;
+            ln.setBroadcastTime(System.currentTimeMillis() + 1000 * 60 * 10);
+
+            JPushInterface.addLocalNotification(context.getApplicationContext(), ln);
+
+            Intent msgIntent = new Intent(Global.PUSH_BROADCAST);
+            context.sendBroadcast(msgIntent);
         } else if (JPushInterface.ACTION_NOTIFICATION_RECEIVED.equals(intent.getAction())) {
             Log.d(TAG,"收到了通知");
             Log.d("title",bundle.getString(JPushInterface.EXTRA_NOTIFICATION_TITLE));
@@ -31,9 +48,11 @@ public class JpushReceiver extends BroadcastReceiver {
         } else if (JPushInterface.ACTION_NOTIFICATION_OPENED.equals(intent.getAction())) {
             Log.d(TAG,"用户点击打开了通知");
 
-//            Intent i = new Intent(context, TestActivity.class);
-//            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//            context.startActivity(i);
+            Intent i = new Intent(context, MainActivity.class);
+            i.putExtra("from_notify",true);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            context.startActivity(i);
         } else {
             Log.d(TAG, "Unhandled intent - " + intent.getAction());
         }

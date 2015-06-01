@@ -82,7 +82,7 @@ public class MyImageGetter implements Html.ImageGetter {
         } catch (Exception e) {
         }
 
-        return R.mipmap.ic_launcher;
+        return R.mipmap.app;
     }
 
 };

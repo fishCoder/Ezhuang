@@ -15,7 +15,6 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
-
 import com.ezhuang.BaseActivity;
 import com.ezhuang.MyApp;
 import com.ezhuang.R;
@@ -24,7 +23,6 @@ import com.ezhuang.common.JsonUtil;
 import com.ezhuang.common.PhotoOperate;
 import com.ezhuang.common.network.NetworkImpl;
 import com.ezhuang.common.photopick.PhotoPickActivity;
-import com.ezhuang.model.BillDetail;
 import com.ezhuang.model.BillExamines;
 import com.ezhuang.model.BillState;
 import com.ezhuang.model.Billing;
@@ -34,6 +32,7 @@ import com.ezhuang.model.Project;
 import com.ezhuang.model.SpMaterial;
 import com.ezhuang.model.SpMtType;
 import com.ezhuang.project.detail.ListListener;
+import com.gc.materialdesign.widgets.Dialog;
 import com.loopj.android.http.RequestParams;
 import com.qiniu.android.http.ResponseInfo;
 import com.qiniu.android.storage.UpCompletionHandler;
@@ -51,14 +50,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
 /**
  * Created by Administrator on 2015/4/14 0014.
  */
@@ -122,6 +118,10 @@ public class AddMaterialToBillActivity extends BaseActivity {
 
     String QUERY_BILL_DETAIL_BY_NEWS = Global.HOST + "/app/project/queryBillingByNews.do?pjBillId=%s&newsId=%s&state=1,2,3,4,5";
 
+    String UPDATE_BILL_DETAIL = Global.HOST + "/app/project/updateProjectBilling.do";
+
+    public List<SpMaterial> deleteBillItem = new LinkedList<>();
+
     @AfterViews
     void init(){
 
@@ -166,31 +166,35 @@ public class AddMaterialToBillActivity extends BaseActivity {
                 viewAndSubmitBillFragment.dealblank = false;
                 getNetwork(String.format(QUERY_BILL_DETAIL,pjBillId),QUERY_BILL_DETAIL);
                 showDialogLoading();
+                getSupportFragmentManager().beginTransaction().replace(R.id.container, viewAndSubmitBillFragment).commit();
+                changeToSubmitActionBar();
+            }else{
+                changeToMaterialActionBar();
+                getSupportFragmentManager().beginTransaction().replace(R.id.container, totalSpMaterialFragment).commit();
+                if(mData.size()==0)
+                    new LoadDataTask().execute();
             }
-            changeToSubmitActionBar();
+
         }else{
             viewAndSubmitBillFragment.dealblank = false;
 
             getNetwork(String.format(QUERY_BILL_DETAIL_BY_NEWS,pjBillId,newsId),QUERY_BILL_DETAIL_BY_NEWS);
             showDialogLoading();
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, viewAndSubmitBillFragment).commit();
+            changeToRejectActionBar();
         }
 
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, viewAndSubmitBillFragment).commit();
+
     }
 
     void changeToSubmitActionBar(){
 
-        needToback = true;
+        needToback = false;
         actionBar.setCustomView(R.layout.submit_bill_actionbar);
         findViewById(R.id.action_submit).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                if(pjBillId != null){
-                    reSubmitBill();
-                    return;
-                }
 
                 if(billData.size()==0){
                     showButtomToast("没有可提交的内容");
@@ -256,17 +260,70 @@ public class AddMaterialToBillActivity extends BaseActivity {
                     new LoadDataTask().execute();
             }
         });
+
+    }
+
+    void changeToRejectActionBar(){
+        needToback = true;
+        actionBar.setCustomView(R.layout.submit_bill_actionbar);
+        findViewById(R.id.action_add).setVisibility(View.GONE);
+        findViewById(R.id.action_submit).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<Map<String,Object>> updateBill = new LinkedList<>();
+                for(SpMaterial item : billData){
+                    Map<String,Object> updateItem = new HashMap();
+                    updateItem.put("billDId",item.item_id);
+                    updateItem.put("billDDosage",item.item_count);
+                    updateBill.add(updateItem);
+                }
+                List<Map<String,Object>> delBill = new LinkedList<>();
+                for(SpMaterial item : deleteBillItem){
+                    Map<String,Object> delItem = new HashMap();
+                    int hasImg = 1;
+                    if(item.itemImages.size()!=0){
+                        hasImg = 2;
+                    }
+
+                    delItem.put("billDId",item.item_id);
+                    delItem.put("hasImg",hasImg);
+                    delBill.add(delItem);
+                }
+                String sUpdateBill = JsonUtil.Object2Json(updateBill);
+                String sDelBill = JsonUtil.Object2Json(delBill);
+
+                Log.i("sUpdateBill",sUpdateBill);
+                Log.i("sDelBill",sDelBill);
+
+                RequestParams params = new RequestParams();
+                params.add("updateBill",sUpdateBill);
+                params.add("delBill",sDelBill);
+                params.add("billId",pjBillId);
+                params.add("newsId",newsId);
+                postNetwork(UPDATE_BILL_DETAIL, params, UPDATE_BILL_DETAIL);
+                showProgressBar(true,"重新提价订单");
+            }
+        });
     }
 
     void changeToMaterialActionBar(){
 
-        needToback =  false;
+        needToback =  true;
 
         actionBar.setCustomView(R.layout.activity_add_material_to_bill_actionbar);
 
         EditText editText = (EditText) findViewById(R.id.editText);
         editText.addTextChangedListener(watcher);
         Spinner  spinner  = (Spinner) findViewById(R.id.spinner);
+        View     view     = findViewById(R.id.action_view);
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeToSubmitActionBar();
+                getSupportFragmentManager().beginTransaction().replace(R.id.container, viewAndSubmitBillFragment).commit();
+            }
+        });
 
         Map<String,Object> base = new HashMap<>();
         base.put("icon",R.mipmap.ic_spinner_maopao_time);
@@ -289,11 +346,21 @@ public class AddMaterialToBillActivity extends BaseActivity {
 
     @OptionsItem(android.R.id.home)
     void home() {
-        if(needToback)
-            onBackPressed();
+        if(needToback) {
+            final Dialog dialog = new Dialog(this, "退出", "确定退出开单吗？");
+            dialog.show();
+            dialog.getButtonAccept().setText("确定");
+            dialog.setOnAcceptButtonClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.hide();
+                    finish();
+                }
+            });
+        }
         else{
-            changeToSubmitActionBar();
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, viewAndSubmitBillFragment).commit();
+            changeToMaterialActionBar();
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, totalSpMaterialFragment).commit();
         }
     }
 
@@ -487,6 +554,7 @@ public class AddMaterialToBillActivity extends BaseActivity {
                 billData.clear();
                 viewAndSubmitBillFragment.updateData(billData);
                 showButtomToast("提交成功");
+                finish();
             }else{
                 showButtomToast("错误码:"+code);
             }
@@ -507,11 +575,39 @@ public class AddMaterialToBillActivity extends BaseActivity {
                 billExamines = JsonUtil.Json2Object(jsonObject.getString("billExamine"),BillExamines.class);
                 billState = jsonObject.getInt("billState");
                 if(billState == BillState.REJECT.state){
-                    changeToSubmitActionBar();
+                    changeToRejectActionBar();
                 }else{
                     viewAndSubmitBillFragment.isRecord = true;
                 }
                 jsonToObject(jsonObject.getJSONArray("details"));
+            }else{
+                showButtomToast("错误码 "+code);
+            }
+        }
+        if(UPDATE_BILL_DETAIL.equals(tag)){
+            if(code ==  NetworkImpl.REQ_SUCCESSS){
+                showProgressBar(true,"提交成功");
+                new AsyncTask<Void,Void,Void>(){
+                    @Override
+                    protected Void doInBackground(Void... params) {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void aVoid) {
+                        showProgressBar(false);
+                        super.onPostExecute(aVoid);
+                        Intent intent = new Intent();
+                        intent.putExtra("msg_state",4);
+                        setResult(RESULT_OK, intent);
+                        finish();
+                    }
+                }.execute();
             }else{
                 showButtomToast("错误码 "+code);
             }
@@ -532,6 +628,7 @@ public class AddMaterialToBillActivity extends BaseActivity {
                     spMaterial.item_count = String.valueOf(jsonObject.getInt("dosage"));
                     spMaterial.item_remark = jsonObject.getString("remark");
                     spMaterial.mgBillId = jsonObject.getString("mgBillId");
+                    spMaterial.item_id = jsonObject.getString("id");
                     spMaterial.itemImages = new LinkedList();
                     String img = jsonObject.getString("img");
                     if(!img.isEmpty()){
@@ -714,23 +811,13 @@ public class AddMaterialToBillActivity extends BaseActivity {
         }
     }
 
-//    @OnActivityResult(FillBillItemFragment.RESULT_REQUEST_IMAGE)
-//    void result_view_alter_photo(int resultCode, Intent data){
-//        if (resultCode == RESULT_OK) {
-//            ArrayList<String> delUris = data.getStringArrayListExtra("mDelUrls");
-//            for (String item : delUris) {
-//                for (int i = 0; i < spMaterial.itemImages.size(); ++i) {
-//                    if (((List<FillBillItemFragment.PhotoData>)spMaterial.itemImages).get(i).uri.toString().equals(item)) {
-//                        spMaterial.itemImages.remove(i);
-//                    }
-//                }
-//            }
-//
-//        }
-//    }
-
-    void reSubmitBill(){
-        //TODO 重新提交订单
+    boolean isSelect(String mtId){
+        for(SpMaterial m : billData){
+            if(m.mtId.equals(mtId)){
+                return true;
+            }
+        }
+        return false;
     }
 
     void addBillRow(){
@@ -742,6 +829,7 @@ public class AddMaterialToBillActivity extends BaseActivity {
                     m.item_count = spMaterial.item_count;
                     m.item_remark = spMaterial.item_remark;
                     m.itemImages = spMaterial.itemImages;
+
                     flag = false;
                 }
             }
@@ -750,7 +838,12 @@ public class AddMaterialToBillActivity extends BaseActivity {
             }
 
             viewAndSubmitBillFragment.updateData(billData);
+
+            searchSpMaterialFragment.refreshListView();
+            totalSpMaterialFragment.refreshListView();
+
             fillBillItemFragment.dismiss();
+            showMiddleToast("添加成功");
         }else{
             showMiddleToast("用量不正确");
         }

@@ -11,6 +11,7 @@ import com.ezhuang.R;
 import com.ezhuang.common.Global;
 import com.ezhuang.common.JsonUtil;
 import com.ezhuang.common.network.NetworkImpl;
+import com.ezhuang.model.AccountInfo;
 import com.ezhuang.model.BillDetailState;
 import com.ezhuang.model.IPcMt;
 import com.ezhuang.model.PhotoData;
@@ -21,6 +22,7 @@ import com.ezhuang.project.detail.SetProjectInfo_;
 import com.ezhuang.purchase.SelectPcMtFragment;
 import com.ezhuang.purchase.SelectPcMtFragment_;
 import com.ezhuang.quality.ProgressDetailActivity;
+import com.gc.materialdesign.widgets.Dialog;
 import com.loopj.android.http.RequestParams;
 
 import org.androidannotations.annotations.AfterViews;
@@ -65,6 +67,10 @@ public class ViewBillDetailActivity extends BaseActivity {
 
     View action_pass;
     View action_reject;
+    View action_cancel;
+    View action_remind;
+
+    boolean action_remind_network = false;
 
     boolean isOperatOk = false;
 
@@ -79,6 +85,10 @@ public class ViewBillDetailActivity extends BaseActivity {
     String OPARE_BILL = Global.HOST + "/app/order/billExamine.do";
 
     String ADD_PURCHASE_ORDER = Global.HOST + "/app/order/addPurchaseOrder.do";
+
+    String CANCEL_BILL = Global.HOST + "/app/project/deleteBill.do";
+
+    String ORDER_REMIND = Global.HOST + "/app/order/reminderOrder.do";
 
     @ViewById
     TextView total_price;
@@ -95,6 +105,52 @@ public class ViewBillDetailActivity extends BaseActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowCustomEnabled(true);
 
+        if(Global.PROJECT_MANAGER.equals(roleId)){
+            actionBar.setCustomView(R.layout.cancel_bill_actionbar);
+            action_cancel = findViewById(R.id.action_cancel);
+            action_remind = findViewById(R.id.action_remind);
+
+            if(billState == 0){
+                action_cancel.setVisibility(View.VISIBLE);
+            }else{
+                action_cancel.setVisibility(View.GONE);
+            }
+
+            if(billState == 0||billState == 1||billState == 2){
+                action_remind.setVisibility(View.VISIBLE);
+            }else{
+                action_remind.setVisibility(View.GONE);
+            }
+            action_cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Dialog dialog = new Dialog(ViewBillDetailActivity.this,"撤销", "撤销后所有开单都将删除");
+                    dialog.show();
+                    dialog.getButtonAccept().setText("确定");
+                    dialog.setOnAcceptButtonClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            RequestParams params = new RequestParams();
+                            params.add("billId",pjBillId);
+                            postNetwork(CANCEL_BILL,params,CANCEL_BILL);
+                            showButtomToast("正在撤销");
+                        }
+                    });
+
+                }
+            });
+            action_remind.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(!action_remind_network){
+                        RequestParams params = new RequestParams();
+                        params.put("billId",pjBillId);
+                        postNetwork(ORDER_REMIND,params,ORDER_REMIND);
+                        action_remind_network = true;
+                    }
+                }
+            });
+        }
         if(billState == 0 && Global.CEHCK.equals(roleId)){
             actionBar.setCustomView(R.layout.chcek_bill_actionbar);
             action_pass = findViewById(R.id.action_pass);
@@ -112,6 +168,8 @@ public class ViewBillDetailActivity extends BaseActivity {
                 }
             });
         }
+
+
         if((billState == 1||billState == 2) && Global.BUYER.equals(roleId)){
             actionBar.setCustomView(R.layout.purchase_actionbar);
             findViewById(R.id.layout_parchase).setVisibility(View.VISIBLE);
@@ -136,8 +194,6 @@ public class ViewBillDetailActivity extends BaseActivity {
             purchase.setOnClickListener(submitClick);
             reflashBottom();
         }
-
-
 
         viewOrderFragment = SelectPcMtFragment_.builder().build();
         viewOrderFragment.viewOrder = true;
@@ -199,6 +255,27 @@ public class ViewBillDetailActivity extends BaseActivity {
                 showButtomToast("提交订单成功");
             }else{
                 showButtomToast("提交订单失败 "+code);
+            }
+        }
+        if(CANCEL_BILL.equals(tag)){
+            if(code == NetworkImpl.REQ_SUCCESSS){
+                Intent intent = new Intent();
+                intent.putExtra("pjBillId",pjBillId);
+                intent.putExtra("state",6);
+                setResult(RESULT_OK,intent);
+                finish();
+                showButtomToast("成功");
+            }else{
+                showButtomToast("失败");
+            }
+        }
+        if(ORDER_REMIND.equals(tag)){
+            if(code == NetworkImpl.REQ_SUCCESSS){
+                action_remind.setVisibility(View.GONE);
+                showButtomToast("催单成功");
+            }else{
+                action_remind_network = false;
+                showButtomToast("催单失败");
             }
         }
     }

@@ -48,6 +48,9 @@ public class TotalSpMaterialFragment  extends BaseFragment {
         this.fillBillItem = fillBillItem;
     }
 
+    public void refreshListView(){
+        adapter.notifyDataSetChanged();
+    }
 
     void updateData(Map<String,List<SpMaterial>> mData,List<SpMtType> mType){
         this.mData = mData;
@@ -160,7 +163,7 @@ public class TotalSpMaterialFragment  extends BaseFragment {
                 viewHolder.sp_m_name = (TextView) view.findViewById(R.id.sp_m_name);
                 viewHolder.sp_m_spec = (TextView) view.findViewById(R.id.sp_m_spec);
                 viewHolder.sp_m_unit_name = (TextView) view.findViewById(R.id.sp_m_unit_name);
-
+                viewHolder.icon_mark = view.findViewById(R.id.icon_mark);
                 view.setTag(viewHolder);
                 convertView = view;
 
@@ -172,6 +175,12 @@ public class TotalSpMaterialFragment  extends BaseFragment {
             viewHolder.sp_m_name.setText(spMaterial.mtName);
             viewHolder.sp_m_spec.setText(spMaterial.spec);
             viewHolder.sp_m_unit_name.setText(spMaterial.unitName);
+
+            if(((AddMaterialToBillActivity)getActivity()).isSelect(spMaterial.mtId)){
+                viewHolder.icon_mark.setVisibility(View.VISIBLE);
+            }else{
+                viewHolder.icon_mark.setVisibility(View.GONE);
+            }
 
             return convertView;
         }
@@ -223,6 +232,7 @@ public class TotalSpMaterialFragment  extends BaseFragment {
         TextView sp_m_name;
         TextView sp_m_spec;
         TextView sp_m_unit_name;
+        View     icon_mark;
     }
 
     PullToRefreshBase.OnRefreshListener onRefreshListener = new PullToRefreshBase.OnRefreshListener<ListView>() {

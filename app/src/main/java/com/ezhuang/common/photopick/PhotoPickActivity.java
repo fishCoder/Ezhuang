@@ -1,15 +1,12 @@
 package com.ezhuang.common.photopick;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
@@ -128,6 +125,7 @@ public class PhotoPickActivity extends BaseActivity {
 
                 displayTime(0);
 
+
                 String[] projection = {MediaStore.Images.ImageColumns._ID,
                         MediaStore.Images.ImageColumns.DATA,
                         MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
@@ -135,9 +133,22 @@ public class PhotoPickActivity extends BaseActivity {
                         MediaStore.Images.ImageColumns.HEIGHT,
                         MediaStore.Images.ImageColumns.MINI_THUMB_MAGIC};
 
-                String selection = "";
-                String[] selectionArgs = null;
-                Cursor mImageExternalCursor = managedQuery(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, selection, selectionArgs, MediaStore.MediaColumns.DATE_ADDED + " DESC");
+                Uri mImageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                ContentResolver mContentResolver = PhotoPickActivity.this
+                        .getContentResolver();
+
+                // 只查询jpeg和png的图片
+                Cursor mImageExternalCursor = mContentResolver.query(mImageUri, projection,
+                        MediaStore.Images.Media.MIME_TYPE + "=? or "
+                                + MediaStore.Images.Media.MIME_TYPE + "=?",
+                        new String[] { "image/jpeg", "image/png" },
+                        MediaStore.Images.Media.DATE_MODIFIED);
+
+
+
+//                String selection = "";
+//                String[] selectionArgs = null;
+//                Cursor mImageExternalCursor = managedQuery(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, selection, selectionArgs, MediaStore.MediaColumns.DATE_ADDED + " DESC");
 
                 displayTime(0);
 
@@ -390,6 +401,8 @@ public class PhotoPickActivity extends BaseActivity {
             } else {
 
             }
+        } else if (requestCode == RESULT_CAMERA){
+
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -466,6 +479,7 @@ public class PhotoPickActivity extends BaseActivity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+            long start = System.currentTimeMillis();
             int type = getItemViewType(position);
             int width = MyApp.sWidthPix / 3;
             if (type == TYPE_PHOTO) {
@@ -488,25 +502,31 @@ public class PhotoPickActivity extends BaseActivity {
 
                 ImageInfo data = (ImageInfo) getItem(position);
                 ImageLoader imageLoader = ImageLoader.getInstance();
-//                holder.icon.setImageBitmap(MediaStore.Images.Thumbnails.getThumbnail(getContentResolver(), 10797, MediaStore.Images.Thumbnails.MINI_KIND, null));
 
-//                Cursor c = MediaStore.Images.Thumbnails.queryMiniThumbnail(getContentResolver(), data.photoId, MediaStore.Images.Thumbnails.MINI_KIND, new String[] {MediaStore.Images.Thumbnails.DATA});
-//                if (c!=null && c.moveToNext()) {
-//                    imageLoader.displayImage("file://" + c.getString(0), holder.icon, optionsImage);
-//                    Log.v("加载的图路径哟~",c.getString(0));
-//                }else{
-//                   Log.v("注意了注意了","没有加载图片");
-//                   Log.v("图片id",""+data.photoId);
-//                }
+//                Bitmap bitmap = MediaStore.Images.Thumbnails.getThumbnail(
+//                        getContentResolver(), data.photoId,
+//                        MediaStore.Images.Thumbnails.MINI_KIND,
+//                        (BitmapFactory.Options) null );
+//                holder.icon.setImageBitmap(MediaStore.Images.Thumbnails.getThumbnail(getContentResolver(), data.photoId, MediaStore.Images.Thumbnails.MINI_KIND, null));
 
-                imageLoader.displayImage(data.path, holder.icon, optionsImage);
-
+                Cursor mes_quality = MediaStore.Images.Thumbnails.queryMiniThumbnail(getContentResolver(), data.photoId, MediaStore.Images.Thumbnails.MINI_KIND, new String[] {MediaStore.Images.Thumbnails.DATA});
+                if (mes_quality!=null && mes_quality.moveToNext()) {
+                    imageLoader.displayImage("file://" + mes_quality.getString(0), holder.icon, optionsImage);
+                    Log.v("加载的图路径哟~",mes_quality.getString(0));
+                }else{
+                   Log.v("注意了注意了","没有加载图片");
+                   Log.v("图片id",""+data.photoId);
+                }
+//                holder.icon.setImageBitmap(bitmap);
+//                imageLoader.displayImage(bitmap, holder.icon, optionsImage);
+                mes_quality.close();
                 ((GridViewCheckTag) holder.check.getTag()).path = data.path;
 
                 boolean picked = isPicked(data.path);
                 holder.check.setChecked(picked);
                 holder.iconFore.setVisibility(picked ? View.VISIBLE : View.INVISIBLE);
-
+                long end = System.currentTimeMillis();
+                Log.v("加载一张图耗时",""+(end-start));
                 return convertView;
             } else {
                 final GridCameraHolder cameraHolder;

@@ -36,6 +36,25 @@ public class Project implements Serializable {
     private Integer pgCount;
     private Integer billCount;
 
+    private Integer nodeId;
+    private String nodeName;
+
+    public Integer getNodeId() {
+        return nodeId;
+    }
+
+    public void setNodeId(Integer nodeId) {
+        this.nodeId = nodeId;
+    }
+
+    public String getNodeName() {
+        return nodeName;
+    }
+
+    public void setNodeName(String nodeName) {
+        this.nodeName = nodeName;
+    }
+
     public Integer getPgCount() {
         return pgCount;
     }

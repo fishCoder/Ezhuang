@@ -45,7 +45,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="30dp"
                 android:layout_marginTop="60dp"
-                android:src="@mipmap/icon_user_monkey_circle"
+                android:src="@mipmap/ic_launcher"
                 app:border_color="#ffffffff"
                 app:border_width="2dp" />
 
@@ -137,6 +137,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginBottom="12dp"
                 android:gravity="center"
+                android:visibility="gone"
                 android:text="无法登录？"
                 android:textColor="@color/font_white_disable"
                 android:textSize="16sp" />
@@ -150,6 +151,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="12dp"
                 android:gravity="center"
+                android:visibility="gone"
                 android:text="去注册"
                 android:textColor="@color/font_white_disable"
                 android:textSize="16sp" />

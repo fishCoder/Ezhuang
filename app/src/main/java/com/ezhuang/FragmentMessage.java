@@ -1,11 +1,6 @@
 package com.ezhuang;
 
 
-import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -97,8 +92,13 @@ public class FragmentMessage extends BaseFragment {
                 }else{
                     listView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
                 }
+                try{
+                    jsonArray = respanse.getJSONObject("data").getJSONArray("projects");
+                }catch(Exception e){
+                    BlankViewDisplay.setBlank(mData.size(), this, true, blankLayout, null);
+                    return;
+                }
 
-                jsonArray = respanse.getJSONObject("data").getJSONArray("projects");
                 for (int i=0 ; i<jsonArray.length() ; i++){
                     Project project = JsonUtil.Json2Object(jsonArray.getString(i),Project.class);
                     if(mProject.get(project.getPjId())==null){
@@ -115,7 +115,11 @@ public class FragmentMessage extends BaseFragment {
     }
 
 
-
+    void refreshData(){
+        if(networkImpl!=null){
+            getNetwork(MESSAGE_LIST,MESSAGE_LIST);
+        }
+    }
 
     BaseAdapter adapter = new BaseAdapter() {
         @Override
@@ -154,8 +158,8 @@ public class FragmentMessage extends BaseFragment {
             Message msg = (Message) getItem(position);
             viewHolder.msg_title.setText(msg.getTitle());
             viewHolder.msg_content.setText(msg.getContent());
-            viewHolder.msg_time.setText(msg.getTime());
-
+            viewHolder.msg_time.setText(Global.dataToNow(msg.getTime()));
+            viewHolder.msg_img.setImageResource(getMsgIcomRes(msg.newsType));
             if(msg.state==2 || msg.state==4){
                 viewHolder.msg_badge.setVisibility(View.GONE);
             }else{
@@ -194,6 +198,46 @@ public class FragmentMessage extends BaseFragment {
             jumpToDealActivity(mData.get(i),i);
         }
     };
+
+    int getMsgIcomRes(int newsType){
+
+        if(newsType==NewsTypeEnum.NewPrijectNoticeToManager.newsType){
+            return NewsTypeEnum.NewPrijectNoticeToManager.newIcon;
+        }else
+        if(newsType==NewsTypeEnum.NewPrijectNoticeToBuyer.newsType){
+            return NewsTypeEnum.NewPrijectNoticeToBuyer.newIcon;
+        }else
+        if(newsType==NewsTypeEnum.NewPrijectNoticeToChecker.newsType){
+            return NewsTypeEnum.NewPrijectNoticeToChecker.newIcon;
+        }else
+        if(newsType==NewsTypeEnum.NewPrijectOrderNotice.newsType){
+            return NewsTypeEnum.NewPrijectOrderNotice.newIcon;
+
+        }else
+        if(newsType==NewsTypeEnum.NewPrijectNoticeToQuality.newsType){
+            return NewsTypeEnum.NewPrijectNoticeToQuality.newIcon;
+        }else
+        if(newsType==NewsTypeEnum.ProjectOrderCheckPassNoticeToManager.newsType){
+            return NewsTypeEnum.ProjectOrderCheckPassNoticeToManager.newIcon;
+        }else
+        if(newsType==NewsTypeEnum.ProjectOrderCheckNotPassNoticeToManager.newsType){
+            return NewsTypeEnum.ProjectOrderCheckNotPassNoticeToManager.newIcon;
+        }else
+        if(newsType==NewsTypeEnum.ProjectOrderCheckResultNoticeToBuyer.newsType){
+            return NewsTypeEnum.ProjectOrderCheckResultNoticeToBuyer.newIcon;
+        }else
+        if(newsType==NewsTypeEnum.NewPurchaseOrderNotice.newsType){
+            return NewsTypeEnum.NewPurchaseOrderNotice.newIcon;
+        }else
+        if(newsType==NewsTypeEnum.NewPrijectProgressNoticeToQuality.newsType){
+            return NewsTypeEnum.NewPrijectProgressNoticeToQuality.newIcon;
+        }else
+        if(newsType==NewsTypeEnum.QualityCheckPrijectProgressNotice.newsType){
+            return  NewsTypeEnum.QualityCheckPrijectProgressNotice.newIcon;
+        }
+
+        return R.mipmap.ic_default_image;
+    }
 
     void jumpToDealActivity(Message msg,int index){
 
@@ -254,6 +298,7 @@ public class FragmentMessage extends BaseFragment {
         if(newsType==NewsTypeEnum.ProjectOrderCheckPassNoticeToManager.newsType){
             //开单通过
             ViewBillDetailActivity_.intent(getActivity())
+                    .project(mProject.get(msg.newsPjId))
                     .pjBillId(msg.source)
                     .roleId(Global.PROJECT_MANAGER)
                     .billState(BillState.UNBUY.state)
@@ -267,7 +312,7 @@ public class FragmentMessage extends BaseFragment {
                     .project(mProject.get(msg.newsPjId))
                     .newsId(msg.newsId)
                     .pjBillId(msg.source)
-                    .start();
+                    .startForResult(index);
         }else
         if(newsType==NewsTypeEnum.ProjectOrderCheckResultNoticeToBuyer.newsType){
 
@@ -281,6 +326,7 @@ public class FragmentMessage extends BaseFragment {
                     .roleId(Global.BUYER)
                     .pjId(msg.newsPjId)
                     .billState(billState)
+                    .project(mProject.get(msg.newsPjId))
                     .startForResult(index);
 
         }else
@@ -291,6 +337,7 @@ public class FragmentMessage extends BaseFragment {
                     .pjId(msg.newsPjId)
                     .pjBillId(msg.source)
                     .roleId(Global.PROJECT_MANAGER)
+                    .project(mProject.get(msg.newsPjId))
                     .billState(billState)
                     .isRecord(true)
                     .start();

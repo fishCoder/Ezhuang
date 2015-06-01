@@ -112,7 +112,7 @@ public class FragmentProjectList extends BaseFragment {
                 viewHolder.pjPgCount.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
 
                 viewHolder.layoutBillCount = view.findViewById(R.id.layout_bill_count);
-                viewHolder.layoutPgCount = view .findViewById(R.id.pj_pg_count);
+                viewHolder.layoutPgCount = view.findViewById(R.id.layout_pg_count);
                 viewHolder.layoutPjBtn = view.findViewById(R.id.layout_pj_btn);
 
                 convertView = view;
@@ -131,7 +131,12 @@ public class FragmentProjectList extends BaseFragment {
             viewHolder.buyerName.setText(project.getPjBuyer().getName());
             viewHolder.qualityName.setText(project.getPjQuality().getName());
             viewHolder.pjCreateTime.setText(project.getPjCreateTime());
-            viewHolder.pjState.setText(Global.PJ_STATE[project.getPjState()]);
+            if(project.getNodeName()==null||project.getNodeName().isEmpty()){
+                viewHolder.pjState.setText(Global.PJ_STATE[project.getPjState()]);
+            }else{
+                viewHolder.pjState.setText(project.getNodeName());
+            }
+
             viewHolder.pjBillCount.setText(""+project.getBillCount());
             viewHolder.pjPgCount.setText(""+project.getPgCount());
 
@@ -211,7 +216,6 @@ public class FragmentProjectList extends BaseFragment {
                 listListener.refresh();
             }else{
                 listListener.loadMore();
-
             }
         }
     };

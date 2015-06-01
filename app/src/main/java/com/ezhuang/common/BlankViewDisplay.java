@@ -8,6 +8,7 @@ import com.ezhuang.R;
 import com.ezhuang.project.ProjectBillFragment;
 import com.ezhuang.project.ViewAndSubmitBillFragment;
 import com.ezhuang.project.detail.FragmentProjectList;
+import com.ezhuang.quality.ViewProgressActivity;
 import com.ezhuang.quality.ViewProjectProgressActivity;
 
 
@@ -59,6 +60,10 @@ public class BlankViewDisplay {
                 text = "没有东西 赶紧去选定吧";
             }
             if (fragment instanceof ViewProjectProgressActivity){
+                iconId = R.mipmap.ic_exception_blank_task;
+                text = "没有上传进度";
+            }
+            if (fragment instanceof ViewProgressActivity){
                 iconId = R.mipmap.ic_exception_blank_task;
                 text = "没有上传进度";
             }

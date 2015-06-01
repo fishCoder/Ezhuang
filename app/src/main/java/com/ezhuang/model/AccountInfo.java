@@ -3,6 +3,7 @@ package com.ezhuang.model;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.ezhuang.common.Banner;
 import com.ezhuang.common.LoginBackground;
 
 import java.io.File;
@@ -483,6 +484,16 @@ public class AccountInfo {
 
     public static ArrayList<LoginBackground.PhotoItem> loadBackgrounds(Context ctx) {
         return new DataCache<LoginBackground.PhotoItem>().loadGlobal(ctx, BACKGROUNDS);
+    }
+
+    private static final String BANNERS = "BANNERS";
+
+    public static void saveBanners(Context ctx, ArrayList<Banner.PhotoItem> data) {
+        new DataCache<Banner.PhotoItem>().saveGlobal(ctx, data, BANNERS);
+    }
+
+    public static ArrayList<Banner.PhotoItem> loadBanners(Context ctx) {
+        return new DataCache<Banner.PhotoItem>().loadGlobal(ctx, BANNERS);
     }
 
 }

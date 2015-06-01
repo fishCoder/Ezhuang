@@ -117,7 +117,7 @@ public class SetProjectInfo extends BaseActivity {
                     flag = true;
                     break;
 
-                case CreatProjectActivity.O_ADDRESS:
+                case CreatProjectActivity.O_BIRTHDAY:
                     flag = true;
                     break;
                 case CreatProjectActivity.O_PHONE:

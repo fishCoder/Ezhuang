@@ -2,16 +2,15 @@ package com.ezhuang;
 
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTabHost;
+import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TabHost;
-import android.widget.TextView;
-
 import com.ezhuang.common.Global;
 import com.ezhuang.common.JsonUtil;
 import com.ezhuang.common.LoginBackground;
@@ -19,29 +18,44 @@ import com.ezhuang.common.network.NetworkImpl;
 import com.ezhuang.model.AccountInfo;
 import com.ezhuang.model.StaffUser;
 import com.loopj.android.http.RequestParams;
+import com.readystatesoftware.viewbadger.BadgeView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import cn.jpush.android.api.JPushInterface;
+
 
 public class MainActivity extends BaseActivity {
-    //定义FragmentTabHost对象
-    private FragmentTabHost mTabHost;
 
-    //定义一个布局
-    private LayoutInflater layoutInflater;
 
-    //定义数组来存放Fragment界面
-    private Class fragmentArray[] = {FragmentHome_.class,FragmentMessage_.class,FragmentSettings_.class};
+    View layout_home;
+    View layout_message;
+    View layout_settings;
 
-    //定义数组来存放按钮图片
-    private int mImageViewArray[] = {
-            R.drawable.tab_home_btn,
-            R.drawable.tab_msg_btn,
-            R.drawable.tab_set_btn
-    };
+    BadgeView badgeView;
+
+    View[] layouts;
+
+    ImageView btn_home;
+    ImageView btn_message;
+    ImageView btn_settings;
+
+    ImageView[] btns;
+
+    int[] icon = new int[]{R.mipmap.icon_home,R.mipmap.icon_message,R.mipmap.icon_settings};
+    int[] icon_active = new int[]{R.mipmap.icon_home_active,R.mipmap.icon_message_active,R.mipmap.icon_settings_active};
+
+    FragmentHome     fragmentHome;
+    FragmentMessage  fragmentMessage;
+    FragmentSettings fragmentSettings;
+
+    Fragment[] fragments;
 
     String HOST_LOGIN = Global.HOST + "/app/stf/login.do";
+
+    String QUERY_BADGE = Global.HOST + "/app/res/queryBadge.do";
+
 
     //Tab选项卡的文字
     private String mTextviewArray[] = {"首页", "消息", "设置"};
@@ -49,64 +63,102 @@ public class MainActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main_);
+
+
 
         initView();
     }
-
-
 
 
     /**
      * 初始化组件
      */
     private void initView(){
+        registerBoradcastReceiver();
+
+        Intent intent = new Intent(this, UpdateService.class);
+        intent.putExtra(UpdateService.EXTRA_BACKGROUND, true);
+        intent.putExtra(UpdateService.EXTRA_WIFI, true);
+        intent.putExtra(UpdateService.EXTRA_DEL_OLD_APK, true);
+        startService(intent);
 
         StaffUser staffUser = AccountInfo.loadAccount(this);
         MyApp.currentUser = staffUser;
-        RequestParams params = new RequestParams();
-        params.put("phone", staffUser.getPhone());
-        params.put("password", staffUser.getPassword());
-        postNetwork(HOST_LOGIN, params, HOST_LOGIN);
+        if(!getIntent().getBooleanExtra("isLogin",false)){
 
-        LoginBackground loginBackground = new LoginBackground(this);
-        loginBackground.update();
+            RequestParams params = new RequestParams();
+            params.put("phone", staffUser.getPhone());
+            params.put("password", staffUser.getPassword());
+            params.put("registerId", JPushInterface.getRegistrationID(this));
+            params.put("equType","2");
+            postNetwork(HOST_LOGIN, params, HOST_LOGIN);
 
-        //实例化布局对象
-        layoutInflater = LayoutInflater.from(this);
-
-        //实例化TabHost对象，得到TabHost
-        mTabHost = (FragmentTabHost)findViewById(android.R.id.tabhost);
-        mTabHost.setup(this, getSupportFragmentManager(), R.id.realtabcontent);
-
-        //得到fragment的个数
-        int count = fragmentArray.length;
-
-        for(int i = 0; i < count; i++){
-            //为每一个Tab按钮设置图标、文字和内容
-            TabHost.TabSpec tabSpec = mTabHost.newTabSpec(mTextviewArray[i]).setIndicator(getTabItemView(i));
-            //将Tab按钮添加进Tab选项卡中
-            mTabHost.addTab(tabSpec, fragmentArray[i], null);
-
-            //设置Tab按钮的背景
-            mTabHost.getTabWidget().getChildAt(i).setBackgroundResource(R.drawable.selector_tab_background);
         }
+
+
+
+        fragmentHome = FragmentHome_.builder().build();
+        fragmentMessage = FragmentMessage_.builder().build();
+        fragmentSettings = FragmentSettings_.builder().build();
+
+        layout_home = findViewById(R.id.layout_home);
+        layout_message = findViewById(R.id.layout_message);
+        layout_settings = findViewById(R.id.layout_settings);
+
+        layout_home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setActiveFragment(0);
+            }
+        });
+
+        layout_message.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setActiveFragment(1);
+            }
+        });
+
+        layout_settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setActiveFragment(2);
+            }
+        });
+
+        btn_home = (ImageView) findViewById(R.id.btn_home);
+        btn_message = (ImageView) findViewById(R.id.btn_message);
+        btn_settings = (ImageView) findViewById(R.id.btn_settings);
+
+        badgeView = (BadgeView) findViewById(R.id.badge);
+        badgeView.setVisibility(View.GONE);
+        layouts = new View[]{layout_home,layout_message,layout_settings};
+        btns = new ImageView[]{btn_home,btn_message,btn_settings};
+        fragments = new Fragment[]{fragmentHome,fragmentMessage,fragmentSettings};
+
+        if(getIntent().getBooleanExtra("from_notify",false)){
+            setActiveFragment(1);
+        }else{
+            setActiveFragment(0);
+        }
+
     }
 
-    /**
-     * 给Tab按钮设置图标和文字
-     */
-    private View getTabItemView(int index){
-        View view = layoutInflater.inflate(R.layout.tab_item_view, null);
 
-        ImageView imageView = (ImageView) view.findViewById(R.id.imageview);
-        imageView.setImageResource(mImageViewArray[index]);
+    void setActiveFragment(int index){
 
-        TextView textView = (TextView) view.findViewById(R.id.textview);
-        textView.setText(mTextviewArray[index]);
+        for (int i=0;i<layouts.length;i++){
+            layouts[i].setBackgroundColor(getResources().getColor(R.color.white));
+            btns[i].setImageResource(icon[i]);
+        }
 
-        return view;
+        layouts[index].setBackgroundColor(getResources().getColor(R.color.white_pressed));
+        btns[index].setImageResource(icon_active[index]);
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, fragments[index]).commit();
     }
+
 
     @Override
     public void parseJson(int code, JSONObject respanse, String tag, int pos, Object data) throws JSONException {
@@ -122,16 +174,29 @@ public class MainActivity extends BaseActivity {
             }
 
         }
+        if(QUERY_BADGE.equals(tag)){
+            if(code == NetworkImpl.REQ_SUCCESSS){
+                int count = respanse.getInt("data");
+                Log.i("data",respanse.toString());
+                if(count==0){
+                    badgeView.setVisibility(View.GONE);
+                }else{
+                    badgeView.setVisibility(View.VISIBLE);
+                    badgeView.setText(""+count);
+                }
+            }else{
+
+            }
+        }
 
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(resultCode == Activity.RESULT_OK){
-            FragmentMessage fragmentMessage = (FragmentMessage) getSupportFragmentManager()
-                    .findFragmentByTag("消息");
             fragmentMessage.updateMsgState(requestCode,data.getIntExtra("msg_state",1));
         }
+
     }
 
     void toLoginActivity(){
@@ -158,4 +223,48 @@ public class MainActivity extends BaseActivity {
             finish();
         }
     }
+
+    boolean isActive =  false;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isActive = true;
+        getNetwork(QUERY_BADGE,QUERY_BADGE);
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isActive = false;
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(mBroadcastReceiver);
+        super.onDestroy();
+    }
+
+    public void registerBoradcastReceiver(){
+        IntentFilter myIntentFilter = new IntentFilter();
+        myIntentFilter.addAction(Global.PUSH_BROADCAST);
+        registerReceiver(mBroadcastReceiver, myIntentFilter);
+    }
+
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver(){
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if(action.equals(Global.PUSH_BROADCAST)){
+                if(isActive){
+                    setActiveFragment(1);
+                    fragmentMessage.refreshData();
+                }
+            }
+        }
+
+    };
+
 }

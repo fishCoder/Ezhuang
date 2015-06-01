@@ -171,7 +171,8 @@ public class LoginActivity extends BaseActivity {
             RequestParams params = new RequestParams();
             params.put("phone", name);
             params.put("password", password);
-            params.put("registerid",JPushInterface.getRegistrationID(this));
+            params.put("registerId",JPushInterface.getRegistrationID(this));
+            params.put("equType","2");
             if (captchaLayout.getVisibility() == View.VISIBLE) {
                 params.put("j_captcha", captcha);
             }
@@ -192,20 +193,19 @@ public class LoginActivity extends BaseActivity {
         if(tag.equals(HOST_LOGIN)){
             if(code==10001){
                 StaffUser currentUser = JsonUtil.Json2Object(respanse.getString("data"), StaffUser.class);
-                //TODO 保存登陆用户
                 MyApp.currentUser = currentUser;
                 showProgressBar(false);
                 AccountInfo.saveAccount(LoginActivity.this,currentUser);
-//                UserDetailActivity_
-//                        .intent(this)
-//                        .globalKey(MyApp.currentUser.getGlobal_key())
-//                        .companyType(MyApp.currentUser.getCompanyType())
-//                        .startForResult(RESULT_REQUEST_USERINFO);
-
                 Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                intent.putExtra("isLogin",true);
                 startActivity(intent);
                 finish();
-            }else{
+            }else
+            if(code==10007){
+                AlterPasswordActivity_.intent(LoginActivity.this).phone(editName.getText().toString()).oldPwd(editPassword.getText().toString()).start();
+            }else
+            if(code==10003)
+            {
                 showMiddleToast("密码或账号不正确");
                 showProgressBar(false);
             }
@@ -244,7 +244,7 @@ public class LoginActivity extends BaseActivity {
     TextWatcher textWatcherName = new SimpleTextWatcher() {
         @Override
         public void afterTextChanged(Editable s) {
-            userIcon.setImageResource(R.mipmap.icon_user_monkey_circle);
+//            userIcon.setImageResource(R.mipmap.icon_user_monkey_circle);
         }
     };
 

@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.ezhuang.BaseActivity;
 import com.ezhuang.ImagePagerActivity_;
 import com.ezhuang.R;
+import com.ezhuang.common.BlankViewDisplay;
 import com.ezhuang.common.Global;
 import com.ezhuang.common.JsonUtil;
 import com.ezhuang.model.PhotoData;
@@ -66,6 +67,9 @@ public class ViewProgressActivity extends BaseActivity {
     @ViewById
     PullToRefreshExpandableListView listView;
 
+    @ViewById
+    View blankLayout;
+
     List<Project> mType = new LinkedList<>();
 
     List<List<ProjectProgress>> mData = new LinkedList<>();
@@ -94,7 +98,6 @@ public class ViewProgressActivity extends BaseActivity {
     @Override
     public void parseJson(int code, JSONObject respanse, String tag, int pos, Object data) throws JSONException {
         if(QUERY_PROGRESS.equals(tag)||QUERY_PROGRESS_MORE.equals(tag)){
-            Log.i("json",respanse.getString("data"));
             if(tag.equals(QUERY_PROGRESS)){
                 mType.clear();
                 mData.clear();
@@ -125,7 +128,7 @@ public class ViewProgressActivity extends BaseActivity {
                 mData.add(projectProgressList);
             }
         } catch (JSONException e) {
-            e.printStackTrace();
+            toUI(0);
         }
         toUI(count);
     }
@@ -138,6 +141,7 @@ public class ViewProgressActivity extends BaseActivity {
         listView.onRefreshComplete();
         hideProgressDialog();
         adapter.notifyDataSetChanged();
+        BlankViewDisplay.setBlank(mData.size(), this, true, blankLayout, null);
         expandGroup();
     }
 
@@ -271,8 +275,21 @@ public class ViewProgressActivity extends BaseActivity {
             viewHolder.pg_remark.setText(pg.pgRemark);
             if(pg.isNeedOwnerCheck()){
                 viewHolder.layout_owner.setVisibility(View.VISIBLE);
-                viewHolder.owner_state.setText(pg_state[pg.owerCheckResult]);
-                viewHolder.owner_state.setTextColor(pg_state_color[pg.owerCheckResult]);
+                if(pg.owerScore==0){
+                    viewHolder.owner_state.setText(pg_state[pg.owerCheckResult]);
+                    viewHolder.owner_state.setTextColor(getResources().getColor(pg_state_color[pg.owerCheckResult]));
+                }else{
+                    int i=0;
+                    StringBuffer stars = new StringBuffer();
+                    for(;i<pg.owerScore;i++){
+                        stars.append("★");
+                    }
+                    for (;i<ProjectProgress.SCORE;i++){
+                        stars.append("☆");
+                    }
+                    viewHolder.owner_state.setText(stars.toString());
+                    viewHolder.owner_state.setTextColor(getResources().getColor(R.color.yellow));
+                }
             }else{
                 viewHolder.layout_owner.setVisibility(View.GONE);
             }

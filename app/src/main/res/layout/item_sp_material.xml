@@ -4,98 +4,121 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingRight="10dp"
-    android:gravity="right|center_vertical">
+    >
 
 
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:paddingLeft="30dp"
-            android:gravity="left">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="名称"
-
-                android:textColor="#333"
-                android:textSize="17sp" />
-
-            <TextView
-                android:id="@+id/sp_m_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:singleLine="false"
-                android:layout_marginLeft="5dp"
-                android:text="2015020608354486953"
-                android:textColor="#555"
-                android:textSize="17sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="5dp"
-            android:paddingTop="5dp"
-            android:paddingLeft="30dp"
-            android:gravity="left">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-
-                android:text="规格"
-                android:textColor="#333"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/sp_m_spec"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:singleLine="false"
-                android:layout_marginLeft="5dp"
-                android:text="8888-88-88 88:88:88"
-                android:textColor="#555"
-                android:textSize="15sp" />
-
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="8dp"
-            android:paddingLeft="30dp"
-            android:gravity="left">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="单位"
-                android:textColor="#333"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/sp_m_unit_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:text="8888-88-88 88:88:88"
-                android:textColor="#555"
-                android:textSize="15sp" />
-
-        </LinearLayout>
-
-
-        <View
-        android:id="@+id/divider"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_marginLeft="25dp"
-        android:layout_height="1dp"
-        android:background="@color/divide" />
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+       >
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingRight="10dp"
+                android:gravity="right|center_vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:paddingLeft="30dp"
+                    android:gravity="left">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="名称"
+
+                        android:textColor="#333"
+                        android:textSize="17sp" />
+
+                    <TextView
+                        android:id="@+id/sp_m_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:singleLine="false"
+                        android:layout_marginLeft="5dp"
+                        android:text="2015020608354486953"
+                        android:textColor="#555"
+                        android:textSize="17sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="5dp"
+                    android:paddingTop="5dp"
+                    android:paddingLeft="30dp"
+                    android:gravity="left">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:text="规格"
+                        android:textColor="#333"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/sp_m_spec"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:singleLine="false"
+                        android:layout_marginLeft="5dp"
+                        android:text="8888-88-88 88:88:88"
+                        android:textColor="#555"
+                        android:textSize="15sp" />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="8dp"
+                    android:paddingLeft="30dp"
+                    android:gravity="left">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="单位"
+                        android:textColor="#333"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/sp_m_unit_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:text="8888-88-88 88:88:88"
+                        android:textColor="#555"
+                        android:textSize="15sp" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:gravity="center">
+                <View
+                    android:id="@+id/icon_mark"
+                    android:visibility="gone"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:background="@mipmap/icon_mark"/>
+            </LinearLayout>
+    </LinearLayout>
+
+    <View
+    android:id="@+id/divider"
+    android:layout_width="match_parent"
+    android:layout_marginLeft="25dp"
+    android:layout_height="1dp"
+    android:background="@color/divide" />
 
 
 

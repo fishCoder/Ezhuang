@@ -8,14 +8,38 @@
 
     <include layout="@layout/project_item" android:id="@+id/item_project"/>
 
+    <LinearLayout
+        android:id="@+id/layout_share"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp"
+        android:visibility="gone"
+        android:gravity="right">
+
+        <TextView
+            android:id="@+id/share"
+            android:background="@drawable/list_item_selector"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="10dp"
+            android:text="分享"
+            android:textSize="17sp" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="30dp"
+        android:paddingTop="20dp"
         android:paddingLeft="40dp"
         android:paddingRight="30dp"
         android:gravity="left">
+
+
 
         <TextView
             android:id="@+id/pg_name"
@@ -83,7 +107,7 @@
                 android:singleLine="true"
                 android:text="未审核"
                 android:layout_marginLeft="5dp"
-                android:textSize="15sp" />
+                android:textSize="17sp" />
 
 
         </LinearLayout>

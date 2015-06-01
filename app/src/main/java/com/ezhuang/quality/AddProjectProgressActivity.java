@@ -24,8 +24,10 @@ import com.ezhuang.common.JsonUtil;
 import com.ezhuang.common.PhotoOperate;
 import com.ezhuang.common.network.NetworkImpl;
 import com.ezhuang.common.photopick.PhotoPickActivity;
+import com.ezhuang.common.photopick.VideoPickActivity;
 import com.ezhuang.model.BillingDetail;
 import com.ezhuang.model.PhotoData;
+import com.ezhuang.model.ProjectProgress;
 import com.ezhuang.model.SpMaterial;
 import com.loopj.android.http.RequestParams;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -41,6 +43,7 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.res.StringArrayRes;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -83,6 +86,12 @@ public class AddProjectProgressActivity extends BaseActivity {
 
     @Extra
     String projectId;
+
+    @Extra
+    ProjectProgress pg;
+
+    @StringArrayRes
+    String[] progress_node;
 
     PhotoOperate photoOperate = new PhotoOperate(this);
 
@@ -132,7 +141,33 @@ public class AddProjectProgressActivity extends BaseActivity {
             }
         });
 
+        if(pg!=null){
+            message.setText(pg.pgRemark);
+            node_name.setText(pg.nodeName);
 
+            for (int i=0;i<progress_node.length;i++){
+                if(progress_node[i].equals(pg.nodeName)){
+                    pg_node = String.valueOf(i+1);
+                    break;
+                }
+            }
+
+
+            String dealName = "";
+            if(pg.pgDeal.equals("10")){
+                dealName = "业主";
+                pg_deal = "10";
+            }else
+            if(pg.pgDeal.equals("01")){
+                dealName = "质检员";
+                pg_deal = "01";
+            }else
+            if(pg.pgDeal.equals("11")){
+                dealName = "业主 质检员";
+                pg_deal = "11";
+            }
+            user_name.setText(dealName);
+        }
     }
 
     @Override
@@ -147,6 +182,7 @@ public class AddProjectProgressActivity extends BaseActivity {
     public static final int RESULT_REQUEST_FOLLOW = 1002;
     public static final int RESULT_REQUEST_PICK_PHOTO = 1003;
     public static final int RESULT_REQUEST_PHOTO = 1005;
+    public static final int RESULT_REQUEST_PICK_VIDEO = 1006;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -198,6 +234,18 @@ public class AddProjectProgressActivity extends BaseActivity {
             if(resultCode == RESULT_OK){
                 pg_deal = data.getStringExtra("pg_deal");
                 user_name.setText(data.getStringExtra("deal_name"));
+            }
+        } else if (requestCode == RESULT_REQUEST_PICK_VIDEO){
+            try {
+                ArrayList<VideoPickActivity.VideoInfo> pickPhots = (ArrayList<VideoPickActivity.VideoInfo>) data.getSerializableExtra("data");
+                for (VideoPickActivity.VideoInfo item : pickPhots) {
+                    Uri uri = Uri.parse(item.path);
+                    File outputFile = photoOperate.scal(uri);
+                    mData.add(new PhotoData(outputFile));
+                }
+            } catch (Exception e) {
+                showMiddleToast("缩放图片失败");
+                Global.errorLog(e);
             }
         } else
         {
@@ -284,6 +332,7 @@ public class AddProjectProgressActivity extends BaseActivity {
 
     @Override
     public void parseJson(int code, JSONObject respanse, final String tag, int pos, Object data) throws JSONException {
+        showProgressBar(false);
         if (QINIU_TOKEN.equals(tag)) {
             if (code == NetworkImpl.REQ_SUCCESSS) {
 
@@ -300,7 +349,7 @@ public class AddProjectProgressActivity extends BaseActivity {
 
                     String fileType = url.substring(url.lastIndexOf("."), url.length());
                     final String key = new StringBuffer(MyApp.currentUser.getCompanyId())
-                            .append("/bill/")
+                            .append("/progress/")
                             .append(UUID.randomUUID().toString())
                             .append(fileType).toString();
 
@@ -353,6 +402,13 @@ public class AddProjectProgressActivity extends BaseActivity {
             showProgressBar(false);
             if(code == NetworkImpl.REQ_SUCCESSS){
                 showButtomToast("提交成功");
+                if(pg!=null){
+                    Intent intent = new Intent();
+                    intent.putExtra("pgId",pg.pgId);
+                    setResult(RESULT_OK,intent);
+                }else{
+                    setResult(RESULT_CANCELED);
+                }
                 finish();
             }else{
                 showButtomToast("错误码:"+code);
@@ -366,15 +422,23 @@ public class AddProjectProgressActivity extends BaseActivity {
     int SELECT_DEAL_TYEP = 2001;
     @Click
     void item_node() {
+        if(pg!=null)return;
         Intent intent = new Intent(this, SelectNodeAndUserActivity_.class);
         intent.putExtra("select_type", "node");
         startActivityForResult(intent,SELECT_NODE_TYEP);
     }
     @Click
     void item_deal() {
+        if(pg!=null)return;
         Intent intent = new Intent(this, SelectNodeAndUserActivity_.class);
         intent.putExtra("select_type", "deal");
         startActivityForResult(intent,SELECT_DEAL_TYEP);
+    }
+    @Click
+    void video(){
+        Intent intent = new Intent(AddProjectProgressActivity.this, VideoPickActivity.class);
+        intent.putExtra(VideoPickActivity.EXTRA_MAX, 1);
+        startActivityForResult(intent, RESULT_REQUEST_PICK_VIDEO);
     }
     @OptionsItem
     void action_add(){
@@ -409,16 +473,11 @@ public class AddProjectProgressActivity extends BaseActivity {
         }else{
             com.gc.materialdesign.widgets.Dialog dialog = new com.gc.materialdesign.widgets.Dialog(this,"提示", "放弃这次编辑吗？");
             dialog.show();
+            dialog.getButtonAccept().setText("接受");
             dialog.setOnAcceptButtonClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     onBackPressed();
-                }
-            });
-            dialog.setOnCancelButtonClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
                 }
             });
         }
@@ -430,6 +489,10 @@ public class AddProjectProgressActivity extends BaseActivity {
     void add_progress(){
         showProgressBar(true, "提交进度");
         RequestParams params = new RequestParams();
+
+        if(pg!=null){
+            params.put("pgId",pg.pgId);
+        }
         params.put("pgPjId",projectId);
         params.put("pgRemark",message.getText().toString());
         params.put("pgPtUrl",pgPtUrl);

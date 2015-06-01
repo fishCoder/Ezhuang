@@ -1,6 +1,7 @@
 package com.ezhuang.project.detail;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -21,6 +23,8 @@ import com.ezhuang.R;
 import com.ezhuang.common.Global;
 import com.ezhuang.common.JsonUtil;
 import com.ezhuang.common.ListModify;
+import com.ezhuang.common.network.NetworkImpl;
+import com.ezhuang.model.HouseType;
 import com.ezhuang.model.StaffUser;
 import com.loopj.android.http.RequestParams;
 
@@ -34,6 +38,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -49,15 +55,23 @@ public class CreatProjectActivity extends BaseActivity {
 
     String[] project_staff_ids = null;
 
+    String hlId;
+
     List<StaffUser> pm = null;
     List<StaffUser> buyer = null;
     List<StaffUser> check = null;
     List<StaffUser> quality = null;
 
+    List<HouseType> houseTypes = null;
+
     @ViewById
     ListView listView;
 
     String QUERY_STAFF_BY_ROLE =   Global.HOST + "/app/stf/queryStaffs.do?";
+
+    String QUERY_HOUSE_TYPES = Global.HOST + "/app/project/queryHouseLayout.do";
+
+    DatePickerDialog datePickerDialog;
 
     @AfterViews
     void init(){
@@ -69,6 +83,7 @@ public class CreatProjectActivity extends BaseActivity {
             buyer = new LinkedList<>();
             check = new LinkedList<>();
             quality =  new LinkedList<>();
+            houseTypes = new LinkedList<>();
 
             String companyId = MyApp.currentUser.getCompanyId();
             int companyType = MyApp.currentUser.getCompanyType();
@@ -77,6 +92,18 @@ public class CreatProjectActivity extends BaseActivity {
             getNetwork(QUERY_STAFF_BY_ROLE+"companyId="+companyId+"&companyType="+companyType+"&roleId="+Global.CEHCK,Global.CEHCK);
             getNetwork(QUERY_STAFF_BY_ROLE+"companyId="+companyId+"&companyType="+companyType+"&roleId="+Global.BUYER,Global.BUYER);
             getNetwork(QUERY_STAFF_BY_ROLE+"companyId="+companyId+"&companyType="+companyType+"&roleId="+Global.QUALITY,Global.QUALITY);
+            getNetwork(QUERY_HOUSE_TYPES,QUERY_HOUSE_TYPES);
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new Date());
+            datePickerDialog = new DatePickerDialog(this,new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                    monthOfYear++;
+                    project_item_value[O_BIRTHDAY] = String.format("%d-%d-%d",year,monthOfYear,dayOfMonth);
+                    adapter.notifyDataSetChanged();
+                }
+            },calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH));
 
             getProjectRows();
         }
@@ -163,7 +190,7 @@ public class CreatProjectActivity extends BaseActivity {
         //不需要检查的字段
         List<Integer> unCheckFeild = new ArrayList<>();
         unCheckFeild.add(PJ_REMARK);
-        unCheckFeild.add(O_ADDRESS);
+        unCheckFeild.add(O_BIRTHDAY);
 
         for (int i=0 ;i<project_item_value.length;i++){
             if(unCheckFeild.contains(i))continue;
@@ -177,12 +204,13 @@ public class CreatProjectActivity extends BaseActivity {
         params.put("pjName",project_item_value[0]);
         params.put("pjAddress",project_item_value[1]);
         params.put("pjHousetype",project_item_value[2]);
+        params.put("pjHousetypeId",hlId);
         params.put("pjArea",project_item_value[3]);
         params.put("pjContractnum",project_item_value[4]);
         params.put("pjRemark",project_item_value[5]);
 
         params.put("realName",project_item_value[6]);
-        params.put("address",project_item_value[7]);
+        params.put("birthDay",project_item_value[7]);
         params.put("userName",project_item_value[8]);
 
         params.put("pjDesigner",project_item_value[9]);
@@ -239,11 +267,22 @@ public class CreatProjectActivity extends BaseActivity {
 
             }
         }else if(tag.equals(CREATE_PROJECT)){
-            if(code==10001){
+            if(code == 10001){
                 showMiddleToast("创建成功");
                 getProjectRows();
                 adapter.notifyDataSetChanged();
                 showProgressBar(false);
+                finish();
+            }else{
+
+            }
+        }else if(tag.equals(QUERY_HOUSE_TYPES)){
+            if(code == NetworkImpl.REQ_SUCCESSS){
+                JSONArray jsonArray = respanse.getJSONArray("data");
+                for(int i=0;i<jsonArray.length();i++){
+                    HouseType houseType = JsonUtil.Json2Object(jsonArray.getString(i),HouseType.class);
+                    houseTypes.add(houseType);
+                }
             }else{
 
             }
@@ -271,7 +310,7 @@ public class CreatProjectActivity extends BaseActivity {
     public final static int CONTRACT_NUM = 4;
     public final static int PJ_REMARK = 5;
     public final static int O_NAME = 6;
-    public final static int O_ADDRESS = 7;
+    public final static int O_BIRTHDAY = 7;
     public final static int O_PHONE = 8;
     public final static int PJ_DESINER = 9;
     public final static int PJ_M = 10;
@@ -302,12 +341,7 @@ public class CreatProjectActivity extends BaseActivity {
                             .startForResult(ListModify.Add);
                     break;
                 case HOUSE_TYPE:
-                    SetProjectInfo_
-                            .intent(CreatProjectActivity.this)
-                            .title(title)
-                            .row(HOUSE_TYPE)
-                            .rowValue(rowValue)
-                            .startForResult(ListModify.Add);
+                    shouHouseType();
                     break;
                 case AREA:
                     SetProjectInfo_
@@ -341,13 +375,8 @@ public class CreatProjectActivity extends BaseActivity {
                             .rowValue(rowValue)
                             .startForResult(ListModify.Add);
                     break;
-                case O_ADDRESS:
-                    SetProjectInfo_
-                            .intent(CreatProjectActivity.this)
-                            .title(title)
-                            .row(O_ADDRESS)
-                            .rowValue(rowValue)
-                            .startForResult(ListModify.Add);
+                case O_BIRTHDAY:
+                    datePickerDialog.show();
                     break;
                 case O_PHONE:
                     SetProjectInfo_
@@ -377,8 +406,6 @@ public class CreatProjectActivity extends BaseActivity {
                 case PJ_Q:
                     showStaff(PJ_Q);
                     break;
-
-
             }
         }
     };
@@ -414,6 +441,26 @@ public class CreatProjectActivity extends BaseActivity {
                 project_item_value[row] = staffList.get(which).getName();
                 project_staff_ids[row-PJ_M] = staffList.get(which).getGlobal_key();
 
+                adapter.notifyDataSetChanged();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        WindowManager.LayoutParams p = dialog.getWindow().getAttributes();
+        dialog.getWindow().setAttributes(p);
+        dialogTitleLineColor(dialog);
+    }
+
+
+    void shouHouseType(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("选择户型");
+        builder.setAdapter(houseTypeAdapter,new Dialog.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialogInterface, int which) {
+                hlId = houseTypes.get(which).hlId;
+                project_item_value[HOUSE_TYPE] = houseTypes.get(which).hlName;
                 adapter.notifyDataSetChanged();
             }
         });
@@ -470,6 +517,41 @@ public class CreatProjectActivity extends BaseActivity {
             if(staff.getAvatar()!=null&&!staff.getAvatar().isEmpty())
                 iconfromNetwork(staffHolder.imageView,staff.getAvatar());
             staffHolder.textView.setText(staff.getName());
+            return convertView;
+        }
+    };
+
+    BaseAdapter houseTypeAdapter = new BaseAdapter() {
+        @Override
+        public int getCount() {
+            return houseTypes.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return houseTypes.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            StaffHolder staffHolder;
+            if(convertView == null){
+                convertView = mInflater.inflate(R.layout.item_staff_role, parent, false);
+                staffHolder = new StaffHolder();
+                staffHolder.imageView = (ImageView) convertView.findViewById(R.id.staff_avator);
+                staffHolder.textView = (TextView) convertView.findViewById(R.id.staff_name);
+                convertView.setTag(staffHolder);
+            }else{
+                staffHolder = (StaffHolder) convertView.getTag();
+            }
+            HouseType houseType = (HouseType) getItem(position);
+            staffHolder.imageView.setVisibility(View.INVISIBLE);
+            staffHolder.textView.setText(houseType.hlName);
             return convertView;
         }
     };

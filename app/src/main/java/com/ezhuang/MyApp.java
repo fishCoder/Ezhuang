@@ -15,6 +15,7 @@ import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
+import com.pgyersdk.crash.PgyCrashManager;
 
 import cn.jpush.android.api.JPushInterface;
 import me.leolin.shortcutbadger.ShortcutBadgeException;
@@ -72,8 +73,18 @@ public class MyApp extends Application {
         sEmojiNormal = getResources().getDimensionPixelSize(R.dimen.emoji_normal);
         sEmojiMonkey = getResources().getDimensionPixelSize(R.dimen.emoji_monkey);
 
-//        JPushInterface.setDebugMode(true);
-//        JPushInterface.init(this);
+        JPushInterface.setDebugMode(false);
+        JPushInterface.init(this);
+
+        String appId = "b87e159131abde328237831cd3902aad";  //蒲公英注册或上传应用获取的AppId
+        PgyCrashManager.register(this, appId);
+
+        int badgeCount = 100;
+        try {
+            ShortcutBadger.setBadge(getApplicationContext(), badgeCount);
+        } catch (ShortcutBadgeException e) {
+            //handle the Exception
+        }
 
         sUnread = new Unread();
     }

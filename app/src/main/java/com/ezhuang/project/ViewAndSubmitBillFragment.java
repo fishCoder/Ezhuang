@@ -147,7 +147,7 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
         this.mData = mData;
         Log.i(this.getClass().getSimpleName()+""," listview 刷新");
         adapter.notifyDataSetChanged();
-        BlankViewDisplay.setBlank(mData.size(), this, true, blankLayout, null);
+//        BlankViewDisplay.setBlank(mData.size(), this, true, blankLayout, null);
     }
 
 
@@ -220,21 +220,21 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
                             if(spMaterial.state == BillDetailState.UNBUY.state){
                                 SpMaterial sp = mData.get(position);
                                 SpMaterial tmp = new SpMaterial();
-                                tmp.bigTypeId = sp.bigTypeId;
-                                tmp.bigTypeName = sp.bigTypeName;
-                                tmp.mtId = sp.mtId;
-                                tmp.mtName = sp.mtName;
-                                tmp.sTypeId = sp.sTypeId;
-                                tmp.sTypeName = sp.sTypeName;
-                                tmp.spec = sp.spec;
-                                tmp.unitId = sp.unitId;
-                                tmp.unitName = sp.unitName;
-                                tmp.item_count = sp.item_count;
-                                tmp.item_id = sp.item_id;
-                                tmp.bmb_name = sp.bmb_name;
-                                tmp.bmb_m_name = sp.bmb_m_name;
-                                tmp.bmb_price = sp.bmb_price;
-                                tmp.bmb_m_spec = sp.bmb_m_spec;
+                                tmp.bigTypeId   =   sp.bigTypeId;
+                                tmp.bigTypeName =   sp.bigTypeName;
+                                tmp.mtId        =   sp.mtId;
+                                tmp.mtName      =   sp.mtName;
+                                tmp.sTypeId     =   sp.sTypeId;
+                                tmp.sTypeName   =   sp.sTypeName;
+                                tmp.spec        =   sp.spec;
+                                tmp.unitId      =   sp.unitId;
+                                tmp.unitName    =   sp.unitName;
+                                tmp.item_count  =   sp.item_count;
+                                tmp.item_id     =   sp.item_id;
+                                tmp.bmb_name    =   sp.bmb_name;
+                                tmp.bmb_m_name  =   sp.bmb_m_name;
+                                tmp.bmb_price   =   sp.bmb_price;
+                                tmp.bmb_m_spec  =   sp.bmb_m_spec;
                                 PurchaseActivity_.intent(getActivity()).spMaterial(tmp).startForResult(16);
                             }else{
                                 showButtomToast("已经采购过了");
@@ -264,21 +264,28 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
                 @Override
                 public void onClick(View v) {
 
-                    if(Global.PROJECT_MANAGER.equals(roleId)){
-                        mData.remove(position);
-                        notifyDataSetChanged();
-                        listView.closeOpenedItems();
-                        BlankViewDisplay.setBlank(mData.size(), ViewAndSubmitBillFragment.this, true, blankLayout, null);
+                if(Global.PROJECT_MANAGER.equals(roleId)){
+                    SpMaterial item = mData.get(position);
+                    SpMaterial sp = new SpMaterial();
+                    sp.item_id = item.item_id;
+                    sp.itemImages = item.itemImages;
 
-                    }
+                    ((AddMaterialToBillActivity)getActivity()).deleteBillItem.add(sp);
+                    mData.remove(position);
+                    notifyDataSetChanged();
+                    listView.closeOpenedItems();
 
-                    if(Global.BUYER.equals(roleId)){
-                        mData.get(position).bmb_name = "";
-                        notifyDataSetChanged();
-                        listView.closeOpenedItems();
-                        ((ViewBillDetailActivity)getActivity()).reflashBottom();
+                    BlankViewDisplay.setBlank(mData.size(), ViewAndSubmitBillFragment.this, true, blankLayout, null);
 
-                    }
+                }
+
+                if(Global.BUYER.equals(roleId)){
+                    mData.get(position).bmb_name = "";
+                    notifyDataSetChanged();
+                    listView.closeOpenedItems();
+                    ((ViewBillDetailActivity)getActivity()).reflashBottom();
+
+                }
 
                 }
             });

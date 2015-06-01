@@ -17,14 +17,14 @@ import android.widget.TextView;
 import com.ezhuang.BaseActivity;
 import com.ezhuang.MyApp;
 import com.ezhuang.R;
+import com.ezhuang.SelectActivity;
+import com.ezhuang.SelectActivity_;
 import com.ezhuang.common.Global;
 import com.ezhuang.common.JsonUtil;
 import com.ezhuang.common.network.NetworkImpl;
 import com.ezhuang.model.AccountInfo;
-import com.ezhuang.model.BillDetail;
 import com.ezhuang.model.Project;
 import com.ezhuang.model.ProjectBill;
-import com.ezhuang.model.SpMaterial;
 import com.ezhuang.model.StaffUser;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshExpandableListView;
@@ -65,16 +65,18 @@ public class ViewBillingActivity extends BaseActivity {
     @StringArrayRes
     String[] bill_state;
 
-    String QUERY_BILL = Global.HOST + "/app/project/queryBillings.do?global_key=%s&roleId=%s&state=%s&keyword=%s";
+    String QUERY_BILL = Global.HOST + "/app/project/queryBillings.do?global_key=%s&roleId=%s&state=%s&keyword=%s&beginTime=%s&endTime=%s";
 
-    String QUERY_BILL_MORE = Global.HOST + "/app/project/queryBillings.do?global_key=%s&roleId=%s&state=%s&lastId=%s&keyword=%s";
-
+    String QUERY_BILL_MORE = Global.HOST + "/app/project/queryBillings.do?global_key=%s&roleId=%s&state=%s&lastId=%s&keyword=%s&beginTime=%s&endTime=%s";
 
     List<Project> mType = new LinkedList<>();
 
     List<List<ProjectBill>> mData = new LinkedList<>();
 
     String state = "";
+
+    String startTime = "";
+    String endTime = "";
 
     @AfterViews
     void init(){
@@ -119,14 +121,19 @@ public class ViewBillingActivity extends BaseActivity {
                 StaffUser staffUser = MyApp.currentUser;
                 showDialogLoading();
 
-                getNetwork(String.format(QUERY_BILL,staffUser.getGlobal_key(),roleId,state,s.toString()),QUERY_BILL);
+                getNetwork(String.format(QUERY_BILL,staffUser.getGlobal_key(),roleId,state,s.toString(),startTime,endTime),QUERY_BILL);
                 showDialogLoading();
             }
         });
-
+        findViewById(R.id.action_calender).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SelectActivity_.intent(ViewBillingActivity.this).start(startTime).end(endTime).startForResult(SelectActivity.REQUEST_CODE);
+            }
+        });
         StaffUser staffUser = AccountInfo.loadAccount(this);
         showDialogLoading();
-        getNetwork(String.format(QUERY_BILL,staffUser.getGlobal_key(),roleId,state,""),QUERY_BILL);
+        getNetwork(String.format(QUERY_BILL,staffUser.getGlobal_key(),roleId,state,"",startTime,endTime),QUERY_BILL);
     }
 
     BaseExpandableListAdapter adapter = new BaseExpandableListAdapter() {
@@ -304,7 +311,7 @@ public class ViewBillingActivity extends BaseActivity {
                 try{
                     Log.i("json",respanse.getString("data"));
                 }catch (Exception e){
-                    showButtomToast("没有待采购");
+                    showButtomToast("没有记录");
                     return;
                 }
                 toObject(respanse);
@@ -397,20 +404,29 @@ public class ViewBillingActivity extends BaseActivity {
         }
     }
 
-
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if( requestCode == SelectActivity.REQUEST_CODE ){
+            if(resultCode == RESULT_OK){
+                startTime = data.getStringExtra("start");
+                endTime = data.getStringExtra("end");
+                getNetwork(String.format(QUERY_BILL,MyApp.currentUser.getGlobal_key(),roleId,state,editText.getText().toString(),startTime,endTime),QUERY_BILL);
+                showDialogLoading();
+            }
+        }
+    }
 
     PullToRefreshBase.OnRefreshListener onRefreshListener = new PullToRefreshBase.OnRefreshListener<ListView>() {
         @Override
         public void onRefresh(PullToRefreshBase<ListView> refreshView) {
             StaffUser staffUser = MyApp.currentUser;
             if(PullToRefreshBase.Mode.PULL_FROM_START == listView.getCurrentMode()){
-
-                getNetwork(String.format(QUERY_BILL,staffUser.getGlobal_key(),roleId,state,editText.getText().toString()),QUERY_BILL);
+                getNetwork(String.format(QUERY_BILL,staffUser.getGlobal_key(),roleId,state,editText.getText().toString(),startTime,endTime),QUERY_BILL);
             }else{
                 int i = mData.size()-1;
                 int index = mData.get(i).size()-1;
                 String lastId = mData.get(i).get(index).getId();
-                getNetwork(String.format(QUERY_BILL_MORE,staffUser.getGlobal_key(),roleId,state,lastId,editText.getText().toString()),QUERY_BILL_MORE);
+                getNetwork(String.format(QUERY_BILL_MORE,staffUser.getGlobal_key(),roleId,state,lastId,editText.getText().toString(),startTime,endTime),QUERY_BILL_MORE);
             }
         }
     };

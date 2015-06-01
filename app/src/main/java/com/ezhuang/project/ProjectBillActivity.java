@@ -1,5 +1,6 @@
 package com.ezhuang.project;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,6 +17,7 @@ import com.ezhuang.project.detail.ListListener;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Extra;
+import org.androidannotations.annotations.OnActivityResult;
 import org.androidannotations.annotations.OptionsItem;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -120,6 +122,23 @@ public class ProjectBillActivity extends BaseActivity {
 
         }
 
+    }
+
+    @OnActivityResult(0)
+    void changeBillState(int resultCode,Intent data){
+        if(resultCode == RESULT_OK){
+            String pjBillId = data.getStringExtra("pjBillId");
+            int state = data.getIntExtra("state",0);
+
+            for (ProjectBill bill:bills){
+                if(bill.getId().equals(pjBillId)){
+                    bill.setState(state);
+                    fragment.updateDate(bills);
+                    return ;
+                }
+            }
+
+        }
     }
 
     @OptionsItem(android.R.id.home)

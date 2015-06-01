@@ -1,33 +1,26 @@
 package com.ezhuang.quality;
 
+
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
+import android.graphics.Paint;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.ezhuang.BaseActivity;
-import com.ezhuang.ImagePagerActivity_;
 import com.ezhuang.R;
 import com.ezhuang.common.BlankViewDisplay;
 import com.ezhuang.common.Global;
 import com.ezhuang.common.JsonUtil;
 import com.ezhuang.common.network.NetworkImpl;
-import com.ezhuang.model.PhotoData;
 import com.ezhuang.model.ProjectProgress;
-import com.ezhuang.project.FillBillItemFragment;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.ImageSize;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
@@ -39,7 +32,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -84,7 +76,12 @@ public class ViewProjectProgressActivity extends BaseActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.i("position",String.valueOf(position));
                 ProjectProgress pg = mData.get(position-1);
-                ProgressDetailActivity_.intent(ViewProjectProgressActivity.this).roleId(roleId).pjId(pjId).pg(pg).start();
+                if(pg.quoCheckResult==3&&pg.pgState==1){
+                    AddProjectProgressActivity_.intent(ViewProjectProgressActivity.this).projectId(pjId).pg(pg).startForResult(529);
+                }else{
+                    ProgressDetailActivity_.intent(ViewProjectProgressActivity.this).roleId(roleId).pjId(pjId).pg(pg).start();
+                }
+
             }
         });
 
@@ -169,12 +166,30 @@ public class ViewProjectProgressActivity extends BaseActivity {
             ProjectProgress pg = (ProjectProgress) getItem(position);
 
             viewHolder.pg_name.setText(pg.nodeName);
+
+            if(pg.pgState==2){
+                viewHolder.pg_name.getPaint().setFlags(Paint. STRIKE_THRU_TEXT_FLAG);
+            }
+
             viewHolder.pg_time.setText(pg.time);
             viewHolder.pg_remark.setText(pg.pgRemark);
             if(pg.isNeedOwnerCheck()){
                 viewHolder.layout_owner.setVisibility(View.VISIBLE);
-                viewHolder.owner_state.setText(pg_state[pg.owerCheckResult]);
-                viewHolder.owner_state.setTextColor(pg_state_color[pg.owerCheckResult]);
+                if(pg.owerScore==0){
+                    viewHolder.owner_state.setText(pg_state[pg.owerCheckResult]);
+                    viewHolder.owner_state.setTextColor(getResources().getColor(pg_state_color[pg.owerCheckResult]));
+                }else{
+                    int i=0;
+                    StringBuffer stars = new StringBuffer();
+                    for(;i<pg.owerScore;i++){
+                        stars.append("★");
+                    }
+                    for (;i<ProjectProgress.SCORE;i++){
+                        stars.append("☆");
+                    }
+                    viewHolder.owner_state.setText(stars.toString());
+                    viewHolder.owner_state.setTextColor(getResources().getColor(R.color.yellow));
+                }
             }else{
                 viewHolder.layout_owner.setVisibility(View.GONE);
             }
@@ -217,9 +232,21 @@ public class ViewProjectProgressActivity extends BaseActivity {
         }
     };
 
-
-
-
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode==529){
+            if(resultCode==RESULT_OK){
+                String pgId = data.getStringExtra("pgId");
+                for (ProjectProgress pg : mData){
+                    if(pg.pgId.equals(pgId)){
+                        pg.pgState = 2;
+                        adapter.notifyDataSetChanged();
+                        break;
+                    }
+                }
+            }
+        }
+    }
 
     @OptionsItem(android.R.id.home)
     void home() {

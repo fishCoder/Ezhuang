@@ -28,7 +28,7 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
+import cn.jpush.android.api.JPushInterface;
 
 
 /**
@@ -128,6 +128,18 @@ public class BaseActivity extends ActionBarActivity implements NetworkCallback {
         }
 
         super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        JPushInterface.onResume(this);
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        JPushInterface.onPause(this);
+        super.onPause();
     }
 
     protected void initSetting() {

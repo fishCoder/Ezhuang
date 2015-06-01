@@ -14,6 +14,9 @@
     <string name="purchase_record">采购记录</string>
     <string name="problem">投诉/报修</string>
     <string name="project_detail">项目详情</string>
+    <string name="select">筛选</string>
+    <string name="alter_init_password">修改初始密码</string>
+    <string name="pick_video">选择视频</string>
 
     <string name="action_settings">设置</string>
     <string name="action_refrush">刷新</string>
@@ -26,7 +29,7 @@
     <string name="title_activity_setting">设置</string>
     <string name="title_activity_user_info">个人信息</string>
     <string name="title_activity_set_password">密码设置</string>
-    <string name="title_activity_feedback">用户反馈</string>
+
     <string name="title_activity_about">关于我们</string>
     <string name="title_activity_topic_comment">讨论</string>
     <string name="topic_create">创建讨论</string>
@@ -44,7 +47,7 @@
 
     <string name="title_activity_friend">选择好友</string>
     <string name="empty"></string>
-    <string name="title_activity_like_users_list">点赞的用户</string>
+
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_maopao_detail">冒泡详情</string>
     <string name="title_activity_user_maopao">所有冒泡</string>

@@ -1,28 +1,35 @@
 package com.ezhuang;
 
 import android.content.Intent;
+import android.net.Uri;
+import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.ezhuang.common.Banner;
 import com.ezhuang.common.Global;
 import com.ezhuang.common.network.BaseFragment;
 import com.ezhuang.model.AccountInfo;
 import com.ezhuang.model.Role;
 import com.ezhuang.model.StaffUser;
-import com.ezhuang.project.ProjectBillActivity_;
+import android.widget.LinearLayout.LayoutParams;
 import com.ezhuang.project.ViewBillingActivity_;
 import com.ezhuang.project.detail.CreatProjectActivity_;
 import com.ezhuang.project.detail.ViewProjectActivity_;
-import com.ezhuang.purchase.PurchaseActivity;
 import com.ezhuang.purchase.PurchaseRecordActivity_;
 import com.ezhuang.quality.ViewProgressActivity_;
 import com.readystatesoftware.viewbadger.BadgeView;
+
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
@@ -44,27 +51,43 @@ public class FragmentHome extends BaseFragment {
 
     @StringArrayRes
     String[] staff_apps;
-    int[] staff_apps_icon = new int[]{R.mipmap.ic_project,R.mipmap.ic_project,R.mipmap.ic_project};
+    int[] staff_apps_icon = new int[]{R.mipmap.ic_new_project,R.mipmap.ic_project_rec,R.mipmap.ic_fix};
 
     @StringArrayRes
     String[] project_manager_apps;
-    int[] project_manager_apps_icon = new int[]{R.mipmap.bill,R.mipmap.bill,R.mipmap.bill};
+    int[] project_manager_apps_icon = new int[]{R.mipmap.ic_bill,R.mipmap.ic_bill_rec};
 
     @StringArrayRes
     String[] check_apps;
-    int[] check_apps_icon = new int[]{R.mipmap.ic_check,R.mipmap.ic_check};
+    int[] check_apps_icon = new int[]{R.mipmap.ic_check,R.mipmap.ic_check_rec};
 
     @StringArrayRes
     String[] buyer_apps;
-    int[] buyer_apps_icon = new int[]{R.mipmap.ic_purchase,R.mipmap.ic_purchase};
+    int[] buyer_apps_icon = new int[]{R.mipmap.ic_buy,R.mipmap.ic_buy_rec};
 
     @StringArrayRes
     String[] quality_apps;
-    int[] quality_apps_icon = new int[]{R.mipmap.ic_quality};
+    int[] quality_apps_icon = new int[]{R.mipmap.ic_quolity};
 
     @ViewById
     ListView listRoleFunction;
 
+
+    ViewPager   viewpager;
+
+    TextView    tv_image_description;
+
+    LinearLayout ll_point_group;
+
+    List<Banner.PhotoItem> items;
+
+    View banner;
+
+    boolean isShow = true;
+
+    private List<ImageView> mImageList = new LinkedList<>();
+    private int previousPointEnale = 0;
+    private boolean isStop = false;
 
     @AfterViews
     void init(){
@@ -82,11 +105,15 @@ public class FragmentHome extends BaseFragment {
 
 
         }
-        listRoleFunction.setAdapter(new MyAdapter());
+
 
         listRoleFunction.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(isShow){
+                    position--;
+                }
+
                 if(list.get(position)[0].equals("采购")){
                     ViewBillingActivity_.intent(getActivity()).roleId(Global.BUYER).start();
                 }else
@@ -123,7 +150,68 @@ public class FragmentHome extends BaseFragment {
             }
         });
 
+        loadBanners();
 
+
+        listRoleFunction.setAdapter(new MyAdapter());
+    }
+
+    void loadBanners(){
+
+        items = AccountInfo.loadBanners(getActivity());
+        if(items.size()==0){
+            isShow = false;
+            return;
+        }
+        for (Banner.PhotoItem item : items){
+            if(!item.isCached(getActivity())){
+                isShow = false;
+                return;
+            }
+        }
+        if(banner!=null){
+            listRoleFunction.removeHeaderView(banner);
+            listRoleFunction.addHeaderView(banner);
+            isShow = true;
+            return;
+        }
+        banner = getActivity().getLayoutInflater().inflate(R.layout.banner,null);
+        listRoleFunction.addHeaderView(banner);
+        viewpager = (ViewPager) banner.findViewById(R.id.viewpager);
+        ll_point_group = (LinearLayout) banner.findViewById(R.id.ll_point_group);
+        tv_image_description = (TextView) banner.findViewById(R.id.tv_image_description);
+
+        ImageView mImageView;
+        LayoutParams params;
+        // 初始化广告条资源
+        for (Banner.PhotoItem item : items) {
+            mImageView = new ImageView(getActivity());
+            Uri uri = Uri.fromFile(item.getCacheFile(getActivity()));
+            Log.v("uri",uri.toString());
+            mImageView.setImageURI(uri);
+            mImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            mImageList.add(mImageView);
+
+            // 初始化广告条正下方的"点"
+            View dot = new View(getActivity());
+            dot.setBackgroundResource(R.color.item_press);
+            params = new LayoutParams(10, 10);
+            params.leftMargin = 10;
+            dot.setLayoutParams(params);
+            dot.setEnabled(false);
+            ll_point_group.addView(dot);
+        }
+
+        viewpager.setAdapter(new BannerAdapter());
+
+        // 设置广告条跳转时，广告语和状态语的变化
+        viewpager.setOnPageChangeListener(new BannerListener());
+
+        // 初始化广告条，当前索引Integer.MAX_VALUE的一半
+        int index = (Integer.MAX_VALUE / 2) - (Integer.MAX_VALUE / 2 % items.size());
+        viewpager.setCurrentItem(index); // 设置当前选中的Page，会触发onPageChangListener.onPageSelected方法
+
+        isShow = true;
     }
 
     List<Object[]> getApps(String roleId){
@@ -203,5 +291,82 @@ public class FragmentHome extends BaseFragment {
 
     }
 
+    private class BannerListener implements OnPageChangeListener {
 
+        @Override
+        public void onPageScrollStateChanged(int arg0) {
+
+        }
+
+        @Override
+        public void onPageScrolled(int arg0, float arg1, int arg2) {
+
+        }
+
+        @Override
+        public void onPageSelected(int arg0) {
+            // 获取新的位置
+            int newPosition = arg0 % items.size();
+            // 设置广告标语
+            tv_image_description.setText(items.get(newPosition).description);
+            // 消除上一次的状态点
+            ll_point_group.getChildAt(previousPointEnale).setBackgroundResource(R.color.item_press);
+            // 设置当前的状态点“点”
+            ll_point_group.getChildAt(newPosition).setBackgroundResource(R.color.white);
+            // 记录位置
+            previousPointEnale = newPosition;
+        }
+
+    }
+
+    /**
+     * ViewPager数据适配器
+     */
+    private class BannerAdapter extends PagerAdapter {
+
+        @Override
+        public int getCount() {
+            // 将viewpager页数设置成Integer.MAX_VALUE，可以模拟无限循环
+            return Integer.MAX_VALUE;
+        }
+
+        /**
+         * 复用对象 true 复用view false 复用的是Object
+         */
+        @Override
+        public boolean isViewFromObject(View arg0, Object arg1) {
+            // TODO Auto-generated method stub
+            return arg0 == arg1;
+        }
+
+        /**
+         * 销毁对象
+         *
+         * @param position
+         *            被销毁对象的索引位置
+         */
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            container.removeView(mImageList.get(position % mImageList.size()));
+        }
+
+        /**
+         * 初始化一个对象
+         *
+         * @param position
+         *            初始化对象的索引位置
+         */
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            container.addView(mImageList.get(position % mImageList.size()));
+            return mImageList.get(position % mImageList.size());
+        }
+
+    }
+
+    @Override
+    public void onDestroy() {
+        isStop = true;
+        super.onDestroy();
+    }
 }

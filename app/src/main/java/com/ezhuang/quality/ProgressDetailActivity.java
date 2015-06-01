@@ -37,6 +37,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import cn.sharesdk.framework.ShareSDK;
+import cn.sharesdk.onekeyshare.OnekeyShare;
+
 /**
  * Created by Administrator on 2015/4/24 0024.
  */
@@ -63,6 +66,8 @@ public class ProgressDetailActivity extends BaseActivity {
     TextView pgOwnerEmeExplain;
     @ViewById
     GridView gridView;
+    @ViewById
+    View layout_share;
 
     @StringArrayRes
     String[] pg_state;
@@ -117,6 +122,26 @@ public class ProgressDetailActivity extends BaseActivity {
         }else{
             findViewById(R.id.item_project).setVisibility(View.GONE);
         }
+
+        if(pg!=null){
+            if(Global.PROJECT_MANAGER.equals(roleId)&&pg.owerScore!=0){
+                layout_share.setVisibility(View.VISIBLE);
+                layout_share.findViewById(R.id.share).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ShareSDK.initSDK(ProgressDetailActivity.this);
+                        OnekeyShare oks = new OnekeyShare();
+                        oks.setTitle(getString(R.string.share));
+                        oks.setText("装修进度-"+pg.nodeName);
+                        oks.setUrl("http://www.91jzw.com/index/home/share_pg.do?pgId="+pg.pgId);
+                        for(String url:pg.imgUrls)
+                            oks.setImageUrl(url);
+                        oks.show(ProgressDetailActivity.this);
+                    }
+                });
+            }
+        }
+
     }
 
     void fill_progress(){
@@ -145,8 +170,22 @@ public class ProgressDetailActivity extends BaseActivity {
         pg_remark.setText(pg.pgRemark);
         if (pg.isNeedOwnerCheck()&&Global.PROJECT_MANAGER.equals(roleId)) {
             layout_owner.setVisibility(View.VISIBLE);
-            owner_state.setText(pg_state[pg.owerCheckResult]);
-            owner_state.setTextColor(pg_state_color[pg.owerCheckResult]);
+            if(pg.owerScore==0){
+                owner_state.setText(pg_state[pg.owerCheckResult]);
+                owner_state.setTextColor(getResources().getColor(pg_state_color[pg.owerCheckResult]));
+            }else{
+                int i=0;
+                StringBuffer stars = new StringBuffer();
+                for(;i<pg.owerScore;i++){
+                    stars.append("★");
+                }
+                for (;i<ProjectProgress.SCORE;i++){
+                    stars.append("☆");
+                }
+                owner_state.setText(stars.toString());
+                owner_state.setTextColor(getResources().getColor(R.color.yellow));
+            }
+
             pgOwnerEmeExplain.setText(pg.owerRemark==null?"":pg.owerRemark);
         } else {
             layout_owner.setVisibility(View.GONE);

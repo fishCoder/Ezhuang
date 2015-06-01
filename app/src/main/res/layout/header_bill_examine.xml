@@ -73,7 +73,7 @@
             android:id="@+id/layout_explain"
             android:orientation="vertical"
             android:visibility="gone"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <LinearLayout
                 android:layout_width="match_parent"

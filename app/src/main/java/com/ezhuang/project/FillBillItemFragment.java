@@ -149,9 +149,6 @@ public class FillBillItemFragment extends DialogFragment {
     int PHOTO_MAX_COUNT = 6;
 
 
-
-
-
     List<PhotoData> mData = new LinkedList<>();
 
     public void updateData(List<PhotoData> mData){

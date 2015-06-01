@@ -9,12 +9,31 @@ android {
         minSdkVersion 11
         targetSdkVersion 21
         versionCode 1
-        versionName "1.0"
+        versionName "0.9"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    signingConfigs {
+
+        release {
+            storeFile file('android.keystore')
+            storePassword "91jingzw"
+            keyAlias "91jz"
+            keyPassword "91jingzw"
+        }
+
+    }
+
+    buildTypes {
+
+        release {
+
+            signingConfig signingConfigs.release
         }
     }
 
@@ -28,6 +47,9 @@ android {
 repositories {
     maven { url 'http://maven.oschina.net/content/groups/public/' }
 }
+
+
+
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -52,6 +74,15 @@ dependencies {
     }
     compile project(':pulltorefresh')
     compile files('libs/jpush-sdk-release1.7.3.jar')
+
+    compile files("MobTools.jar")
+    compile files("ShareSDK-Core-2.6.0.jar")
+    compile files("ShareSDK-SinaWeibo-2.6.0.jar")
+    compile files("ShareSDK-Wechat-2.6.0.jar")
+    compile files("ShareSDK-Wechat-Core-2.6.0.jar")
+    compile files("ShareSDK-Wechat-Moments-2.6.0.jar")
+
+    compile files("pgyer_sdk_2.1.2.jar")
 }
 
 //################

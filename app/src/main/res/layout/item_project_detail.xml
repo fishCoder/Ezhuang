@@ -44,6 +44,7 @@
                 android:layout_width="12dp"
                 android:layout_height="12dp"
                 android:layout_marginRight="7dp"
+                android:visibility="gone"
                 android:scrollbars = "horizontal"
                 android:src="@mipmap/ic_file_pdf" />
 
@@ -69,7 +70,7 @@
                 android:layout_height="12dp"
                 android:layout_marginRight="7dp"
                 android:scrollbars = "horizontal"
-                android:src="@mipmap/ic_file_video" />
+                android:src="@mipmap/icon_time" />
 
             <TextView
                 android:id="@+id/pj_create_time"
@@ -112,7 +113,7 @@
             android:scrollbars = "horizontal"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="15dp"
-            android:src="@mipmap/ic_file_pdf" />
+            android:src="@mipmap/icon_location" />
 
         <EditText
             android:id="@+id/pj_address"
@@ -150,7 +151,7 @@
             android:scrollbars = "horizontal"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="15dp"
-            android:src="@mipmap/ic_file_ppt" />
+            android:src="@mipmap/icon_user" />
 
         <TextView
             android:id="@+id/owner_name"
@@ -176,7 +177,7 @@
             android:scrollbars = "horizontal"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="15dp"
-            android:src="@mipmap/ic_file_apk" />
+            android:src="@mipmap/icon_mobile" />
 
         <TextView
             android:id="@+id/owner_phone"
@@ -373,6 +374,7 @@
             android:layout_height="wrap_content"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
+            android:background="@drawable/list_item_selector_2"
             android:gravity="center_vertical">
 
             <TextView
@@ -421,6 +423,7 @@
             android:layout_marginLeft="15dp"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
+            android:background="@drawable/list_item_selector_2"
             android:gravity="center_vertical">
 
             <TextView

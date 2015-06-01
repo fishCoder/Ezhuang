@@ -47,6 +47,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,8 +57,9 @@ import java.util.regex.Pattern;
  * Created by cc191954 on 14-8-233.
  */
 public class Global {
-    public static final String HOST_91JZ = "http://121.41.117.203:80";
-//    public static final String HOST_91JZ = "http://192.168.0.134:8080/HardcoverServer";
+//    public static final String HOST_91JZ = "http://121.41.117.203:80";
+    public static final String HOST_91JZ = "http://wwww.91jzw.com";
+//    public static final String HOST_91JZ = "http://192.168.0.178:8080/HardcoverServer";
 
     public static String HOST = HOST_91JZ;
 
@@ -68,6 +70,8 @@ public class Global {
     public static String BUYER = "8";
     public static String STAFF = "9";
     public static String QUALITY = "13";
+
+    public static String PUSH_BROADCAST = "jpush_broadcast";
 
     public static String[] PJ_STATE = new String[]{"","启动","进行中","竣工"};
 
@@ -308,6 +312,19 @@ public class Global {
         }
     }
 
+    public static String dataToNow(String time){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = null;
+        try {
+            date = sdf.parse(time);
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return "未知";
+        }
+        return dayToNow(date.getTime());
+    }
+
     public static String dayToNow(long time) {
         Calendar now = Calendar.getInstance();
 
@@ -515,7 +532,7 @@ public class Global {
     }
 
     public static boolean isMoblie(String moblie){
-        Pattern p = Pattern.compile("^((13[0-9])|(15[^4,\\D])|(17[0-9])|(18[0,5-9]))\\d{8}$");
+        Pattern p = Pattern.compile("^((1[3-9][0-9])|(15[^4,\\D])|(17[0-9])|(18[0,5-9]))\\d{8}$");
         Matcher m = p.matcher(moblie);
         return m.matches();
     }

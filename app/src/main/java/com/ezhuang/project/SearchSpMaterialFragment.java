@@ -58,6 +58,10 @@ public class SearchSpMaterialFragment extends BaseFragment {
         adapter.notifyDataSetChanged();
     }
 
+    public void refreshListView(){
+        adapter.notifyDataSetChanged();
+    }
+
     BaseAdapter adapter = new BaseAdapter() {
         @Override
         public int getCount() {
@@ -84,6 +88,7 @@ public class SearchSpMaterialFragment extends BaseFragment {
                 viewHolder.sp_m_name = (TextView) view.findViewById(R.id.sp_m_name);
                 viewHolder.sp_m_spec = (TextView) view.findViewById(R.id.sp_m_spec);
                 viewHolder.sp_m_unit_name = (TextView) view.findViewById(R.id.sp_m_unit_name);
+                viewHolder.icon_mark = view.findViewById(R.id.icon_mark);
                 view.findViewById(R.id.divider).setVisibility(View.GONE);
                 view.setTag(viewHolder);
                 convertView = view;
@@ -97,6 +102,12 @@ public class SearchSpMaterialFragment extends BaseFragment {
             viewHolder.sp_m_spec.setText(spMaterial.spec);
             viewHolder.sp_m_unit_name.setText(spMaterial.unitName);
 
+            if(((AddMaterialToBillActivity)getActivity()).isSelect(spMaterial.mtId)){
+                viewHolder.icon_mark.setVisibility(View.VISIBLE);
+            }else{
+                viewHolder.icon_mark.setVisibility(View.GONE);
+            }
+
             return convertView;
         }
     };
@@ -105,5 +116,6 @@ public class SearchSpMaterialFragment extends BaseFragment {
         TextView sp_m_name;
         TextView sp_m_spec;
         TextView sp_m_unit_name;
+        View     icon_mark;
     }
 }

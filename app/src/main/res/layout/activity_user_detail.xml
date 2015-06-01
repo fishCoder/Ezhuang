@@ -106,8 +106,9 @@
                 android:layout_alignLeft="@+id/name"
                 android:layout_below="@+id/linearLayout1"
                 android:layout_marginTop="17dp"
+
                 android:button="@drawable/checkbox_fans_big"
-                android:visibility="visible" />
+                android:visibility="gone" />
 
         </RelativeLayout>
 

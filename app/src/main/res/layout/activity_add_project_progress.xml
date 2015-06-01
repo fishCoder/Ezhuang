@@ -63,6 +63,13 @@
         android:gravity="center" />
 
 
-
+    <ImageView
+        android:id="@+id/video"
+        android:layout_below="@+id/gridView"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_margin="20dp"
+        android:background="@drawable/actionbar_item_selector"
+        android:src="@mipmap/ic_video"/>
 
 </RelativeLayout>

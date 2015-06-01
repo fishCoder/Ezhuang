@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divide_line_color"/>
+
+    <LinearLayout
+        android:id="@+id/layout_parchase"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:id="@+id/layout_home"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/btn_home"
+                android:layout_height="30dp"
+                android:layout_width="30dp"
+                android:src="@mipmap/icon_home"
+                 />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_message"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/btn_message"
+                android:layout_height="30dp"
+                android:layout_width="30dp"
+                android:src="@mipmap/icon_message" />
+
+            <com.readystatesoftware.viewbadger.BadgeView
+                android:id="@+id/badge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_notify_txt"
+                android:gravity="center"
+                android:visibility="gone"
+                android:layout_alignTop="@id/btn_message"
+                android:layout_alignRight="@id/btn_message"
+                android:layout_marginRight="-6dp"
+                android:layout_marginTop="-3dp" />
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/layout_settings"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/btn_settings"
+                android:layout_height="30dp"
+                android:layout_width="30dp"
+                android:src="@mipmap/icon_settings" />
+
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+</LinearLayout>

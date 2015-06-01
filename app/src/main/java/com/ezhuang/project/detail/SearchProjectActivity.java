@@ -1,5 +1,6 @@
 package com.ezhuang.project.detail;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -8,6 +9,8 @@ import android.widget.EditText;
 
 import com.ezhuang.BaseActivity;
 import com.ezhuang.R;
+import com.ezhuang.SelectActivity;
+import com.ezhuang.SelectActivity_;
 import com.ezhuang.common.Global;
 import com.ezhuang.common.JsonUtil;
 import com.ezhuang.common.network.NetworkImpl;
@@ -45,13 +48,17 @@ public class SearchProjectActivity extends BaseActivity{
 
     EditText editText;
 
-    String PROJECT_BY_SEARCH = Global.HOST + "/app/project/queryMyProject.do?roleId=%s&global_key=%s&keyword=%s";
+    String PROJECT_BY_SEARCH = Global.HOST + "/app/project/queryMyProject.do?roleId=%s&global_key=%s&keyword=%s&beginTime=%s&endTime=%s";
 
-    String PROJECT_BY_SEARCH_MORE = Global.HOST + "/app/project/queryMyProject.do?roleId=%s&global_key=%s&keyword=%s&lastPjId=%s";
+    String PROJECT_BY_SEARCH_MORE = Global.HOST + "/app/project/queryMyProject.do?roleId=%s&global_key=%s&keyword=%s&lastPjId=%s&beginTime=%s&endTime=%s";
 
     String keyword = "";
 
     FragmentProjectList fragment;
+
+
+    String startTime = "";
+    String endTime = "";
 
     @AfterViews
     void init(){
@@ -59,10 +66,16 @@ public class SearchProjectActivity extends BaseActivity{
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowCustomEnabled(true);
 
+
         actionBar.setCustomView(R.layout.activity_search_project_actionbar);
         editText = (EditText) findViewById(R.id.editText);
         editText.addTextChangedListener(watcher);
-
+        findViewById(R.id.action_calender).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SelectActivity_.intent(SearchProjectActivity.this).start(startTime).end(endTime).startForResult(SelectActivity.REQUEST_CODE);
+            }
+        });
         if(listProject == null){
             listProject = new LinkedList<>();
         }
@@ -73,13 +86,21 @@ public class SearchProjectActivity extends BaseActivity{
             @Override
             public void refresh() {
                 SearchProjectActivity.this
-                        .getNetwork(String.format(PROJECT_BY_SEARCH, roleId, staffId, keyword), PROJECT_BY_SEARCH);
+                        .getNetwork(String.format(PROJECT_BY_SEARCH, roleId, staffId, keyword, startTime, endTime), PROJECT_BY_SEARCH);
             }
 
             @Override
             public void loadMore() {
                 SearchProjectActivity.this
-                        .getNetwork(String.format(PROJECT_BY_SEARCH_MORE, roleId, staffId ,keyword ,listProject.get(listProject.size() - 1).getPjId()), PROJECT_BY_SEARCH_MORE);
+                        .getNetwork(String.format(
+                                PROJECT_BY_SEARCH_MORE,
+                                roleId,
+                                staffId,
+                                keyword,
+                                listProject.get(listProject.size() - 1).getPjId(),
+                                startTime,
+                                endTime),
+                                PROJECT_BY_SEARCH_MORE);
             }
         });
 
@@ -172,5 +193,18 @@ public class SearchProjectActivity extends BaseActivity{
 
     private void updateSearchResult() {
         fragment.updateData(listProject);
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if( requestCode == SelectActivity.REQUEST_CODE ){
+            if(resultCode == RESULT_OK){
+                startTime = data.getStringExtra("start");
+                endTime = data.getStringExtra("end");
+                getNetwork(String.format(PROJECT_BY_SEARCH, roleId, staffId, keyword, startTime, endTime), PROJECT_BY_SEARCH);
+                showDialogLoading();
+            }
+        }
     }
 }

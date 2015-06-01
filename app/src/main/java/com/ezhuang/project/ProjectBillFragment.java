@@ -61,17 +61,17 @@ public class ProjectBillFragment extends BaseFragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ProjectBill bill = mData.get(position-1);
 
-                if(bill.getState()!=5){
-                    ViewBillDetailActivity_.intent(getActivity())
-                            .roleId(Global.PROJECT_MANAGER)
-                            .staffId(MyApp.currentUser.getGlobal_key())
-                            .pjBillId(bill.getId())
-                            .billState(bill.getState())
-                            .isRecord(true)
-                            .startForResult(0);
-                }else{
-                    AddMaterialToBillActivity_.intent(getActivity()).projectId(bill.getPjId()).pjBillId(bill.getId()).startForResult(0);
-                }
+//                if(bill.getState()!=5){
+                ViewBillDetailActivity_.intent(getActivity())
+                        .roleId(Global.PROJECT_MANAGER)
+                        .staffId(MyApp.currentUser.getGlobal_key())
+                        .pjBillId(bill.getId())
+                        .billState(bill.getState())
+                        .isRecord(true)
+                        .startForResult(0);
+//                }else{
+//                    AddMaterialToBillActivity_.intent(getActivity()).projectId(bill.getPjId()).pjBillId(bill.getId()).startForResult(0);
+//                }
 
             }
         });
@@ -155,20 +155,17 @@ public class ProjectBillFragment extends BaseFragment {
         public void onRefresh(PullToRefreshBase<ListView> refreshView) {
 
             if(PullToRefreshBase.Mode.PULL_FROM_START == listView.getCurrentMode()){
-                new StopPullTask().execute();
+                listListener.refresh();
+                //new StopPullTask().execute();
             }else{
-                if (mData.size()< Global.PAGE_SIZE){
-                    new StopPullTask().execute();
-                }else{
-                    listListener.loadMore();
-                }
+                 listListener.loadMore();
             }
         }
     };
 
     @OnActivityResult(0)
     void reSubmitBill(int resultCode,Intent data){
-        if(resultCode==getActivity().RESULT_OK){
+        if(resultCode == getActivity().RESULT_OK){
             String pjBillId = data.getStringExtra("pjBillId");
 
             Log.i("重新提交返回结果pjBillId",pjBillId);
@@ -188,6 +185,7 @@ public class ProjectBillFragment extends BaseFragment {
 
         @Override
         protected Object doInBackground(Void... params) {
+
             return new Object();
         }
 
