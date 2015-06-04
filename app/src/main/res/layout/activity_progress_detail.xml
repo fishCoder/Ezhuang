@@ -272,5 +272,20 @@
         android:stretchMode="columnWidth"
         android:gravity="center" />
 
+    <com.ezhuang.common.AutoHeightGridView
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:id="@+id/videoGridView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:columnWidth="@dimen/image_display_width"
+        android:numColumns="3"
+        android:horizontalSpacing="8dp"
+        android:verticalSpacing="8dp"
+        android:stretchMode="columnWidth"
+        android:gravity="center" />
+
 
 </LinearLayout>

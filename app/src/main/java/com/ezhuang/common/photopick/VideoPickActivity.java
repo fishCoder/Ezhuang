@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
@@ -17,14 +18,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,22 +31,25 @@ import com.ezhuang.MyApp;
 import com.ezhuang.R;
 import com.ezhuang.common.CameraPreview;
 import com.ezhuang.common.Global;
+import com.ezhuang.common.RecorderVideoActivity;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 
 public class VideoPickActivity extends BaseActivity {
 
-    TextView mFoldName;
-    View mListViewGroup;
-    ListView mListView;
+
     GridView mGridView;
     LayoutInflater mInflater;
+
 
     public static final String EXTRA_MAX = "EXTRA_MAX";
 
@@ -75,7 +76,10 @@ public class VideoPickActivity extends BaseActivity {
         public long photoId;
         public int width;
         public int height;
-
+        public VideoInfo(String path,long id){
+            this.path = path;
+            this.photoId = id;
+        }
         public VideoInfo(String path) {
             this.path = path;
         }
@@ -107,91 +111,87 @@ public class VideoPickActivity extends BaseActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         mMaxPick = getIntent().getIntExtra(EXTRA_MAX, 6);
 
+        findViewById(R.id.layoutBottom).setVisibility(View.GONE);
         mInflater = getLayoutInflater();
         mGridView = (GridView) findViewById(R.id.gridView);
-        mListView = (ListView) findViewById(R.id.listView);
-        mListViewGroup = findViewById(R.id.listViewParent);
-        mListViewGroup.setOnClickListener(mOnClickFoldName);
-        mFoldName = (TextView) findViewById(R.id.foldName);
-
-        findViewById(R.id.selectFold).setOnClickListener(mOnClickFoldName);
 
         mPreView = (TextView) findViewById(R.id.preView);
         mPreView.setOnClickListener(onClickPre);
 
         lastTime = System.currentTimeMillis();
 
-        new AsyncTask<Void,Void,Void>(){
-            @Override
-            protected Void doInBackground(Void... params) {
+        new VideoAsyncTask().execute();
 
-                long start = System.currentTimeMillis();
+   }
 
-                displayTime(0);
+   class VideoAsyncTask extends  AsyncTask<Void,Void,Void>{
 
-                String[] projection = {
+        protected Void doInBackground(Void... params) {
+
+            long start = System.currentTimeMillis();
+
+            displayTime(0);
+
+            String[] projection = {
                     MediaStore.Video.Media._ID,
                     MediaStore.Video.Media.DISPLAY_NAME,
                     MediaStore.Video.Media.DATA};
 
-                ContentResolver mContentResolver = VideoPickActivity.this
-                        .getContentResolver();
+            ContentResolver mContentResolver = VideoPickActivity.this
+                    .getContentResolver();
 
-                Cursor mImageExternalCursor = mContentResolver.query(
-                        MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
+            Cursor mImageExternalCursor = mContentResolver.query(
+                    MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
 
-                displayTime(0);
+            displayTime(0);
 
-                ArrayList<VideoInfo> allPhoto = new ArrayList();
-                allPhoto.add(new VideoInfo(CameraItem));
-                mFoldersName.add(allPhotos);
+            ArrayList<VideoInfo> allPhoto = new ArrayList();
+            allPhoto.add(new VideoInfo(CameraItem));
+            mFoldersName.clear();
+            mFoldersName.add(allPhotos);
 
-                while (mImageExternalCursor.moveToNext()) {
-                    String s0 = mImageExternalCursor.getString(0);
-                    String s1 = mImageExternalCursor.getString(1);
-                    String s2 = mImageExternalCursor.getString(2);
+            while (mImageExternalCursor.moveToNext()) {
+                String s0 = mImageExternalCursor.getString(0);
+                String s1 = mImageExternalCursor.getString(1);
+                String s2 = mImageExternalCursor.getString(2);
 
-                    if (Global.isImageUri(s1)) {
-                        s1 = "file://" + s1;
-                    }
-                    VideoInfo imageInfo = new VideoInfo(s1);
-                    imageInfo.photoId = Long.valueOf(s0);
 
-                    ArrayList<VideoInfo> value = mFolders.get(s2);
-                    if (value == null) {
-                        value = new ArrayList<VideoInfo>();
-                        mFolders.put(s2, value);
-                        mFoldersName.add(s2);
-                    }
-                    allPhoto.add(imageInfo);
-                    value.add(imageInfo);
+                VideoInfo imageInfo = new VideoInfo(s2);
+                imageInfo.photoId = Long.valueOf(s0);
+
+                ArrayList<VideoInfo> value = mFolders.get(s2);
+                if (value == null) {
+                    value = new ArrayList<VideoInfo>();
+                    mFolders.put(s2, value);
+                    mFoldersName.add(s2);
                 }
-                mFolders.put(allPhotos, allPhoto);
-
-                long end = System.currentTimeMillis();
-
-                Log.v("加载数据",""+(end-start));
-
-                return null;
+                allPhoto.add(imageInfo);
+                value.add(imageInfo);
             }
+            mFolders.put(allPhotos, allPhoto);
 
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
+            long end = System.currentTimeMillis();
 
-                long start = System.currentTimeMillis();
+            Log.v("加载数据",""+(end-start));
 
-                displayTime(1);
+            return null;
+        }
 
-                mPhotoAdapter.setData(mFolders.get(mFoldersName.get(0)));
-                mListView.setAdapter(mFoldAdapter);
-                mListView.setOnItemClickListener(mOnItemClick);
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
 
-                displayTime(2);
+            long start = System.currentTimeMillis();
 
-                mGridView.setAdapter(mPhotoAdapter);
-                mGridView.setOnItemClickListener(mOnPhotoItemClick);
-                displayTime(3);
+            displayTime(1);
+
+            mPhotoAdapter.setData(mFolders.get(mFoldersName.get(0)));
+
+            displayTime(2);
+
+            mGridView.setAdapter(mPhotoAdapter);
+            mGridView.setOnItemClickListener(mOnPhotoItemClick);
+            displayTime(3);
 
 // 必须这么刷一下，否则很卡，也许是ImageLoader某个地方的线程写的有问题，当然了，更有可能是我用的的有问题：），先这样吧
 //                mGridView.post(new Runnable() {
@@ -201,19 +201,14 @@ public class VideoPickActivity extends BaseActivity {
 //                    }
 //                });
 
-                String folderName = mFoldersName.get(0);
-                mFoldName.setText(folderName);
 
-                long end = System.currentTimeMillis();
+            long end = System.currentTimeMillis();
 
-                Log.v("加载UI",""+(end-start));
-            }
-        }.execute();
-
+            Log.v("加载UI",""+(end-start));
+        }
     }
 
-
-    View.OnClickListener onClickPre = new View.OnClickListener() {
+   View.OnClickListener onClickPre = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if (mPickData.size() == 0) {
@@ -226,88 +221,37 @@ public class VideoPickActivity extends BaseActivity {
             intent.putExtra(PhotoPickDetailActivity.EXTRA_MAX, mMaxPick);
             startActivityForResult(intent, RESULT_PICK);
         }
-    };
+   };
 
-    ListView.OnItemClickListener mOnItemClick = new AdapterView.OnItemClickListener() {
+
+
+   GridView.OnItemClickListener mOnPhotoItemClick = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            String folderName = mFoldersName.get((int) id);
-            mPhotoAdapter.setData(mFolders.get(folderName));
-            mPhotoAdapter.notifyDataSetChanged();
-            mFoldName.setText(folderName);
-            mFoldAdapter.notifyDataSetChanged();
-            hideFolderList();
-        }
-    };
-
-    GridView.OnItemClickListener mOnPhotoItemClick = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Uri uri = Uri.parse(mFoldersName.get(position));
             Intent intent = new Intent(Intent.ACTION_VIEW);
-            Log.v("URI:::::::::", uri.toString());
-            intent.setDataAndType(uri, "video/mp4");
+            String url = mFolders.get(mFoldersName.get(0)).get(position).path;
+            Log.d("video local url",url);
+            intent.setDataAndType(Uri.fromFile(new File(url)),
+                    "video/mp4");
             startActivity(intent);
         }
-    };
-
-    View.OnClickListener mOnClickFoldName = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (mListViewGroup.getVisibility() == View.VISIBLE) {
-                hideFolderList();
-            } else {
-                showFolderList();
-            }
-        }
-
-    };
-
-    private void showFolderList() {
-        Animation animation = AnimationUtils.loadAnimation(this, R.anim.listview_up);
-        Animation fadeIn = AnimationUtils.loadAnimation(this, R.anim.listview_fade_in);
-
-        mListView.startAnimation(animation);
-        mListViewGroup.startAnimation(fadeIn);
-        mListViewGroup.setVisibility(View.VISIBLE);
-    }
-
-    private void hideFolderList() {
-        Animation animation = AnimationUtils.loadAnimation(VideoPickActivity.this, R.anim.listview_down);
-        Animation fadeOut = AnimationUtils.loadAnimation(VideoPickActivity.this, R.anim.listview_fade_out);
-        fadeOut.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                mListViewGroup.setVisibility(View.INVISIBLE);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-        });
-
-        mListView.startAnimation(animation);
-        mListViewGroup.startAnimation(fadeOut);
-    }
-
-    MenuItem mMenuItem;
+   };
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+   MenuItem mMenuItem;
+
+
+   @Override
+   public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_photo_pick, menu);
         mMenuItem = menu.getItem(0);
         updatePickCount();
 
         return true;
-    }
+   }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+   @Override
+   public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
         if (id == R.id.action_finish) {
@@ -319,53 +263,56 @@ public class VideoPickActivity extends BaseActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
+   }
 
-    private void send() {
+   private void send() {
 
         Intent intent = new Intent();
         intent.putExtra("data", mPickData);
         setResult(Activity.RESULT_OK, intent);
 
         finish();
-    }
+   }
 
-    private static final String RESTORE_FILEURI = "fileUri";
-    private Uri fileUri;
+   private static final String RESTORE_FILEURI = "fileUri";
+   private Uri fileUri;
 
-    public void camera() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        fileUri = CameraPhotoUtil.getOutputMediaFileUri();
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-        startActivityForResult(intent, RESULT_CAMERA);
-    }
+   public void camera() {
+        Intent intent=new Intent();
+        intent.setClass(VideoPickActivity.this, RecorderVideoActivity.class);
+        startActivityForResult(intent, 602);
+   }
 
-    final int RESULT_PICK = 20;
-    final int RESULT_CAMERA = 21;
+   final int RESULT_PICK = 20;
+   final int RESULT_CAMERA = 21;
 
 
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+   @Override
+   protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
         fileUri = savedInstanceState.getParcelable(RESTORE_FILEURI);
-    }
+   }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
+   @Override
+   protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
         if (fileUri != null) {
             outState.putParcelable(RESTORE_FILEURI, fileUri);
         }
-    }
+   }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+   @Override
+   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode==602){
+            if(resultCode==RESULT_OK){
+                new VideoAsyncTask().execute();
+            }
+        }
+   }
 
-    }
-
-    private boolean isPicked(String path) {
+   private boolean isPicked(String path) {
         for (VideoInfo item : mPickData) {
             if (item.path.equals(path)) {
                 return true;
@@ -373,11 +320,11 @@ public class VideoPickActivity extends BaseActivity {
         }
 
         return false;
-    }
+   }
 
-    private void addPicked(String path) {
-        if (!isPicked(path)) {
-            mPickData.add(new VideoInfo(path));
+    private void addPicked(VideoInfo videoInfo) {
+        if (!isPicked(videoInfo.path)) {
+            mPickData.add(videoInfo);
         }
     }
 
@@ -391,15 +338,13 @@ public class VideoPickActivity extends BaseActivity {
     }
 
 
-    List<VideoInfo> list;
 
-    class GridAdapter extends BaseAdapter {
+   class GridAdapter extends BaseAdapter {
 
         ArrayList<VideoInfo> mData = new ArrayList<VideoInfo>();
 
         public void setData(ArrayList<VideoInfo> data) {
             mData = data;
-            list = data;
         }
 
         public ArrayList<VideoInfo> getData() {
@@ -457,6 +402,8 @@ public class VideoPickActivity extends BaseActivity {
                     GridViewCheckTag checkTag = new GridViewCheckTag(holder.iconFore);
                     holder.check.setTag(checkTag);
                     holder.check.setOnClickListener(mClickItem);
+                    holder.size = (TextView) convertView.findViewById(R.id.video_size);
+                    holder.size.setVisibility(View.VISIBLE);
                     convertView.setTag(holder);
                 } else {
                     holder = (GridViewHolder) convertView.getTag();
@@ -464,21 +411,44 @@ public class VideoPickActivity extends BaseActivity {
 
                 VideoInfo data = (VideoInfo) getItem(position);
 
-                String[] VIDEOTHUMBNAIL_TABLE = new String[] {
+                holder.icon.setImageResource(R.mipmap.ic_default_image);
 
-                        MediaStore.Video.Media._ID, // 0
-                        MediaStore.Video.Media.DATA, // 1 from android.provider.MediaStore.Video
+                File file = new File(data.path);
+                try {
+                    FileInputStream fis = new FileInputStream(file);
+                    float size = (float)fis.available();
+                    size = size / (2<<19);
+                    holder.size.setText(String.format("%.2f mb",size));
+                    fis.close();
+                } catch (IOException e) {
+                    holder.size.setText("未知");
+                    e.printStackTrace();
+                }
 
-                };
+                new AsyncTask<Object,Void,Bitmap>(){
+                    ImageView icon;
 
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inDither = false;
-                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                options.inSampleSize = 1;
-                Bitmap bitmap = MediaStore.Video.Thumbnails.getThumbnail(getContentResolver(), data.photoId, MediaStore.Images.Thumbnails.MINI_KIND, options);
-                holder.icon.setImageBitmap(bitmap);
+                    @Override
+                    protected Bitmap doInBackground(Object... params) {
+                        Long id = (Long) params[0];
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inDither = false;
+                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        options.inSampleSize = 1;
+                        Bitmap bitmap = MediaStore.Video.Thumbnails.getThumbnail(getContentResolver(), id, MediaStore.Images.Thumbnails.MINI_KIND, options);
+                        ImageView icon = (ImageView) params[1];
+                        this.icon = icon;
+                        return bitmap;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Bitmap bitmap) {
+                        icon.setImageBitmap(bitmap);
+                    }
+                }.execute(data.photoId,holder.icon);
 
                 ((GridViewCheckTag) holder.check.getTag()).path = data.path;
+                ((GridViewCheckTag) holder.check.getTag()).id   = data.photoId;
 
                 boolean picked = isPicked(data.path);
                 holder.check.setChecked(picked);
@@ -526,118 +496,49 @@ public class VideoPickActivity extends BaseActivity {
                         Toast.makeText(VideoPickActivity.this, s, Toast.LENGTH_LONG).show();
                         return;
                     }
-
-                    addPicked(tag.path);
+                   ;
+                    addPicked(new VideoInfo(tag.path,tag.id));
                     tag.iconFore.setVisibility(View.VISIBLE);
                 } else {
                     removePicked(tag.path);
                     tag.iconFore.setVisibility(View.INVISIBLE);
                 }
-                mFoldAdapter.notifyDataSetChanged();
+
 
                 updatePickCount();
             }
         };
-    }
+   }
 
-    private void updatePickCount() {
+   private void updatePickCount() {
         String format = "完成(%d/%d)";
         mMenuItem.setTitle(String.format(format, mPickData.size(), mMaxPick));
 
         String formatPreview = "预览(%d/%d)";
         mPreView.setText(String.format(formatPreview, mPickData.size(), mMaxPick));
-    }
+   }
 
-    GridAdapter mPhotoAdapter = new GridAdapter();
+   GridAdapter mPhotoAdapter = new GridAdapter();
 
-    static class GridViewCheckTag {
+   static class GridViewCheckTag {
         View iconFore;
         String path = "";
-
+        Long   id = 0l;
         GridViewCheckTag(View iconFore) {
             this.iconFore = iconFore;
         }
-    }
+   }
 
-    static class GridViewHolder {
+   static class GridViewHolder {
         ImageView icon;
         ImageView iconFore;
         CheckBox check;
-    }
+        TextView size;
+   }
 
-    static class GridCameraHolder {
+   static class GridCameraHolder {
         CameraPreview cameraPreview;
-    }
+   }
 
-    BaseAdapter mFoldAdapter = new BaseAdapter() {
-        @Override
-        public int getCount() {
-            return mFoldersName.size();
-        }
 
-        @Override
-        public Object getItem(int position) {
-            return mFoldersName.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder;
-            if (convertView == null) {
-                convertView = mInflater.inflate(R.layout.photopick_list_item, parent, false);
-                holder = new ViewHolder();
-                holder.foldIcon = (ImageView) convertView.findViewById(R.id.foldIcon);
-                holder.foldName = (TextView) convertView.findViewById(R.id.foldName);
-                holder.photoCount = (TextView) convertView.findViewById(R.id.photoCount);
-                holder.check = convertView.findViewById(R.id.check);
-                convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
-
-            String name = (String) getItem(position);
-            ArrayList<VideoInfo> imageInfos = mFolders.get(name);
-            String uri = imageInfos.get(0).path;
-            int count = imageInfos.size();
-
-            holder.foldName.setText(name);
-            holder.photoCount.setText(String.format("%d个", count));
-
-            // 如果是照相机，就用下一张图片
-            if (uri.equals(CameraItem)) {
-                if (imageInfos.size() >= 2) {
-                    uri = imageInfos.get(1).path;
-                }
-            }
-
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inDither = false;
-            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-
-            Bitmap bitmap = MediaStore.Video.Thumbnails.getThumbnail(getContentResolver(),imageInfos.get(0).photoId, MediaStore.Images.Thumbnails.MINI_KIND, options);
-
-            holder.foldIcon.setImageBitmap(bitmap);
-
-            if (mFoldName.getText().toString().equals(name)) {
-                holder.check.setVisibility(View.VISIBLE);
-            } else {
-                holder.check.setVisibility(View.INVISIBLE);
-            }
-
-            return convertView;
-        }
-
-    };
-
-    static class ViewHolder {
-        ImageView foldIcon;
-        TextView foldName;
-        TextView photoCount;
-        View check;
-    }
 }

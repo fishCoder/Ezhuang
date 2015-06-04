@@ -8,6 +8,7 @@ import android.util.Log;
 import java.util.List;
 
 import com.activeandroid.ActiveAndroid;
+import com.ezhuang.common.PhoneType;
 import com.ezhuang.common.Unread;
 import com.ezhuang.common.third.MyImageDownloader;
 import com.ezhuang.model.StaffUser;
@@ -73,18 +74,17 @@ public class MyApp extends Application {
         sEmojiNormal = getResources().getDimensionPixelSize(R.dimen.emoji_normal);
         sEmojiMonkey = getResources().getDimensionPixelSize(R.dimen.emoji_monkey);
 
-        JPushInterface.setDebugMode(false);
-        JPushInterface.init(this);
+        if(!PhoneType.isX86()){
+            JPushInterface.setDebugMode(false);
+            JPushInterface.init(this);
+        }
+
+
 
         String appId = "b87e159131abde328237831cd3902aad";  //蒲公英注册或上传应用获取的AppId
         PgyCrashManager.register(this, appId);
 
-        int badgeCount = 100;
-        try {
-            ShortcutBadger.setBadge(getApplicationContext(), badgeCount);
-        } catch (ShortcutBadgeException e) {
-            //handle the Exception
-        }
+
 
         sUnread = new Unread();
     }

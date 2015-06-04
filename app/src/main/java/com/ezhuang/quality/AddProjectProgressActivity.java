@@ -2,7 +2,10 @@ package com.ezhuang.quality;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,22 +23,21 @@ import com.ezhuang.ImagePagerActivity_;
 import com.ezhuang.MyApp;
 import com.ezhuang.R;
 import com.ezhuang.common.Global;
-import com.ezhuang.common.JsonUtil;
 import com.ezhuang.common.PhotoOperate;
 import com.ezhuang.common.network.NetworkImpl;
 import com.ezhuang.common.photopick.PhotoPickActivity;
 import com.ezhuang.common.photopick.VideoPickActivity;
-import com.ezhuang.model.BillingDetail;
 import com.ezhuang.model.PhotoData;
 import com.ezhuang.model.ProjectProgress;
-import com.ezhuang.model.SpMaterial;
 import com.loopj.android.http.RequestParams;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.qiniu.android.http.ResponseInfo;
 import com.qiniu.android.storage.UpCompletionHandler;
+import com.qiniu.android.storage.UpProgressHandler;
 import com.qiniu.android.storage.UploadManager;
+import com.qiniu.android.storage.UploadOptions;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Click;
@@ -66,6 +68,9 @@ public class AddProjectProgressActivity extends BaseActivity {
     GridView gridView;
 
     @ViewById
+    GridView videoGridView;
+
+    @ViewById
     EditText message;
 
     @ViewById
@@ -80,9 +85,12 @@ public class AddProjectProgressActivity extends BaseActivity {
 
     List<PhotoData> mData = new LinkedList<>();
 
+    List<VideoPickActivity.VideoInfo> videoData = new LinkedList<>();
+
     String ADD_PROGRESS = Global.HOST + "/app/progress/addProgress.do";
 
     String QINIU_TOKEN = Global.HOST + "/app/qiniu/appToken.do";
+
 
     @Extra
     String projectId;
@@ -101,8 +109,12 @@ public class AddProjectProgressActivity extends BaseActivity {
     private Uri fileUri;
 
     int PHOTO_MAX_COUNT = 9;
+    int VIDEO_MAX_COUNT = 3;
 
     String pgPtUrl = "";
+
+    String pgVideoUrl = "";
+
 
     @AfterViews
     void init(){
@@ -111,6 +123,17 @@ public class AddProjectProgressActivity extends BaseActivity {
         mSize = new ImageSize(imageWidthPx, imageWidthPx);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        videoGridView.setAdapter(videoAdapter);
+        videoGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(position == videoData.size()){
+                    video();
+                }
+            }
+        });
+
 
         gridView.setAdapter(adapter);
 
@@ -237,14 +260,14 @@ public class AddProjectProgressActivity extends BaseActivity {
             }
         } else if (requestCode == RESULT_REQUEST_PICK_VIDEO){
             try {
-                ArrayList<VideoPickActivity.VideoInfo> pickPhots = (ArrayList<VideoPickActivity.VideoInfo>) data.getSerializableExtra("data");
-                for (VideoPickActivity.VideoInfo item : pickPhots) {
-                    Uri uri = Uri.parse(item.path);
-                    File outputFile = photoOperate.scal(uri);
-                    mData.add(new PhotoData(outputFile));
-                }
+
+            if(resultCode == RESULT_OK){
+                videoData = (ArrayList<VideoPickActivity.VideoInfo>) data.getSerializableExtra("data");
+                videoAdapter.notifyDataSetChanged();
+            }
+
             } catch (Exception e) {
-                showMiddleToast("缩放图片失败");
+                showMiddleToast("获取视频失败");
                 Global.errorLog(e);
             }
         } else
@@ -289,10 +312,9 @@ public class AddProjectProgressActivity extends BaseActivity {
 
                 } else {
                     holder.image.setVisibility(View.VISIBLE);
-                    holder.image.setImageResource(R.mipmap.make_maopao_add);
+                    holder.image.setImageResource(R.mipmap.ic_add_image);
                     holder.uri = "";
                 }
-
             } else {
                 holder.image.setVisibility(View.VISIBLE);
                 PhotoData photoData = mData.get(position);
@@ -321,6 +343,79 @@ public class AddProjectProgressActivity extends BaseActivity {
 
     };
 
+
+    BaseAdapter videoAdapter = new BaseAdapter() {
+
+        public int getCount() {
+            return videoData.size() + 1;
+        }
+
+        public Object getItem(int position) {
+            return null;
+        }
+
+        public long getItemId(int position) {
+            return position;
+        }
+
+
+        // create a new ImageView for each item referenced by the Adapter
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder holder;
+
+            holder = new ViewHolder();
+            holder.image = (ImageView) mInflater.inflate(R.layout.image_make_maopao, parent, false);
+            holder.image.setTag(holder);
+
+            if (position == getCount()-1) {
+
+                holder.image.setImageResource(R.mipmap.ic_add_video);
+                holder.uri = "";
+
+            } else {
+
+                VideoPickActivity.VideoInfo data = videoData.get(position);
+
+                holder.image.setImageResource(R.mipmap.ic_default_image);
+                new AsyncTask<Object,Void,Bitmap>(){
+                    ImageView icon;
+
+                    @Override
+                    protected Bitmap doInBackground(Object... params) {
+                        Long id = (Long) params[0];
+
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inDither = false;
+                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        options.inSampleSize = 1;
+
+                        Bitmap bitmap = MediaStore.Video.Thumbnails.getThumbnail(getContentResolver(), id, MediaStore.Images.Thumbnails.MINI_KIND, options);
+                        ImageView icon = (ImageView) params[1];
+
+                        this.icon = icon;
+                        return bitmap;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Bitmap bitmap) {
+                        icon.setImageBitmap(bitmap);
+                    }
+                }.execute(data.photoId,holder.image,position);
+            }
+
+            return holder.image;
+        }
+
+        class ViewHolder {
+            ImageView image;
+            String uri = "";
+        }
+
+    };
+
+    int totalVideo = 0;
+    int fialVideoCount = 0;
+    int hasVideoCount = 0;
     //上传失败图片数量
     int failCount = 0;
     //待上传图片总数
@@ -329,6 +424,10 @@ public class AddProjectProgressActivity extends BaseActivity {
     int hasUpImgCount = 0;
     //本地路径 服务器路径
     Map<String,String> hasUpPic = new HashMap<>();
+
+    Map<String,String> hasUpVideo = new HashMap<>();
+
+    String token = "";
 
     @Override
     public void parseJson(int code, JSONObject respanse, final String tag, int pos, Object data) throws JSONException {
@@ -339,9 +438,17 @@ public class AddProjectProgressActivity extends BaseActivity {
                 imgCount = 0;
                 hasUpImgCount = 0;
                 failCount = 0;
-                String token = respanse.getString("data");
+                token = respanse.getString("data");
                 Log.i("七牛上传凭证", token);
                 UploadManager uploadManager = new UploadManager();
+
+                if(mData.size()==0){
+                    failCount = 0;
+                    hasVideoCount = 0;
+                    totalVideo = videoData.size();
+                    upVideo();
+                    return;
+                }
 
                 for (PhotoData photoData : mData) {
                     Log.i("上传图片本地路径", photoData.uri.toString());
@@ -362,33 +469,54 @@ public class AddProjectProgressActivity extends BaseActivity {
                     uploadManager.put(new File(Global.getPath(this, photoData.uri)), key, token, new UpCompletionHandler() {
                         @Override
                         public void complete(String s, ResponseInfo responseInfo, JSONObject jsonObject) {
-                            if (responseInfo.statusCode == 200) {
-                                hasUpPic.put(url, s);
+                        if (responseInfo.statusCode == 200) {
+                            hasUpPic.put(url, s);
 
-                                hasUpImgCount++;
-                                showProgressBar(true, String.format("上传图片[%d/%d]", hasUpImgCount, imgCount));
+                            hasUpImgCount++;
+                            showProgressBar(true, String.format("上传图片[%d/%d]", hasUpImgCount, imgCount));
 
-                                if(pgPtUrl.isEmpty()){
-                                    pgPtUrl = s;
-                                }else{
-                                    pgPtUrl += "&"+s;
-                                }
-
-                                if (hasUpImgCount == imgCount) {
-                                    add_progress();
-                                }
-
-                                if (failCount != 0 && imgCount == (hasUpImgCount + failCount)){
-                                    showProgressBar(false);
-                                    showButtomToast(String.format("上传%d张 失败%d张",hasUpImgCount,failCount));
-                                }
-                            } else {
-                                failCount ++;
+                            if(pgPtUrl.isEmpty()){
+                                pgPtUrl = s;
+                            }else{
+                                pgPtUrl += "&"+s;
                             }
+
+                            if (hasUpImgCount == imgCount) {
+                                if(videoData.size() == 0){
+                                    add_progress();
+                                }else{
+                                    failCount = 0;
+                                    hasVideoCount = 0;
+                                    totalVideo = videoData.size();
+                                    Log.v("上传图片完成后调用","upVideo");
+                                    upVideo();
+                                }
+
+                            }
+
+                            if (failCount != 0 && imgCount == (hasUpImgCount + failCount)){
+                                showProgressBar(false);
+                                showButtomToast(String.format("上传%d张 失败%d张",hasUpImgCount,failCount));
+                            }
+                        } else {
+                            failCount ++;
+
+                            if (failCount != 0 && imgCount == (hasUpImgCount + failCount)){
+                                showProgressBar(false);
+                                showButtomToast(String.format("上传%d张 失败%d张",hasUpImgCount,failCount));
+                            }
+                        }
                         }
 
                     }, null);
 
+                }
+                if(hasUpImgCount==imgCount){
+                    if(videoData.size()!=0){
+                        Log.v("重新上传调用","upVideo");
+                        upVideo();
+                        return;
+                    }
                 }
                 showProgressBar(true, String.format("上传图片[%d/%d]", hasUpImgCount, imgCount));
             } else {
@@ -418,6 +546,90 @@ public class AddProjectProgressActivity extends BaseActivity {
     }
 
 
+
+    void upVideo(){
+
+        UploadManager uploadManager = new UploadManager();
+
+        for (int i=0;i<videoData.size();i++){
+            VideoPickActivity.VideoInfo info = videoData.get(i);
+
+            if(hasUpVideo.get(info.path)==null){
+
+                final String url = info.path;
+                Log.d("url",url);
+                String fileType = url.substring(url.lastIndexOf("."), url.length());
+                final String key = new StringBuffer()
+                        .append(MyApp.currentUser.getCompanyId())
+                        .append("/progress/")
+                        .append(UUID.randomUUID().toString())
+                        .append(fileType).toString();
+                File file = new File(url);
+                Log.d("file",String.valueOf(file.exists()));
+                Log.i("七牛上传凭证", token);
+                uploadManager.put(file,key,token,new UpCompletionHandler(){
+                    @Override
+                    public void complete(String s, ResponseInfo responseInfo, JSONObject jsonObject) {
+                        if(responseInfo.statusCode == 200){
+                            hasVideoCount ++;
+                            hasUpVideo.put(url, s);
+
+                            Log.v("video url",s);
+
+                            if (pgVideoUrl.isEmpty()){
+                                pgVideoUrl = s;
+                            }else{
+                                pgVideoUrl = pgVideoUrl + "&" + s;
+                            }
+
+
+                            if(hasVideoCount==totalVideo){
+                                add_progress();
+                                return;
+                            }else
+                            if((hasVideoCount+failCount)==totalVideo){
+                                showProgressBar(false);
+                                showButtomToast(String.format("上传%d个视频 失败%d个",hasVideoCount,fialVideoCount));
+                            }else{
+                                Log.v("上传完一个视频后调用","upVideo");
+                                upVideo();
+                            }
+
+
+                        }else{
+                            fialVideoCount ++;
+
+                            if((hasVideoCount+fialVideoCount)==totalVideo){
+                                showProgressBar(false);
+                                showButtomToast(String.format("上传%d个视频 失败%d个",hasVideoCount,fialVideoCount));
+                            }else{
+                                upVideo();
+                            }
+                        }
+
+
+                    }
+                },new UploadOptions(null,null, false,
+                        new UpProgressHandler(){
+                            public void progress(String key, double percent){
+                                Log.i("qiniu", key + ": " + percent);
+                                final double progress = percent*100;
+                                runOnUiThread(new Runnable() {
+                                    @Override public void run() {
+                                        showProgressBar(true, String.format("上传视频[%d/%d]  进度  %.2f%%", (totalVideo-videoData.size()), totalVideo ,progress));
+                                    }
+                                });
+
+                            }
+                        }, null));
+
+                break;
+            }
+        }
+
+
+    }
+
     int SELECT_NODE_TYEP = 2000;
     int SELECT_DEAL_TYEP = 2001;
     @Click
@@ -434,12 +646,13 @@ public class AddProjectProgressActivity extends BaseActivity {
         intent.putExtra("select_type", "deal");
         startActivityForResult(intent,SELECT_DEAL_TYEP);
     }
-    @Click
+
     void video(){
         Intent intent = new Intent(AddProjectProgressActivity.this, VideoPickActivity.class);
-        intent.putExtra(VideoPickActivity.EXTRA_MAX, 1);
+        intent.putExtra(VideoPickActivity.EXTRA_MAX, VIDEO_MAX_COUNT);
         startActivityForResult(intent, RESULT_REQUEST_PICK_VIDEO);
     }
+
     @OptionsItem
     void action_add(){
         String msg = message.getText().toString();
@@ -456,8 +669,8 @@ public class AddProjectProgressActivity extends BaseActivity {
             return;
         }
 
-        if(mData.size() == 0){
-            showMiddleToast("没有上传图片");
+        if(mData.size() == 0&&videoData.size() == 0){
+            showMiddleToast("没有图片或视频");
         }else{
             getNetwork(QINIU_TOKEN,QINIU_TOKEN);
             showProgressBar(true,"请求TOKEN");
@@ -496,6 +709,7 @@ public class AddProjectProgressActivity extends BaseActivity {
         params.put("pgPjId",projectId);
         params.put("pgRemark",message.getText().toString());
         params.put("pgPtUrl",pgPtUrl);
+        params.put("pgVideoUrl",pgVideoUrl);
         params.put("pgNode",pg_node);
         params.put("pgDeal",pg_deal);
 

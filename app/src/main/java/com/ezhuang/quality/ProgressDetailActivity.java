@@ -1,11 +1,21 @@
 package com.ezhuang.quality;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ezhuang.BaseActivity;
@@ -15,14 +25,20 @@ import com.ezhuang.adapter.GridImageAdapter;
 import com.ezhuang.common.Global;
 import com.ezhuang.common.JsonUtil;
 import com.ezhuang.common.network.NetworkImpl;
+import com.ezhuang.common.photopick.VideoPickActivity;
 import com.ezhuang.model.PhotoData;
 import com.ezhuang.model.Project;
 import com.ezhuang.model.ProjectProgress;
+import com.ezhuang.model.VideoData;
 import com.ezhuang.project.FillBillItemFragment;
 import com.ezhuang.project.ProjectDetailActivity;
 import com.ezhuang.project.ProjectDetailActivity_;
 import com.ezhuang.project.detail.SetProjectInfo_;
 import com.loopj.android.http.RequestParams;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
@@ -33,6 +49,7 @@ import org.androidannotations.annotations.res.StringArrayRes;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -67,6 +84,8 @@ public class ProgressDetailActivity extends BaseActivity {
     @ViewById
     GridView gridView;
     @ViewById
+    GridView videoGridView;
+    @ViewById
     View layout_share;
 
     @StringArrayRes
@@ -97,8 +116,24 @@ public class ProgressDetailActivity extends BaseActivity {
 
     ActionBar actionBar;
 
+    List<VideoData> videoDatas = new LinkedList<>();
+
+    DisplayImageOptions options = new DisplayImageOptions.Builder()
+            .showStubImage(R.mipmap.ic_default_image)          // 设置图片下载期间显示的图片
+            .showImageForEmptyUri(R.mipmap.ic_default_image)  // 设置图片Uri为空或是错误的时候显示的图片
+            .showImageOnFail(R.mipmap.ic_default_image)       // 设置图片加载或解码过程中发生错误显示的图片
+            .cacheInMemory(true)                        // 设置下载的图片是否缓存在内存中
+            .cacheOnDisc(true)
+            .build();
+
+    int imageWidthPx;
+    ImageSize mSize;
+
     @AfterViews
     void init() {
+        imageWidthPx = Global.dpToPx(120);
+        mSize = new ImageSize(imageWidthPx, imageWidthPx);
+
         actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowCustomEnabled(true);
@@ -229,6 +264,32 @@ public class ProgressDetailActivity extends BaseActivity {
                     startActivityForResult(intent, FillBillItemFragment.RESULT_REQUEST_IMAGE);
                 }
             });
+
+        }
+
+        if(pg.mediaUrls==null||pg.mediaUrls.length==0){
+            videoGridView.setVisibility(View.GONE);
+        }else{
+            for (String url:pg.mediaUrls){
+                VideoData videoData = new VideoData();
+                videoData.url = url;
+                videoData.thumdUrl = url+"?vframe/jpg/offset/0/w/360/h/360";
+                videoDatas.add(videoData);
+            }
+
+            videoGridView.setVisibility(View.VISIBLE);
+            videoGridView.setAdapter(videoAdapter);
+            videoGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    String url = videoDatas.get(position).url;
+                    Log.d("video web url",url);
+                    intent.setDataAndType(Uri.parse(url),
+                            "video/*");
+                    startActivity(intent);
+                }
+            });
         }
     }
 
@@ -260,6 +321,73 @@ public class ProgressDetailActivity extends BaseActivity {
         SetProjectInfo_.intent(this).row(PG_REJECT).title("驳回意见").startForResult(PG_REJECT);
     }
 
+
+    BaseAdapter videoAdapter = new BaseAdapter() {
+
+        public int getCount() {
+            return videoDatas.size();
+        }
+
+        public Object getItem(int position) {
+            return null;
+        }
+
+        public long getItemId(int position) {
+            return position;
+        }
+
+        ArrayList<ViewHolder> holderList = new ArrayList<ViewHolder>();
+        // create a new ImageView for each item referenced by the Adapter
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder holder;
+            if (convertView == null) {
+                holder = new ViewHolder();
+                holder.image = (ImageView) mInflater.inflate(R.layout.image_display, parent, false);
+                holderList.add(holder);
+                holder.image.setTag(holder);
+                holder.image.setImageResource(R.mipmap.ic_video_play);
+            }else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+            String thumdUrl = videoDatas.get(position).thumdUrl;
+            holder.uri = thumdUrl;
+            ImageLoader.getInstance().loadImage(thumdUrl, mSize, new SimpleImageLoadingListener() {
+                @Override
+                public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                    for (ViewHolder item : holderList) {
+                        if (item.uri.equals(imageUri)) {
+                            if (android.os.Build.VERSION.SDK_INT >= 16){
+                                setBackgroundV16Plus(item.image, loadedImage);
+                            }
+                            else{
+                                setBackgroundV16Minus(item.image, loadedImage);
+                            }
+                        }
+                    }
+                }
+            });
+
+            return holder.image;
+        }
+
+        class ViewHolder {
+            ImageView image;
+            String uri = "";
+        }
+
+    };
+
+    @TargetApi(16)
+    private void setBackgroundV16Plus(View view, Bitmap bitmap) {
+        view.setBackground(new BitmapDrawable(getResources(), bitmap));
+
+    }
+
+    @SuppressWarnings("deprecation")
+    private void setBackgroundV16Minus(View view, Bitmap bitmap) {
+        view.setBackgroundDrawable(new BitmapDrawable(bitmap));
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -280,6 +408,8 @@ public class ProgressDetailActivity extends BaseActivity {
             showProgressBar(true,"提交操作");
         }
     }
+
+
 
     @Override
     public void parseJson(int code, JSONObject respanse, String tag, int pos, Object data) throws JSONException {

@@ -1,6 +1,5 @@
 package com.ezhuang.adapter;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -54,13 +53,13 @@ public class GridImageAdapter extends BaseAdapter {
 
     // create a new ImageView for each item referenced by the Adapter
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
+         ViewHolder holder;
         if (convertView == null) {
             holder = new ViewHolder();
             holder.image = (ImageView) mInflater.inflate(R.layout.image_display, parent, false);
             holderList.add(holder);
             holder.image.setTag(holder);
-        } else {
+        }else {
             holder = (ViewHolder) convertView.getTag();
         }
 

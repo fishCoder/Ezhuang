@@ -9,6 +9,7 @@ import android.content.ClipboardManager;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.hardware.Camera;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -47,6 +48,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -57,8 +59,8 @@ import java.util.regex.Pattern;
  * Created by cc191954 on 14-8-233.
  */
 public class Global {
-//    public static final String HOST_91JZ = "http://121.41.117.203:80";
-    public static final String HOST_91JZ = "http://wwww.91jzw.com";
+    public static final String HOST_91JZ = "http://121.41.117.203:80";
+//    public static final String HOST_91JZ = "http://wwww.91jzw.com";
 //    public static final String HOST_91JZ = "http://192.168.0.178:8080/HardcoverServer";
 
     public static String HOST = HOST_91JZ;
@@ -131,6 +133,15 @@ public class Global {
                 || s1.endsWith(".gif");
     }
 
+    public static boolean isVideoUri(String s1) {
+        s1 = s1.toLowerCase();
+        return s1.endsWith(".mp4")
+                || s1.endsWith(".3gp")
+                || s1.endsWith(".flv")
+                || s1.endsWith(".bmp")
+                || s1.endsWith(".gif");
+    }
+
     public static void syncCookie(Context context) {
         PersistentCookieStore cookieStore = new PersistentCookieStore(context);
         List<Cookie> cookies = cookieStore.getCookies();
@@ -150,6 +161,31 @@ public class Global {
     public static void copy(Context context, String content) {
 //        ClipboardManager cmb = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
 //        cmb.setText(content);
+    }
+
+    public static boolean isExitsSdcard() {
+        if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED))
+            return true;
+        else
+            return false;
+    }
+
+    public static List<Camera.Size> getResolutionList(Camera camera){
+        Camera.Parameters parameters = camera.getParameters();
+        List<Camera.Size> previewSizes = parameters.getSupportedPreviewSizes();
+        return previewSizes;
+    }
+
+    public static class ResolutionComparator implements Comparator<Camera.Size> {
+
+        @Override
+        public int compare(Camera.Size lhs, Camera.Size rhs) {
+            if(lhs.height!=rhs.height)
+                return lhs.height-rhs.height;
+            else
+                return lhs.width-rhs.width;
+        }
+
     }
 
     public static String replaceAvatar(JSONObject json) {

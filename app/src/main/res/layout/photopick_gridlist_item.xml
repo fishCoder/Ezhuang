@@ -26,4 +26,22 @@
         android:button="@drawable/pick_photo_checkbox"
         android:focusable="false" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/iconFore"
+        android:background="#33000000"
+        android:orientation="vertical"
+        android:padding="5dp" >
+
+        <TextView
+            android:id="@+id/video_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone"
+            android:text="0.00mb"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+
 </RelativeLayout>

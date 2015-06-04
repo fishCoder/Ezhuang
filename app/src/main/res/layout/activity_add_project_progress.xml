@@ -44,32 +44,45 @@
 
         <include layout="@layout/divide_15_top_bottom" />
 
+        <com.ezhuang.common.AutoHeightGridView
+            android:id="@+id/gridView"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnWidth="@dimen/image_add_maopao_width"
+            android:numColumns="4"
+            android:horizontalSpacing="8dp"
+            android:verticalSpacing="8dp"
+            android:stretchMode="none"
+
+            android:gravity="center" />
+
+        <include layout="@layout/divide_15_top_bottom" />
+
+        <com.ezhuang.common.AutoHeightGridView
+            android:id="@+id/videoGridView"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnWidth="@dimen/image_add_maopao_width"
+            android:numColumns="4"
+            android:horizontalSpacing="8dp"
+            android:verticalSpacing="8dp"
+            android:stretchMode="none"
+            android:gravity="center" />
+
     </LinearLayout>
 
 
-    <com.ezhuang.common.AutoHeightGridView
-        android:id="@+id/gridView"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
-        android:layout_marginTop="10dp"
-        android:layout_below="@+id/layout_spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:columnWidth="@dimen/image_add_maopao_width"
-        android:numColumns="4"
-        android:horizontalSpacing="8dp"
-        android:verticalSpacing="8dp"
-        android:stretchMode="none"
-        android:gravity="center" />
 
 
-    <ImageView
-        android:id="@+id/video"
-        android:layout_below="@+id/gridView"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_margin="20dp"
-        android:background="@drawable/actionbar_item_selector"
-        android:src="@mipmap/ic_video"/>
+
+
+
 
 </RelativeLayout>

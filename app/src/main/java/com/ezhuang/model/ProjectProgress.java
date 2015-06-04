@@ -24,6 +24,11 @@ public class ProjectProgress implements Serializable {
     public String  quoRemark;
     public String  owerRemark;
     public int owerScore;
+    public String[] mediaUrls;
+
+    public String pgVideoUrl; // 视频url(多张"&"分开)
+    public String pgVideoPicUrl; // 视频截图url(多张"&"分开)
+
 
     public boolean isNeedQualityCheck(){
         return '1'==pgDeal.charAt(1);
