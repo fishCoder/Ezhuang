@@ -36,6 +36,9 @@ public class FragmentSettings extends BaseFragment {
     View layout_info;
 
     @ViewById
+    View layout_scheme;
+
+    @ViewById
     View layout_version;
 
     @ViewById
@@ -100,6 +103,13 @@ public class FragmentSettings extends BaseFragment {
             public void onClick(View v) {
             PgyFeedback.getInstance().show(getActivity(), "b87e159131abde328237831cd3902aad");
 //            AlterPasswordActivity_.intent(getActivity()).start();
+            }
+        });
+
+        layout_scheme.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SchemeListActivity_.intent(getActivity()).start();
             }
         });
 

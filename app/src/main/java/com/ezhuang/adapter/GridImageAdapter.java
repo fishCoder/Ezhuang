@@ -68,7 +68,7 @@ public class GridImageAdapter extends BaseAdapter {
         Uri data = photoData.uri;
         holder.uri = data.toString();
 
-        ImageLoader.getInstance().loadImage(data.toString(), mSize, new SimpleImageLoadingListener() {
+        ImageLoader.getInstance().loadImage(data.toString()+"?imageView2/1/w/200/h/200", mSize, new SimpleImageLoadingListener() {
             @Override
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
                 for (ViewHolder item : holderList) {

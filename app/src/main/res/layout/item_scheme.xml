@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="6dp">
+
+        <ImageView
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="10dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:id="@+id/scheme_img"
+            android:scaleType="centerCrop"
+            android:padding="1dp"
+            android:src="@mipmap/ic_default_image" />
+
+
+        <TextView
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/scheme_img"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Medium Text"
+            android:singleLine="true"
+            android:layout_alignTop="@id/scheme_img"
+            android:textSize="16sp"
+            android:textColor="@color/font_black_content"
+            android:id="@+id/scheme_name" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/scheme_name"
+            android:layout_marginTop="3dp"
+            android:textColor="@color/font_black_comment"
+            android:text="chenchao"
+            android:singleLine="true"
+            android:layout_alignLeft="@+id/scheme_name"
+            android:textSize="14sp"
+            android:id="@+id/scheme_desc" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/scheme_desc"
+            android:textColor="@color/font_gray"
+            android:text="2015-05-06 10:00"
+            android:singleLine="true"
+            android:layout_alignLeft="@+id/scheme_desc"
+            android:textSize="13sp"
+            android:gravity="right"
+            android:paddingRight="30dp"
+            android:id="@+id/scheme_time" />
+
+    </RelativeLayout>
+</FrameLayout>

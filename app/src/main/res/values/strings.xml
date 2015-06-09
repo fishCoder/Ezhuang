@@ -18,6 +18,8 @@
     <string name="alter_init_password">修改初始密码</string>
     <string name="pick_video">选择视频</string>
     <string name="recorder_video">录制视频</string>
+    <string name="scheme">展示方案</string>
+    <string name="txt_share">分享</string>
 
     <string name="action_settings">设置</string>
     <string name="action_refrush">刷新</string>
@@ -35,7 +37,7 @@
     <string name="title_activity_topic_comment">讨论</string>
     <string name="topic_create">创建讨论</string>
 
-    <string name="title_activity_make_maopao">发冒泡</string>
+
     <string name="title_activity_location_search">所在位置</string>
     <string name="title_activity_location_edit">创建位置</string>
     <string name="title_activity_location_detail">详情</string>

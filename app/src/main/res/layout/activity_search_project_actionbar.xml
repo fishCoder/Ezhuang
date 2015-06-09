@@ -1,0 +1,24 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
+
+    <com.ezhuang.common.LoginEditText
+        android:id="@+id/editText"
+        android:layout_marginRight="12dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@drawable/actionbar_edit_bg_search"
+        android:singleLine="true" />
+    <ImageView
+        android:id="@+id/action_calender"
+        android:layout_height="30dp"
+        android:layout_margin="10dp"
+        android:layout_width="30dp"
+        android:gravity="center"
+        android:background="@drawable/actionbar_item_selector"
+        android:textColor="@color/white"
+        android:src="@mipmap/ic_select"  />
+</LinearLayout>

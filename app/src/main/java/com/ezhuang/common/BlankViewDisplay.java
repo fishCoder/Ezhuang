@@ -5,6 +5,7 @@ import android.widget.TextView;
 
 import com.ezhuang.FragmentMessage;
 import com.ezhuang.R;
+import com.ezhuang.SchemeListActivity;
 import com.ezhuang.project.ProjectBillFragment;
 import com.ezhuang.project.ViewAndSubmitBillFragment;
 import com.ezhuang.project.detail.FragmentProjectList;
@@ -70,6 +71,10 @@ public class BlankViewDisplay {
             if (fragment instanceof FragmentMessage){
                 iconId = R.mipmap.ic_exception_blank_task;
                 text = "没有消息";
+            }
+            if (fragment instanceof SchemeListActivity){
+                iconId = R.mipmap.ic_exception_blank_task;
+                text = "没有展示方案";
             }
         } else {
             iconId = R.mipmap.ic_exception_no_network;

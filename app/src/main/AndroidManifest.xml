@@ -328,6 +328,13 @@
         </activity>
 
         <activity
+            android:name=".SchemeListActivity_"
+            android:screenOrientation="portrait"
+            android:label="@string/scheme"
+            android:windowSoftInputMode="adjustPan" >
+        </activity>
+
+        <activity
             android:name=".EntranceActivity_"
             android:theme="@style/AppThemeNoActionbar" >
             <intent-filter>
