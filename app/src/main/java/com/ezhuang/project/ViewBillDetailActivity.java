@@ -7,17 +7,21 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.ezhuang.BaseActivity;
+import com.ezhuang.MyApp;
 import com.ezhuang.R;
 import com.ezhuang.common.Global;
 import com.ezhuang.common.JsonUtil;
 import com.ezhuang.common.network.NetworkImpl;
 import com.ezhuang.model.AccountInfo;
 import com.ezhuang.model.BillDetailState;
+import com.ezhuang.model.BmbPurchase;
 import com.ezhuang.model.IPcMt;
 import com.ezhuang.model.PhotoData;
 import com.ezhuang.model.Project;
+import com.ezhuang.model.PurchaseDetail;
 import com.ezhuang.model.SpMaterial;
 import com.ezhuang.model.SpOdDetail;
+import com.ezhuang.model.SpOnlineOrder;
 import com.ezhuang.project.detail.SetProjectInfo_;
 import com.ezhuang.purchase.SelectPcMtFragment;
 import com.ezhuang.purchase.SelectPcMtFragment_;
@@ -246,7 +250,10 @@ public class ViewBillDetailActivity extends BaseActivity {
 
                 for (SpMaterial spMaterial : mData){
                     if(purchaseItemIdSet.contains(spMaterial.item_id)){
-                        spMaterial.state = BillDetailState.SELF.state;
+                        if(spMaterial.getMtType()==0)
+                            spMaterial.state = BillDetailState.BUY.state;
+                        else
+                            spMaterial.state = BillDetailState.SELF.state;
                     }
                 }
 
@@ -301,7 +308,7 @@ public class ViewBillDetailActivity extends BaseActivity {
                     spMaterial.itemImages = new LinkedList();
                     spMaterial.item_id =  jsonObject.getString("id");
 
-                    String img = jsonObject.getString("img");
+                    String img = jsonObject.optString("img");
                     if(!img.isEmpty()){
                         String[] imgs = img.split("&");
                         for (String url:imgs){
@@ -371,52 +378,92 @@ public class ViewBillDetailActivity extends BaseActivity {
         public void onClick(View v) {
             Log.i("submitClick","点击了一下采购");
             Map<String,List<SpOdDetail>> mSpOd = new HashMap<>();
+            Map<String,List<PurchaseDetail>> purchaseDetails = new HashMap<>();
             purchaseItemIdSet.clear();
             for (SpMaterial spMaterial : mData){
                 if(spMaterial.getCompanyName().isEmpty()||spMaterial.state!= BillDetailState.UNBUY.state)continue;
                 purchaseItemIdSet.add(spMaterial.item_id);
 
-                SpOdDetail detail = new SpOdDetail();
-                detail.spOdMtName = spMaterial.getMtName();
-                detail.spOdMtNum  = spMaterial.getCount();
-                detail.spOdMtUnit = spMaterial.unitId;
-                detail.spOdSpec = spMaterial.bmb_m_spec;
+                if(spMaterial.getMtType()==0){
+                    PurchaseDetail detail = new PurchaseDetail();
 
-                detail.pjdId = spMaterial.item_id;
-                detail.spOdPrice  = spMaterial.getPrice();
-                detail.spOdTotalPrice = String.format("%.2f",Float.parseFloat(spMaterial.getPrice())*Float.parseFloat(spMaterial.getCount()));
-                String companyName = spMaterial.getCompanyName();
-                if(mSpOd.get(companyName) == null){
-                    mSpOd.put(companyName,new LinkedList<SpOdDetail>());
+                    detail.materialId = spMaterial.getMtId();
+                    detail.pcPrice = spMaterial.getPrice();
+                    detail.pjBillId = spMaterial.item_id;
+
+                    if(purchaseDetails.get(spMaterial.getCompanyId())==null){
+                        purchaseDetails.put(spMaterial.getCompanyId(),new LinkedList<PurchaseDetail>());
+                    }
+                    purchaseDetails.get(spMaterial.getCompanyId()).add(detail);
+
+                }else{
+                    SpOdDetail detail = new SpOdDetail();
+                    detail.spOdMtName = spMaterial.getMtName();
+                    detail.spOdMtNum  = spMaterial.getCount();
+                    detail.spOdMtUnit = spMaterial.unitId;
+                    detail.spOdSpec = spMaterial.bmb_m_spec;
+
+                    detail.pjdId = spMaterial.item_id;
+                    detail.spOdPrice  = spMaterial.getPrice();
+                    detail.spOdTotalPrice = String.format("%.2f",Float.parseFloat(spMaterial.getPrice())*Float.parseFloat(spMaterial.getCount()));
+                    String companyName = spMaterial.getCompanyName();
+                    if(mSpOd.get(companyName) == null){
+                        mSpOd.put(companyName,new LinkedList<SpOdDetail>());
+                    }
+                    mSpOd.get(companyName).add(detail);
                 }
-                mSpOd.get(companyName).add(detail);
+
 
             }
 
-            if(mSpOd.size()==0){
+            if(mSpOd.size()==0&&purchaseDetails.size()==0){
                 showButtomToast("您还没有采购哦");
                 return;
             }
+
+            List<BmbPurchase> bmbPurchases = new LinkedList<>();
+
+            for(String key:purchaseDetails.keySet()){
+                BmbPurchase bmbPurchase = new BmbPurchase();
+                bmbPurchase.bmbId = key;
+                bmbPurchase.purchaseDetails = purchaseDetails.get(key);
+                bmbPurchases.add(bmbPurchase);
+            }
+
+
 
             List<Map<String,Object>> upSpOd = new LinkedList<>();
             for (String key : mSpOd.keySet()){
                 List<SpOdDetail> details = mSpOd.get(key);
                 Map<String,Object> item = new HashMap<>();
                 item.put("spPjId",pjId);
-                item.put("spBmbName",key);
+                item.put("spBmbName",key.substring(4,key.length()));
                 item.put("details",details);
                 upSpOd.add(item);
 
             }
 
-            String sUpSpOd = JsonUtil.Object2Json(upSpOd);
+
             RequestParams params = new RequestParams();
-            Log.d("purchaseOrder",sUpSpOd);
-            params.put("purchaseOrder",sUpSpOd);
+            if(upSpOd.size()!=0){
+                String sUpSpOd = JsonUtil.Object2Json(upSpOd);
+                params.put("purchaseOrder",sUpSpOd);
+                Log.d("purchaseOrder",sUpSpOd);
+            }
+            if(bmbPurchases.size()!=0){
+                SpOnlineOrder spOnlineOrder = new SpOnlineOrder();
+                spOnlineOrder.bmbPurchases = bmbPurchases;
+                spOnlineOrder.spId = MyApp.currentUser.getCompanyId();
+                spOnlineOrder.spStaffId = MyApp.currentUser.getGlobal_key();
+                spOnlineOrder.spPjId = pjId;
+                String sSpOnlineOrder = JsonUtil.Object2Json(spOnlineOrder);
+                params.put("bmbOrders",sSpOnlineOrder);
+                Log.d("bmbOrders",sSpOnlineOrder);
+            }
             params.put("pjBillId",pjBillId);
 
-            postNetwork(ADD_PURCHASE_ORDER,params,ADD_PURCHASE_ORDER);
-            showProgressBar(true,"提交订单");
+            postNetwork(ADD_PURCHASE_ORDER, params, ADD_PURCHASE_ORDER);
+            showProgressBar(true, "提交订单");
         }
     };
 
@@ -449,6 +496,9 @@ public class ViewBillDetailActivity extends BaseActivity {
                     sp.bmb_m_name = spMaterial.bmb_m_name;
                     sp.bmb_price = spMaterial.bmb_price;
                     sp.bmb_m_spec = spMaterial.bmb_m_spec;
+                    sp.bmb_m_id = spMaterial.bmb_m_id;
+                    sp.bmb_id = spMaterial.bmb_id;
+                    sp.bmb_m_type = spMaterial.bmb_m_type;
                 }
 
             }

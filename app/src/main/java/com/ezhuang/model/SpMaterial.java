@@ -1,6 +1,5 @@
 package com.ezhuang.model;
 
-import android.util.Log;
 
 import com.activeandroid.ActiveAndroid;
 import com.activeandroid.Model;
@@ -8,7 +7,6 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
-import com.ezhuang.common.JsonUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -88,6 +86,12 @@ public class SpMaterial extends Model implements Serializable,IPcMt{
 
     public String bmb_m_spec = "";
 
+    public String bmb_m_img = "";
+
+    public String bmb_id = "";
+
+    public int    bmb_m_type = 0;
+
     @Override
     public String getBigTypeId() {
         return bigTypeId;
@@ -135,7 +139,7 @@ public class SpMaterial extends Model implements Serializable,IPcMt{
 
     @Override
     public String getMtImg() {
-        return "";
+        return bmb_m_img;
     }
 
     @Override
@@ -146,6 +150,18 @@ public class SpMaterial extends Model implements Serializable,IPcMt{
     @Override
     public String getCompanyName() {
         return bmb_name;
+    }
+
+    public String getCompanyId() { return bmb_id;}
+
+    @Override
+    public int getMtType() {
+        return bmb_m_type;
+    }
+
+    @Override
+    public int getMtState() {
+        return state;
     }
 
     @Override
@@ -160,6 +176,8 @@ public class SpMaterial extends Model implements Serializable,IPcMt{
             sTypeId = jsonObject.getString("sTypeId");
             sTypeName = jsonObject.getString("sTypeName");
             unitName = jsonObject.getString("unitName");
+            bmb_id = jsonObject.optString("companyId");
+            bmb_m_img = jsonObject.optString("img");
         } catch (JSONException e) {
             e.printStackTrace();
         }

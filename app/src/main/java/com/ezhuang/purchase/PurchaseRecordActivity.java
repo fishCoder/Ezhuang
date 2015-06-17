@@ -23,6 +23,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.res.StringArrayRes;
@@ -39,10 +40,11 @@ import java.util.List;
 @EActivity(R.layout.activity_view_sp_order)
 public class PurchaseRecordActivity extends BaseActivity {
 
-    String QUERY_PC_ORDER = Global.HOST + "/app/order/queryPurchaseOrder.do?keyword=%s";
-    String QUERY_PC_ORDER_MORE =  Global.HOST + "/app/order/queryPurchaseOrder.do?keyword=%s&lastId=%s";
+    String QUERY_PC_ORDER = Global.HOST + "/app/order/queryPurchaseOrder.do?keyword=%s&type=%d";
+    String QUERY_PC_ORDER_MORE =  Global.HOST + "/app/order/queryPurchaseOrder.do?keyword=%s&lastId=%s&type=%d";
 
-
+    @Extra
+    int type = 0;
 
     List<SpOrder> mData = new LinkedList<>();
 
@@ -50,6 +52,8 @@ public class PurchaseRecordActivity extends BaseActivity {
     PullToRefreshListView listView;
     @StringArrayRes
     String[] self_order_state;
+    @StringArrayRes
+    String[] bmb_order_state;
 
     EditText editText;
 
@@ -74,7 +78,7 @@ public class PurchaseRecordActivity extends BaseActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                getNetwork(String.format(QUERY_PC_ORDER,s.toString()),QUERY_PC_ORDER);
+                getNetwork(String.format(QUERY_PC_ORDER,s.toString(),type),QUERY_PC_ORDER);
                 showDialogLoading();
             }
         });
@@ -84,10 +88,10 @@ public class PurchaseRecordActivity extends BaseActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                PurchaseRecordDetailActivity_.intent(PurchaseRecordActivity.this).spOrderId(mData.get(position-1).spOrderId).start();
+                PurchaseRecordDetailActivity_.intent(PurchaseRecordActivity.this).type(type).spOrderId(mData.get(position-1).spOrderId).start();
             }
         });
-        getNetwork(String.format(QUERY_PC_ORDER, ""), QUERY_PC_ORDER);
+        getNetwork(String.format(QUERY_PC_ORDER, "",type), QUERY_PC_ORDER);
         showDialogLoading();
     }
 
@@ -113,9 +117,7 @@ public class PurchaseRecordActivity extends BaseActivity {
                     showButtomToast("没有更多");
                     return;
                 }
-
                 toObject(respanse);
-
             }else{
                 showButtomToast("错误码:" + code);
             }
@@ -152,11 +154,11 @@ public class PurchaseRecordActivity extends BaseActivity {
         public void onRefresh(PullToRefreshBase<ListView> refreshView) {
 
             if(PullToRefreshBase.Mode.PULL_FROM_START == listView.getCurrentMode()){
-                getNetwork(String.format(QUERY_PC_ORDER,""),QUERY_PC_ORDER);
+                getNetwork(String.format(QUERY_PC_ORDER,"",type),QUERY_PC_ORDER);
             }else{
                 int i = mData.size()-1;
                 String lastId = mData.get(i).spOrderId;
-                getNetwork(String.format(QUERY_PC_ORDER_MORE,editText.getText().toString(),lastId),QUERY_PC_ORDER_MORE);
+                getNetwork(String.format(QUERY_PC_ORDER_MORE,editText.getText().toString(),lastId,type),QUERY_PC_ORDER_MORE);
             }
         }
     };
@@ -205,7 +207,13 @@ public class PurchaseRecordActivity extends BaseActivity {
             viewHolder.sp_order_no.setText(spOrder.spOrderNo);
             viewHolder.sp_bmb_name.setText(spOrder.spBmbName);
             viewHolder.sp_order_time.setText(spOrder.spOrderTime);
-            viewHolder.sp_order_state.setText(self_order_state[spOrder.spOrderState]);
+            String[] state;
+            if(type==0){
+                state = bmb_order_state;
+            }else{
+                state = self_order_state;
+            }
+            viewHolder.sp_order_state.setText(state[spOrder.spOrderState]);
             viewHolder.details_count.setText(String.valueOf(spOrder.detailsCount));
             viewHolder.pj_name.setText(spOrder.spPjName);
             return convertView;

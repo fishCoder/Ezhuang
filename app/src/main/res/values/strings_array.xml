@@ -26,11 +26,21 @@
 
     <string-array name="buyer_apps">
         <item>采购</item>
-        <item>采购记录</item>
+        <item>自购记录</item>
+        <item>线上采购记录</item>
     </string-array>
 
     <string-array name="quality_apps">
         <item>质检</item>
+    </string-array>
+
+    <string-array name="dispatcher_apps">
+        <item>订单调度</item>
+        <item>调度记录</item>
+    </string-array>
+
+    <string-array name="storage_apps">
+        <item>建材出库</item>
     </string-array>
 
     <string-array name="program_title">
@@ -39,9 +49,12 @@
         <item>我创建的</item>
     </string-array>
 
-    <string-array name="user_program_title">
-        <item>TA参与的</item>
-        <item>TA收藏的</item>
+    <string-array name="bmb_order_state">
+        <item>000</item>
+        <item>待发货</item>
+        <item>部分发货</item>
+        <item>全部发货</item>
+        <item>订单完成</item>
     </string-array>
 
     <string-array name="user_me_program_title">
@@ -122,11 +135,11 @@
         <item>other</item>
     </string-array>
 
-    <string-array name="strings_priority">
-        <item>有空再看</item>
-        <item>正常处理</item>
-        <item>优先处理</item>
-        <item>十万火急</item>
+    <string-array name="bmb_order_detail_state">
+        <item>待发货</item>
+        <item>待发货</item>
+        <item>已发货</item>
+        <item>已收货</item>
     </string-array>
 
     <string-array name="self_order_state">

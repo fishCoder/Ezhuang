@@ -9,6 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ezhuang.bmb.OrderDetailActivity_;
 import com.ezhuang.common.BlankViewDisplay;
 import com.ezhuang.common.Global;
 import com.ezhuang.common.JsonUtil;
@@ -22,6 +23,7 @@ import com.ezhuang.model.Project;
 import com.ezhuang.project.AddMaterialToBillActivity_;
 import com.ezhuang.project.ProjectDetailActivity_;
 import com.ezhuang.project.ViewBillDetailActivity_;
+import com.ezhuang.purchase.PurchaseRecordDetailActivity_;
 import com.ezhuang.quality.ProgressDetailActivity_;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
@@ -353,6 +355,37 @@ public class FragmentMessage extends BaseFragment {
         }else
         if(newsType==NewsTypeEnum.QualityCheckPrijectProgressNotice.newsType){
             ProgressDetailActivity_.intent(getActivity()).project(mProject.get(msg.newsPjId)).pgId(msg.source).roleId(Global.PROJECT_MANAGER).start();
+            msg.state = 2;
+        }else
+        if(newsType==NewsTypeEnum.BmbOrderDispatch.newsType){
+            OrderDetailActivity_.intent(getActivity()).roleId(Global.DISPATCH).bmbPcId(msg.source).startForResult(index);
+        }else
+        if(newsType==NewsTypeEnum.BmbOrderStorage.newsType){
+            OrderDetailActivity_.intent(getActivity()).roleId(Global.STORAGE).bmbPcId(msg.source).startForResult(index);
+        }else
+        if(newsType==NewsTypeEnum.ProjectOrderHasSendOutToManager.newsType){
+            int billState = BillState.BUYALL.state;
+
+            ViewBillDetailActivity_.intent(getActivity())
+                    .pjId(msg.newsPjId)
+                    .pjBillId(msg.source)
+                    .roleId(Global.PROJECT_MANAGER)
+                    .project(mProject.get(msg.newsPjId))
+                    .billState(billState)
+                    .isRecord(true)
+                    .start();
+
+        }else
+        if(newsType==NewsTypeEnum.ProjectOrderHasSendOutToBuyer.newsType){
+            PurchaseRecordDetailActivity_.intent(getActivity()).spOrderId(msg.source).type(0).start();
+            msg.state = 2;
+        }else
+        if(newsType==NewsTypeEnum.ConfirmReceiptGoodsToDingdy.newsType){
+            OrderDetailActivity_.intent(getActivity()).roleId(Global.STORAGE).bmbPcId(msg.source).startForResult(index);
+            msg.state = 2;
+        }else
+        if(newsType==NewsTypeEnum.ConfirmReceiptGoodsToBuyer.newsType){
+            PurchaseRecordDetailActivity_.intent(getActivity()).spOrderId(msg.source).type(0).start();
             msg.state = 2;
         }
 

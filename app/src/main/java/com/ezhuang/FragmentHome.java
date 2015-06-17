@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.ezhuang.bmb.OrdersActivity_;
 import com.ezhuang.common.Banner;
 import com.ezhuang.common.Global;
 import com.ezhuang.common.network.BaseFragment;
@@ -63,11 +64,19 @@ public class FragmentHome extends BaseFragment {
 
     @StringArrayRes
     String[] buyer_apps;
-    int[] buyer_apps_icon = new int[]{R.mipmap.ic_buy,R.mipmap.ic_buy_rec};
+    int[] buyer_apps_icon = new int[]{R.mipmap.ic_buy,R.mipmap.ic_buy_rec,R.mipmap.ic_buy_rec};
 
     @StringArrayRes
     String[] quality_apps;
     int[] quality_apps_icon = new int[]{R.mipmap.ic_quolity};
+
+    @StringArrayRes
+    String[] dispatcher_apps;
+    int[] dispatcher_apps_icons = new int[]{R.mipmap.ic_default_image,R.mipmap.ic_default_image};
+
+    @StringArrayRes
+    String[] storage_apps;
+    int[] storage_apps_icons = new int[]{R.mipmap.ic_default_image};
 
     @ViewById
     ListView listRoleFunction;
@@ -102,8 +111,6 @@ public class FragmentHome extends BaseFragment {
                 list.add(new Object[]{role.getRoleName()});
                 list.addAll(getApps(role.getRoleId()));
             }
-
-
         }
 
 
@@ -117,7 +124,10 @@ public class FragmentHome extends BaseFragment {
                 if(list.get(position)[0].equals("采购")){
                     ViewBillingActivity_.intent(getActivity()).roleId(Global.BUYER).start();
                 }else
-                if(list.get(position)[0].equals("采购记录")){
+                if(list.get(position)[0].equals("自购记录")){
+                    PurchaseRecordActivity_.intent(getActivity()).type(1).start();
+                }else
+                if(list.get(position)[0].equals("线上采购记录")){
                     PurchaseRecordActivity_.intent(getActivity()).start();
                 }else
                 if(list.get(position)[0].equals("查看项目")){
@@ -128,8 +138,7 @@ public class FragmentHome extends BaseFragment {
                 }else
                 if(list.get(position)[0].equals("审核记录")){
                     ViewBillingActivity_.intent(getActivity()).roleId(Global.CEHCK).isRecord(true).start();
-                }
-                else
+                }else
                 if(list.get(position)[0].equals("我的项目")){
                     ViewProjectActivity_.intent(getActivity()).roleId(Global.PROJECT_MANAGER).staffId(MyApp.currentUser.getGlobal_key()).start();
                 }else
@@ -142,9 +151,16 @@ public class FragmentHome extends BaseFragment {
                 if(list.get(position)[0].equals("投诉/报修")){
                     ProblemActicity_.intent(getActivity()).start();
                 }else
+                if(list.get(position)[0].equals("订单调度")){
+                    OrdersActivity_.intent(getActivity()).roleId(Global.DISPATCH).start();
+                }else
+                if(list.get(position)[0].equals("创建项目"))
                 {
                     Intent intent = new Intent(getActivity(),CreatProjectActivity_.class);
                     getActivity().startActivity(intent);
+                }else
+                if(list.get(position)[0].equals("建材出库")){
+                    OrdersActivity_.intent(getActivity()).roleId(Global.STORAGE).start();
                 }
 
             }
@@ -234,6 +250,12 @@ public class FragmentHome extends BaseFragment {
         }else if(Global.QUALITY.equals(roleId)){
             apps = quality_apps;
             icons = quality_apps_icon;
+        }else if(Global.DISPATCH.equals(roleId)){
+            apps = dispatcher_apps;
+            icons = dispatcher_apps_icons;
+        }else if(Global.STORAGE.equals(roleId)){
+            apps = storage_apps;
+            icons = storage_apps_icons;
         }
 
         for (int i=0;i<apps.length;i++){

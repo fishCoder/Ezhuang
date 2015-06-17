@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 21
     buildToolsVersion "21.1.2"
+    compileOptions.encoding = "UTF-8"
 
     defaultConfig {
         applicationId "com.ezhuang"
@@ -28,6 +29,8 @@ android {
         }
 
     }
+
+
 
     buildTypes {
 

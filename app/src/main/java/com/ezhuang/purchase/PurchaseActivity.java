@@ -46,7 +46,7 @@ public class PurchaseActivity extends BaseActivity {
 
     ActionBar actionBar;
 
-    String QUERY_MT_REOCORD = Global.HOST + "/app/pcmt/queryPcMtRecord.do?smallTypeId=%s";
+    String QUERY_MT_REOCORD = Global.HOST + "/app/pcmt/queryPcMtRecord.do?smallTypeId=%s&type=%d";
 
     Map<String,List<IPcMt>> mData = new HashMap<>();
 
@@ -63,7 +63,7 @@ public class PurchaseActivity extends BaseActivity {
 
         selectPcMtFragment = SelectPcMtFragment_.builder().build();
 
-        getNetwork(String.format(QUERY_MT_REOCORD,spMaterial.sTypeId),QUERY_MT_REOCORD);
+        getNetwork(String.format(QUERY_MT_REOCORD,spMaterial.sTypeId,2),QUERY_MT_REOCORD);
         showDialogLoading();
     }
 
@@ -109,23 +109,23 @@ public class PurchaseActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
 
-            if(!selfBuyFragment.fill(spMaterial)){
-                return;
-            }
+                if(!selfBuyFragment.fill(spMaterial)){
+                    return;
+                }
 
-            RequestParams params = new RequestParams();
-            params.put("pcMtName",spMaterial.bmb_m_name);
-            params.put("pcMtSmallType",spMaterial.sTypeId);
-            params.put("pcMtUnitId",spMaterial.unitId);
-            params.put("pcMtPrice",spMaterial.bmb_price);
-            params.put("pcCompanyName",spMaterial.bmb_name);
-            params.put("pcMtSpec",spMaterial.bmb_m_spec);
-            postNetwork(ADD_PC_RECORD, params, ADD_PC_RECORD);
+                RequestParams params = new RequestParams();
+                params.put("pcMtName",spMaterial.bmb_m_name);
+                params.put("pcMtSmallType",spMaterial.sTypeId);
+                params.put("pcMtUnitId",spMaterial.unitId);
+                params.put("pcMtPrice",spMaterial.bmb_price);
+                params.put("pcCompanyName",spMaterial.bmb_name);
+                params.put("pcMtSpec",spMaterial.bmb_m_spec);
+                postNetwork(ADD_PC_RECORD, params, ADD_PC_RECORD);
 
-            Intent intent = new Intent();
-            intent.putExtra("sp", spMaterial);
-            setResult(RESULT_OK, intent);
-            finish();
+                Intent intent = new Intent();
+                intent.putExtra("sp", spMaterial);
+                setResult(RESULT_OK, intent);
+                finish();
 
             }
         });
@@ -137,6 +137,9 @@ public class PurchaseActivity extends BaseActivity {
         spMaterial.bmb_m_name = pcMt.getMtName();
         spMaterial.bmb_price = pcMt.getPrice();
         spMaterial.bmb_m_spec = pcMt.getSpec();
+        spMaterial.bmb_m_id = pcMt.getMtId();
+        spMaterial.bmb_id = pcMt.getCompanyId();
+        spMaterial.bmb_m_type = pcMt.getMtType();
 
         Log.d("mData", JsonUtil.Object2Json(spMaterial));
 
@@ -151,21 +154,10 @@ public class PurchaseActivity extends BaseActivity {
         if(QUERY_MT_REOCORD.equals(tag)){
             hideProgressDialog();
             if(code == NetworkImpl.REQ_SUCCESSS){
-                JSONArray jsonArray = respanse.getJSONArray("data");
-                Log.d("data",jsonArray.toString());
-                for(int i=0;i<jsonArray.length();i++){
-                    String companyName = jsonArray.getJSONObject(i).getString("companyName");
-                    JSONArray jsonPcMts = jsonArray.getJSONObject(i).getJSONArray("materials");
-                    List<IPcMt> iPcMts = new LinkedList<>();
-                    for(int k=0;k<jsonPcMts.length();k++){
-                        SpMaterial pcmtImpl = new SpMaterial();
-                        pcmtImpl.bmb_name = companyName;
-                        pcmtImpl.toLoadData(jsonPcMts.getJSONObject(k));
-                        iPcMts.add(pcmtImpl);
-                    }
-                    if(iPcMts.size()!=0)
-                        mData.put(companyName,iPcMts);
-                }
+                JSONObject jsonObject = respanse.getJSONObject("data");
+
+                toLoad(jsonObject.getJSONArray("cooBmbMts"),0);
+                toLoad(jsonObject.getJSONArray("pcMtRecord"),1);
 
                 if(mData.size()==0){
                     changeToSelfBuy();
@@ -179,6 +171,31 @@ public class PurchaseActivity extends BaseActivity {
 
         if(ADD_PC_RECORD.equals(tag))
             Log.i(ADD_PC_RECORD,respanse.toString());
+    }
+
+    void toLoad(JSONArray jsonArray,int type)throws JSONException{
+
+        for(int i=0;i<jsonArray.length();i++){
+            String companyName = jsonArray.getJSONObject(i).getString("companyName");
+            JSONArray jsonPcMts = jsonArray.getJSONObject(i).getJSONArray("materials");
+            List<IPcMt> iPcMts = new LinkedList<>();
+
+            for(int k=0;k<jsonPcMts.length();k++){
+                SpMaterial pcmtImpl = new SpMaterial();
+                pcmtImpl.bmb_name = companyName;
+                pcmtImpl.toLoadData(jsonPcMts.getJSONObject(k));
+                pcmtImpl.bmb_m_type = type;
+                iPcMts.add(pcmtImpl);
+            }
+
+            if(iPcMts.size()!=0){
+                if(type==1){
+                    companyName = "[自购]"+companyName;
+                }
+                mData.put(companyName,iPcMts);
+            }
+
+        }
     }
 
     @Override

@@ -6,6 +6,7 @@ import org.json.JSONObject;
  * Created by Administrator on 2015/4/28 0028.
  */
 public interface IPcMt {
+    String getCompanyId();
     String getCompanyName();
     String getBigTypeId();
     String getBigTypeName();
@@ -18,5 +19,7 @@ public interface IPcMt {
     String getUnitName();
     String getMtImg();
     String getCount();
+    int getMtState();
+    int getMtType();
     void toLoadData(JSONObject jsonObject);
 }

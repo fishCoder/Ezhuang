@@ -51,7 +51,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
-
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
@@ -331,6 +331,20 @@
             android:name=".SchemeListActivity_"
             android:screenOrientation="portrait"
             android:label="@string/scheme"
+            android:windowSoftInputMode="adjustPan" >
+        </activity>
+
+        <activity
+            android:name=".bmb.OrdersActivity_"
+            android:screenOrientation="portrait"
+            android:label="@string/order_dispatch"
+            android:windowSoftInputMode="adjustPan" >
+        </activity>
+
+        <activity
+            android:name=".bmb.OrderDetailActivity_"
+            android:screenOrientation="portrait"
+            android:label="@string/order_detail"
             android:windowSoftInputMode="adjustPan" >
         </activity>
 

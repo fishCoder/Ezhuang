@@ -82,6 +82,21 @@ public class SpOdDetail implements IPcMt {
     }
 
     @Override
+    public String getCompanyId() {
+        return "";
+    }
+
+    @Override
+    public int getMtState() {
+        return spOdState;
+    }
+
+    @Override
+    public int getMtType() {
+        return 0;
+    }
+
+    @Override
     public void toLoadData(JSONObject jsonObject) {
         try {
             spOdMtNum = jsonObject.getString("spOdMtNum");

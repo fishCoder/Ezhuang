@@ -9,13 +9,17 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.ezhuang.ImagePagerActivity_;
 import com.ezhuang.R;
+import com.ezhuang.common.ImageLoadTool;
 import com.ezhuang.common.network.BaseFragment;
 import com.ezhuang.model.IPcMt;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.res.StringArrayRes;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -31,6 +35,11 @@ public class SelectPcMtFragment extends BaseFragment {
     List<IPcMt> mData = new LinkedList<>();
 
     public boolean viewOrder = false;
+
+    public boolean viewState = false;
+
+    @StringArrayRes
+    String[] bmb_order_detail_state;
 
     @AfterViews
     void init(){
@@ -78,10 +87,12 @@ public class SelectPcMtFragment extends BaseFragment {
 
                 viewHolder.bmb_m_img = (ImageView) view.findViewById(R.id.bmb_m_img);
                 viewHolder.bmb_m_name = (TextView) view.findViewById(R.id.bmb_m_name);
-                viewHolder.bmb_m_price = (TextView) view.findViewById(R.id.bmb_m_price);
+                viewHolder.bmb_m_price= (TextView) view.findViewById(R.id.bmb_m_price);
                 viewHolder.bmb_m_spec = (TextView) view.findViewById(R.id.bmb_m_spec);
                 viewHolder.bmb_m_unit = (TextView) view.findViewById(R.id.bmb_m_unit);
                 viewHolder.item_count = (TextView) view.findViewById(R.id.item_count);
+                viewHolder.mt_state   = (TextView) view.findViewById(R.id.mt_state);
+                viewHolder.layout_state = view.findViewById(R.id.layout_state);
 
                 if(viewOrder){
                     TextView item_name = (TextView) view.findViewById(R.id.item_count_name);
@@ -95,21 +106,31 @@ public class SelectPcMtFragment extends BaseFragment {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
 
-            IPcMt pcMt = mData.get(position);
+            final IPcMt pcMt = mData.get(position);
 
-            if(pcMt.getMtImg().isEmpty()){
+            if(pcMt.getMtImg()==null || pcMt.getMtImg().isEmpty()){
                viewHolder.bmb_m_img.setVisibility(View.GONE);
             }else{
                 viewHolder.bmb_m_img.setVisibility(View.VISIBLE);
-                iconfromNetwork(viewHolder.bmb_m_img,pcMt.getMtImg());
+                ImageLoader.getInstance().displayImage(pcMt.getMtImg(), viewHolder.bmb_m_img, ImageLoadTool.optionsImage);
+                viewHolder.bmb_m_img.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ImagePagerActivity_.intent(getActivity()).mSingleUri(pcMt.getMtImg());
+                    }
+                });
             }
-
 
             viewHolder.bmb_m_name.setText(pcMt.getMtName());
             viewHolder.bmb_m_spec.setText(pcMt.getSpec());
             viewHolder.bmb_m_price.setText(pcMt.getPrice());
             viewHolder.bmb_m_unit.setText(pcMt.getUnitName());
             viewHolder.item_count.setText(pcMt.getCount());
+
+            if(viewState){
+                viewHolder.layout_state.setVisibility(View.VISIBLE);
+                viewHolder.mt_state.setText(bmb_order_detail_state[pcMt.getMtState()]);
+            }
 
             return convertView;
         }
@@ -121,6 +142,8 @@ public class SelectPcMtFragment extends BaseFragment {
             TextView bmb_m_spec;
             TextView bmb_m_unit;
             TextView item_count;
+            TextView mt_state;
+            View     layout_state;
         }
     };
 }

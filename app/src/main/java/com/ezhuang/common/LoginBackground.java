@@ -47,7 +47,11 @@ public class LoginBackground {
 
                     ArrayList<PhotoItem> photoItems = new ArrayList();
                     JSONArray data = response.optJSONArray("data");
+                    if(data==null){
+                        return;
+                    }
                     Log.d("data", data.toString());
+
                     for (int i = 0; i < data.length(); ++i) {
                         PhotoItem item = new PhotoItem(data.optJSONObject(i));
                         photoItems.add(item);

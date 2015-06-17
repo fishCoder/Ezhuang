@@ -19,6 +19,7 @@ import com.ezhuang.R;
 import com.ezhuang.common.BlankViewDisplay;
 import com.ezhuang.common.Global;
 import com.ezhuang.common.network.BaseFragment;
+import com.ezhuang.common.network.NetworkImpl;
 import com.ezhuang.model.BillDetail;
 import com.ezhuang.model.BillDetailState;
 import com.ezhuang.model.BillExamines;
@@ -31,7 +32,9 @@ import com.ezhuang.purchase.PurchaseActivity_;
 import com.ezhuang.quality.ProgressDetailActivity_;
 import com.fortysevendeg.swipelistview.BaseSwipeListViewListener;
 import com.fortysevendeg.swipelistview.SwipeListView;
+import com.gc.materialdesign.widgets.SnackBar;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.loopj.android.http.RequestParams;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
@@ -40,6 +43,8 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
 import org.androidannotations.annotations.res.StringArrayRes;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -81,6 +86,10 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
     int billState;
 
     View header;
+
+    String selectId;
+
+    String RECEIVE = Global.HOST + "/app/order/goodsReceipt.do";
 
     @AfterViews
     void init(){
@@ -176,7 +185,7 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
             final ViewHolder viewHolder;
             if(convertView == null){
                 viewHolder = new ViewHolder();
-                view = mInflater.inflate(R.layout.item_bill_row,parent,false);
+                view = mInflater.inflate(R.layout.item_bill_row, parent, false);
                 if(readOnly){
                     view.findViewById(R.id.layout_state).setVisibility(View.VISIBLE);
                     viewHolder.item_state = (TextView) view.findViewById(R.id.item_state);
@@ -190,6 +199,8 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
                 viewHolder.grid_view = (GridView) view.findViewById(R.id.gridView);
                 viewHolder.btnDel =  view.findViewById(R.id.btnDel);
                 viewHolder.grid_view.setAdapter(new MyAdapter());
+                viewHolder.btnSure = view.findViewById(R.id.btnSure);
+                viewHolder.layout_btn = view.findViewById(R.id.layout_btn);
 
                 viewHolder.bmb = view.findViewById(R.id.bmb);
                 viewHolder.bmb_name = (TextView) view.findViewById(R.id.bmb_name);
@@ -303,11 +314,34 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
                 viewHolder.bmb_name.setText(spMaterial.bmb_name);
                 viewHolder.bmb_m_name.setText(spMaterial.bmb_m_name);
                 viewHolder.bmb_m_price.setText(spMaterial.getPrice());
-                viewHolder.bmb_m_total.setText(String.format("%.2f",(Float.parseFloat(spMaterial.bmb_price)*Float.parseFloat(spMaterial.item_count))));
+                viewHolder.bmb_m_total.setText(String.format("%.2f", (Float.parseFloat(spMaterial.bmb_price) * Float.parseFloat(spMaterial.item_count))));
             }else{
                 viewHolder.bmb.setVisibility(View.GONE);
             }
 
+            if(spMaterial.state==3||spMaterial.state==5){
+                viewHolder.layout_btn.setVisibility(View.VISIBLE);
+                viewHolder.btnSure.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(selectId!=null)return;
+
+                        SnackBar snackbar = new SnackBar(getActivity(), "确定收到货物吗？" , "确定", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                selectId = spMaterial.item_id;
+                                RequestParams requestParams = new RequestParams();
+                                requestParams.put("billDId",spMaterial.item_id);
+                                requestParams.put("type",spMaterial.state==3?0:1);
+                                postNetwork(RECEIVE,requestParams,RECEIVE);
+                            }
+                        });
+                        snackbar.show();
+                    }
+                });
+            }else{
+                viewHolder.layout_btn.setVisibility(View.GONE);
+            }
             return convertView;
         }
     };
@@ -323,12 +357,33 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
         TextView item_state;
         GridView grid_view;
         View   btnDel;
+        View   btnSure;
+        View   layout_btn;
 
         View   bmb;
         TextView bmb_name;
         TextView bmb_m_name;
         TextView bmb_m_price;
         TextView bmb_m_total;
+    }
+
+    @Override
+    public void parseJson(int code, JSONObject respanse, String tag, int pos, Object data) throws JSONException {
+        if(RECEIVE.equals(tag)){
+            if(code == NetworkImpl.REQ_SUCCESSS){
+                for (SpMaterial spMaterial : mData){
+                    if(spMaterial.item_id.equals(selectId)){
+                        selectId = null;
+                        spMaterial.state = 4;
+                        adapter.notifyDataSetChanged();
+                        break;
+                    }
+                }
+            }else {
+                selectId = null;
+                showButtomToast(String.format("错误码：%d",code));
+            }
+        }
     }
 
     class ImageClick implements View.OnClickListener{

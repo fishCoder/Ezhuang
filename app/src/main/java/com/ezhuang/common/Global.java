@@ -61,7 +61,7 @@ import java.util.regex.Pattern;
 public class Global {
     public static final String HOST_91JZ = "http://121.41.117.203:80";
 //    public static final String HOST_91JZ = "http://wwww.91jzw.com";
-//    public static final String HOST_91JZ = "http://192.168.0.178:8080/HardcoverServer";
+//    public static final String HOST_91JZ = "http://192.168.0.136:8080/HardcoverServer";
 
     public static String HOST = HOST_91JZ;
 
@@ -72,6 +72,8 @@ public class Global {
     public static String BUYER = "8";
     public static String STAFF = "9";
     public static String QUALITY = "13";
+    public static String DISPATCH = "12";
+    public static String STORAGE = "11";
 
     public static String PUSH_BROADCAST = "jpush_broadcast";
 

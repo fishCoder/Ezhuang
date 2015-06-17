@@ -34,10 +34,12 @@ public class PurchaseRecordDetailActivity extends BaseActivity {
 
     SelectPcMtFragment fragment;
 
-    String PURCHASE_RECORD_DETAIL = Global.HOST + "/app/order/queryPurchaseOrderDetails.do?spOrderId=%s";
+    String PURCHASE_RECORD_DETAIL = Global.HOST + "/app/order/queryPurchaseOrderDetails.do?spOrderId=%s&type=%d";
 
     @Extra
     String spOrderId;
+    @Extra
+    int type;
     @ViewById
     TextView total_price;
     @ViewById
@@ -53,9 +55,10 @@ public class PurchaseRecordDetailActivity extends BaseActivity {
 
         fragment = SelectPcMtFragment_.builder().build();
         fragment.viewOrder = true;
+        fragment.viewState = true;
         getSupportFragmentManager().beginTransaction().add(R.id.container,fragment).commit();
 
-        getNetwork(String.format(PURCHASE_RECORD_DETAIL,spOrderId),PURCHASE_RECORD_DETAIL);
+        getNetwork(String.format(PURCHASE_RECORD_DETAIL,spOrderId,type),PURCHASE_RECORD_DETAIL);
         showDialogLoading();
     }
 

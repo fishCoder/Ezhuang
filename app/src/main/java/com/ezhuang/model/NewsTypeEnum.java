@@ -85,8 +85,19 @@ public enum NewsTypeEnum {
     /**
      *
      */
-    ProjectOrderCheckNotPassNoticeToManager(14, "您的订单已经未通过审核",R.mipmap.mes_check_unpass);
+    ProjectOrderCheckNotPassNoticeToManager(14, "您的订单已经未通过审核",R.mipmap.mes_check_unpass),
 
+	BmbOrderDispatch(15,"你有一个订单需要调度",R.mipmap.ic_default_image),
+
+    BmbOrderStorage(16,"你有一个订单需要出库",R.mipmap.ic_default_image),
+
+    ProjectOrderHasSendOutToManager(17,"订单已出库",R.mipmap.ic_default_image),
+
+    ProjectOrderHasSendOutToBuyer(18,"订单已出库",R.mipmap.ic_default_image),
+
+	ConfirmReceiptGoodsToDingdy(19,"您有一个订单项已经确认签收",R.mipmap.ic_default_image),
+
+	ConfirmReceiptGoodsToBuyer(20,"您采购的订单项已到场确认签收",R.mipmap.ic_default_image);
 
     public int newsType;
 	public String newsContent;

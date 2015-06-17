@@ -194,6 +194,24 @@
             android:gravity="center" />
 
         <LinearLayout
+            android:id="@+id/layout_btn"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="10dp"
+            android:gravity="center">
+
+            <com.gc.materialdesign.views.ButtonRectangle
+                android:id="@+id/btnSure"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:background="#1E88E5"
+                android:text="确认收货" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/bmb"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
