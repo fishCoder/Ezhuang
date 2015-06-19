@@ -1,32 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:orientation="vertical"
     >
 
-    <LinearLayout
-        android:id="@+id/id_back"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center|right" >
-
-        <com.gc.materialdesign.views.ButtonFlat
-            android:id="@+id/btnDel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#1E88E5"
-            android:text="删除" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/id_front"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#fff"
-        android:orientation="vertical"
-        android:gravity="right|center_vertical">
 
         <LinearLayout
             android:id="@+id/layout_bill_item"
@@ -83,7 +62,7 @@
                     android:layout_height="wrap_content"
                     android:singleLine="false"
                     android:layout_marginLeft="5dp"
-                    android:text="8888-88-88 88:88:88"
+                    android:text=""
                     android:textColor="#555"
                     android:textSize="15sp" />
 
@@ -108,7 +87,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
-                    android:text="1"
+                    android:text=""
                     android:textColor="#1E88E5"
                     android:textSize="15sp" />
 
@@ -118,7 +97,7 @@
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
-                    android:text="平方米"
+                    android:text=""
                     android:textColor="#555"
                     android:textSize="15sp" />
 
@@ -127,7 +106,6 @@
 
             <LinearLayout
                 android:id="@+id/layout_state"
-                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="5dp"
@@ -146,7 +124,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
-                    android:text="待采购"
+                    android:text=""
                     android:textColor="#555"
                     android:textSize="15sp" />
 
@@ -171,7 +149,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
-                    android:text="8888-88-88 88:88:88"
+                    android:text=""
                     android:textColor="#555"
                     android:textSize="15sp" />
 
@@ -220,7 +198,7 @@
                     android:id="@+id/bmb_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="红星美凯龙尚都精品瓷砖店"
+                    android:text=""
                     android:textColor="@color/bmb_name"
                     android:textSize="15sp" />
             </LinearLayout>
@@ -244,7 +222,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
-                    android:text="精品瓷砖300*300"
+                    android:text=""
                     android:textColor="#555"
                     android:textSize="15sp" />
 
@@ -269,7 +247,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
-                    android:text="300*300"
+                    android:text=""
                     android:textColor="#555"
                     android:textSize="15sp" />
 
@@ -300,7 +278,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
-                        android:text="1"
+                        android:text=""
                         android:textColor="#f40"
                         android:textSize="15sp" />
 
@@ -335,7 +313,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
-                        android:text="1"
+                        android:text=""
                         android:textColor="#f40"
                         android:textSize="15sp" />
 
@@ -373,9 +351,8 @@
 
         </LinearLayout>
 
-    </LinearLayout>
 
 
 
 
-</FrameLayout>
+</LinearLayout>

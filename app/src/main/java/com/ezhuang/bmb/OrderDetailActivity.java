@@ -66,6 +66,9 @@ public class OrderDetailActivity extends BaseActivity {
     List<StaffUser> staffList = new LinkedList<>();
 
     View headView;
+
+    int msg_state = 1;
+
     @AfterViews
     void init(){
 
@@ -114,6 +117,7 @@ public class OrderDetailActivity extends BaseActivity {
         }else if(POINT_STORAGE.equals(tag)){
             if(code == NetworkImpl.REQ_SUCCESSS){
                 headView.findViewById(R.id.layout_point).setVisibility(View.GONE);
+                msg_state = 4;
             }else{
                 showButtomToast(String.format("错误码：%d",code));
             }
@@ -126,6 +130,17 @@ public class OrderDetailActivity extends BaseActivity {
                         break;
                     }
                 }
+
+                boolean flag = true;
+                for (BmbOdItem item : mData){
+                    if(item.spOdState<3){
+                        flag = false;
+                    }
+                }
+                if(flag){
+                    msg_state = 4;
+                }
+
                 adapter.notifyDataSetChanged();
             }else{
                 selectId = null;
@@ -363,6 +378,9 @@ public class OrderDetailActivity extends BaseActivity {
 
     @OptionsItem(android.R.id.home)
     void home() {
+        Intent intent = getIntent();
+        intent.putExtra("msg_state",msg_state);
+        setResult(RESULT_OK,intent);
         onBackPressed();
     }
 }

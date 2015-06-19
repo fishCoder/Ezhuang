@@ -23,6 +23,7 @@ import com.ezhuang.model.Project;
 import com.ezhuang.project.AddMaterialToBillActivity_;
 import com.ezhuang.project.ProjectDetailActivity_;
 import com.ezhuang.project.ViewBillDetailActivity_;
+import com.ezhuang.purchase.OrderDetailItemActivity_;
 import com.ezhuang.purchase.PurchaseRecordDetailActivity_;
 import com.ezhuang.quality.ProgressDetailActivity_;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -235,8 +236,29 @@ public class FragmentMessage extends BaseFragment {
             return NewsTypeEnum.NewPrijectProgressNoticeToQuality.newIcon;
         }else
         if(newsType==NewsTypeEnum.QualityCheckPrijectProgressNotice.newsType){
-            return  NewsTypeEnum.QualityCheckPrijectProgressNotice.newIcon;
+            return NewsTypeEnum.QualityCheckPrijectProgressNotice.newIcon;
+        }else
+        if(newsType==NewsTypeEnum.BmbOrderDispatch.newsType){
+            return NewsTypeEnum.BmbOrderDispatch.newIcon;
+        }else
+        if(newsType==NewsTypeEnum.BmbOrderStorage.newsType){
+            return NewsTypeEnum.BmbOrderStorage.newIcon;
+        }else
+        if(newsType==NewsTypeEnum.ProjectOrderHasSendOutToManager.newsType){
+            return NewsTypeEnum.ProjectOrderHasSendOutToManager.newIcon;
+        }else
+        if(newsType==NewsTypeEnum.ProjectOrderHasSendOutToBuyer.newsType){
+            return NewsTypeEnum.ProjectOrderHasSendOutToBuyer.newIcon;
+        }else
+        if(newsType==NewsTypeEnum.ConfirmReceiptGoodsToDingdy.newsType){
+            return NewsTypeEnum.ConfirmReceiptGoodsToDingdy.newIcon;
+        }else
+        if(newsType==NewsTypeEnum.ConfirmReceiptGoodsToBuyer.newsType){
+            return NewsTypeEnum.ConfirmReceiptGoodsToBuyer.newIcon;
         }
+
+
+
 
         return R.mipmap.ic_default_image;
     }
@@ -364,28 +386,18 @@ public class FragmentMessage extends BaseFragment {
             OrderDetailActivity_.intent(getActivity()).roleId(Global.STORAGE).bmbPcId(msg.source).startForResult(index);
         }else
         if(newsType==NewsTypeEnum.ProjectOrderHasSendOutToManager.newsType){
-            int billState = BillState.BUYALL.state;
-
-            ViewBillDetailActivity_.intent(getActivity())
-                    .pjId(msg.newsPjId)
-                    .pjBillId(msg.source)
-                    .roleId(Global.PROJECT_MANAGER)
-                    .project(mProject.get(msg.newsPjId))
-                    .billState(billState)
-                    .isRecord(true)
-                    .start();
-
+            OrderDetailItemActivity_.intent(getActivity()).roleId(Global.PROJECT_MANAGER).billDId(msg.source).startForResult(index);
         }else
         if(newsType==NewsTypeEnum.ProjectOrderHasSendOutToBuyer.newsType){
-            PurchaseRecordDetailActivity_.intent(getActivity()).spOrderId(msg.source).type(0).start();
+            OrderDetailItemActivity_.intent(getActivity()).roleId(Global.BUYER).billDId(msg.source).start();
             msg.state = 2;
         }else
         if(newsType==NewsTypeEnum.ConfirmReceiptGoodsToDingdy.newsType){
-            OrderDetailActivity_.intent(getActivity()).roleId(Global.STORAGE).bmbPcId(msg.source).startForResult(index);
+            OrderDetailItemActivity_.intent(getActivity()).roleId(Global.STORAGE).billDId(msg.source).start();
             msg.state = 2;
         }else
         if(newsType==NewsTypeEnum.ConfirmReceiptGoodsToBuyer.newsType){
-            PurchaseRecordDetailActivity_.intent(getActivity()).spOrderId(msg.source).type(0).start();
+            OrderDetailItemActivity_.intent(getActivity()).roleId(Global.BUYER).billDId(msg.source).start();
             msg.state = 2;
         }
 

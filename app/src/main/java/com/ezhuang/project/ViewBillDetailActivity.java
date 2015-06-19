@@ -103,6 +103,11 @@ public class ViewBillDetailActivity extends BaseActivity {
 
     int msg_state = 1;
 
+    void setMsg_state(int state){
+        isOperatOk = true;
+        msg_state = state;
+    }
+
     @AfterViews
     void init(){
         ActionBar actionBar = getSupportActionBar();

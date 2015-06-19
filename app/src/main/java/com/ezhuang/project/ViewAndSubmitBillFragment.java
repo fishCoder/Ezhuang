@@ -379,10 +379,23 @@ public class ViewAndSubmitBillFragment extends BaseFragment {
                         break;
                     }
                 }
+                checkOrderState();
             }else {
                 selectId = null;
                 showButtomToast(String.format("错误码：%d",code));
             }
+        }
+    }
+
+    void checkOrderState(){
+        boolean flag = true;
+        for (SpMaterial spMaterial : mData){
+            if(spMaterial.state != 4){
+                flag = false;
+            }
+        }
+        if(flag){
+            ((ViewBillDetailActivity)getActivity()).setMsg_state(4);
         }
     }
 

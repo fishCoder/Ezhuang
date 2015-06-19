@@ -59,7 +59,7 @@ public class OrdersActivity extends BaseActivity {
         actionBar.setDisplayShowCustomEnabled(true);
         if(mData.size()==0){
             getNetwork(String.format(QUERY_ORDERS,roleId),QUERY_ORDERS);
-            initDialogLoading();
+            showDialogLoading();
         }
 
         listView.setAdapter(adapter);
