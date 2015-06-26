@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.ezhuang.bmb.NewOrderActivity_;
 import com.ezhuang.bmb.OrdersActivity_;
 import com.ezhuang.common.Banner;
 import com.ezhuang.common.Global;
@@ -161,6 +162,9 @@ public class FragmentHome extends BaseFragment {
                 }else
                 if(list.get(position)[0].equals("建材出库")){
                     OrdersActivity_.intent(getActivity()).roleId(Global.STORAGE).start();
+                }else
+                if(list.get(position)[0].equals("新建订单")){
+                    NewOrderActivity_.intent(getActivity()).start();
                 }
 
             }

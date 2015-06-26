@@ -24,7 +24,6 @@ import com.ezhuang.project.AddMaterialToBillActivity_;
 import com.ezhuang.project.ProjectDetailActivity_;
 import com.ezhuang.project.ViewBillDetailActivity_;
 import com.ezhuang.purchase.OrderDetailItemActivity_;
-import com.ezhuang.purchase.PurchaseRecordDetailActivity_;
 import com.ezhuang.quality.ProgressDetailActivity_;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;

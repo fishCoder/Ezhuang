@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.ezhuang.BaseActivity;
 import com.ezhuang.MyApp;
 import com.ezhuang.R;
+import com.ezhuang.bmb.ViewNewOrderFragment;
 import com.ezhuang.common.Global;
 import com.ezhuang.model.StaffUser;
 import com.ezhuang.project.ViewBillDetailActivity;
@@ -159,6 +160,26 @@ public class SetProjectInfo extends BaseActivity {
                     }
                 case SelfBuyFragment.BMB_SPEC:
                     flag = true;
+                    break;
+                case ViewNewOrderFragment.SET_ADDRESS:
+                    flag = emptyValue(itemValue);
+                    break;
+                case ViewNewOrderFragment.SET_NAME:
+                    flag = emptyValue(itemValue);
+                    break;
+                case ViewNewOrderFragment.SET_PHONE:
+                    if(Global.isMoblie(itemValue)){
+                        flag = true;
+                    }else{
+                        flag = false;
+                        showMiddleToast("手机号不正确");
+                    }
+                    break;
+                case ViewNewOrderFragment.SET_SP_NAME:
+                    flag = emptyValue(itemValue);
+                    break;
+                case ViewNewOrderFragment.SET_SP_ADDRESS:
+                    flag = emptyValue(itemValue);
                     break;
         }
 

@@ -17,6 +17,8 @@ import com.ezhuang.common.LoginBackground;
 import com.ezhuang.common.enter.SimpleTextWatcher;
 import com.ezhuang.common.third.FastBlur;
 import com.ezhuang.model.AccountInfo;
+import com.ezhuang.model.SpMaterial;
+import com.ezhuang.model.SpMtType;
 import com.ezhuang.model.StaffUser;
 import com.loopj.android.http.RequestParams;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -192,8 +194,21 @@ public class LoginActivity extends BaseActivity {
 
         if(tag.equals(HOST_LOGIN)){
             if(code==10001){
+
                 StaffUser currentUser = JsonUtil.Json2Object(respanse.getString("data"), StaffUser.class);
                 MyApp.currentUser = currentUser;
+                StaffUser usedUser = AccountInfo.loadAccount(this);
+                if(usedUser.getCompanyType()!=null){
+                    if(!usedUser.getCompanyType().equals(currentUser.getCompanyType())){
+                        /**
+                         * 登录时清空本地物料，目的防止装修公司用户 建材商用户同时登在一个APP上，物料混乱
+                         */
+                        SpMtType.clear();
+                        SpMaterial.clear();
+                    }
+                }
+
+
                 showProgressBar(false);
                 AccountInfo.saveAccount(LoginActivity.this,currentUser);
                 Intent intent = new Intent(LoginActivity.this,MainActivity.class);

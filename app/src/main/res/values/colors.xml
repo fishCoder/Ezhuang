@@ -24,6 +24,8 @@
 
     <color name="divide_line_color">#dddddd</color>
 
+    <color name="border_width">#dddddd</color>
+
     <color name="font_green_1">#09b058</color>
     <color name="font_green">#3bbd79</color>
     <color name="font_black_0">#000000</color>

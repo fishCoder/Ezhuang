@@ -355,6 +355,12 @@
         </activity>
 
         <activity
+            android:name=".bmb.NewOrderActivity_"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" >
+        </activity>
+
+        <activity
             android:name=".EntranceActivity_"
             android:theme="@style/AppThemeNoActionbar" >
             <intent-filter>

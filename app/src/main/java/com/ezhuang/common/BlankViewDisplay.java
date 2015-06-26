@@ -6,6 +6,8 @@ import android.widget.TextView;
 import com.ezhuang.FragmentMessage;
 import com.ezhuang.R;
 import com.ezhuang.SchemeListActivity;
+import com.ezhuang.bmb.BmbMtFragment;
+import com.ezhuang.bmb.ViewNewOrderFragment;
 import com.ezhuang.project.ProjectBillFragment;
 import com.ezhuang.project.ViewAndSubmitBillFragment;
 import com.ezhuang.project.detail.FragmentProjectList;
@@ -75,6 +77,14 @@ public class BlankViewDisplay {
             if (fragment instanceof SchemeListActivity){
                 iconId = R.mipmap.ic_exception_blank_task;
                 text = "没有展示方案";
+            }
+            if (fragment instanceof BmbMtFragment){
+                iconId = R.mipmap.ic_exception_blank_task;
+                text = "空空如也";
+            }
+            if (fragment instanceof ViewNewOrderFragment){
+                iconId = R.mipmap.ic_exception_blank_task;
+                text = "空空如也";
             }
         } else {
             iconId = R.mipmap.ic_exception_no_network;

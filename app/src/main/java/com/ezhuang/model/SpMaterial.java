@@ -35,6 +35,12 @@ public class SpMaterial extends Model implements Serializable,IPcMt{
         spec = jsonObject.getString("spec");
         unitId = jsonObject.getString("unitId");
         unitName = jsonObject.getString("unitName");
+        try{
+            bmb_price = jsonObject.getString("price");
+        }catch (JSONException e){
+
+        }
+
     }
 
     @Column(name = "bigTypeId")
@@ -82,6 +88,7 @@ public class SpMaterial extends Model implements Serializable,IPcMt{
 
     public String bmb_m_name = "";
 
+    @Column(name = "bmb_price")
     public String bmb_price = "";
 
     public String bmb_m_spec = "";

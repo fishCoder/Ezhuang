@@ -36,7 +36,7 @@
 
     <string-array name="dispatcher_apps">
         <item>订单调度</item>
-        <item>调度记录</item>
+        <item>新建订单</item>
     </string-array>
 
     <string-array name="storage_apps">

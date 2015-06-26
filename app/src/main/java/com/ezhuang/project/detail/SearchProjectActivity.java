@@ -123,7 +123,7 @@ public class SearchProjectActivity extends BaseActivity{
             if (s.length() > 0 && !keyword.equals(s.toString())) {
                 keyword = s.toString();
 
-                getNetwork(String.format(PROJECT_BY_SEARCH, roleId, staffId, keyword), PROJECT_BY_SEARCH);
+                getNetwork(String.format(PROJECT_BY_SEARCH, roleId, staffId, keyword,startTime, endTime), PROJECT_BY_SEARCH);
 
                 showDialogLoading();
                 emptyView.setVisibility(View.INVISIBLE);
@@ -137,6 +137,7 @@ public class SearchProjectActivity extends BaseActivity{
 
     @Override
     public void parseJson(int code, JSONObject respanse, String tag, int pos, Object data) throws JSONException {
+        hideProgressDialog();
         if(tag.equals(PROJECT_BY_SEARCH)){
             if(code == NetworkImpl.REQ_SUCCESSS){
                 listProject.clear();
@@ -164,7 +165,7 @@ public class SearchProjectActivity extends BaseActivity{
 
             }
         }
-        hideProgressDialog();
+
         if (listProject.isEmpty()) {
             emptyView.setVisibility(View.VISIBLE);
             container.setVisibility(View.INVISIBLE);
