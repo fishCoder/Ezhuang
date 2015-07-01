@@ -156,4 +156,7 @@
         <item name="android:textColor">@android:color/secondary_text_light</item>
     </style>
 
+    <style name="ActionBarTabTextStyle" parent="@android:style/TextAppearance">
+        <item name="android:textSize">18sp</item>
+    </style>
 </resources>

@@ -197,17 +197,12 @@ public class LoginActivity extends BaseActivity {
 
                 StaffUser currentUser = JsonUtil.Json2Object(respanse.getString("data"), StaffUser.class);
                 MyApp.currentUser = currentUser;
-                StaffUser usedUser = AccountInfo.loadAccount(this);
-                if(usedUser.getCompanyType()!=null){
-                    if(!usedUser.getCompanyType().equals(currentUser.getCompanyType())){
-                        /**
-                         * 登录时清空本地物料，目的防止装修公司用户 建材商用户同时登在一个APP上，物料混乱
-                         */
-                        SpMtType.clear();
-                        SpMaterial.clear();
-                    }
-                }
 
+                /**
+                 * 登录时清空本地物料，目的防止装修公司用户 建材商用户同时登在一个APP上，物料混乱
+                 */
+                SpMtType.clear();
+                SpMaterial.clear();
 
                 showProgressBar(false);
                 AccountInfo.saveAccount(LoginActivity.this,currentUser);

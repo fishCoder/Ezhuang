@@ -121,7 +121,7 @@ public class OrderDetailActivity extends BaseActivity {
             }else{
                 showButtomToast(String.format("错误码：%d",code));
             }
-        } if(OUT_STORAGE.equals(tag)){
+        }else if(OUT_STORAGE.equals(tag)){
             if(code == NetworkImpl.REQ_SUCCESSS){
                 for (BmbOdItem item : mData){
                     if(item.spOdId.equals(selectId)){

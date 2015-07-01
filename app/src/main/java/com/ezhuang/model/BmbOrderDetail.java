@@ -10,4 +10,12 @@ public class BmbOrderDetail {
     public String bmbODPrice;
     public String bmbOorderId;
     public String bmbODstate;
+    public Material material;
+    public class Material {
+        public String spec;
+        public String bigTypeName;
+        public String sTypeName;
+        public String mtName;
+        public String unitName;
+    }
 }

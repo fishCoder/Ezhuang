@@ -15,6 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.ezhuang.bmb.NewOrderActivity_;
+import com.ezhuang.bmb.NewOrderRecordActivity_;
 import com.ezhuang.bmb.OrdersActivity_;
 import com.ezhuang.common.Banner;
 import com.ezhuang.common.Global;
@@ -73,11 +74,11 @@ public class FragmentHome extends BaseFragment {
 
     @StringArrayRes
     String[] dispatcher_apps;
-    int[] dispatcher_apps_icons = new int[]{R.mipmap.ic_default_image,R.mipmap.ic_default_image};
+    int[] dispatcher_apps_icons = new int[]{R.mipmap.ic_bill_scheduling};
 
     @StringArrayRes
     String[] storage_apps;
-    int[] storage_apps_icons = new int[]{R.mipmap.ic_default_image};
+    int[] storage_apps_icons = new int[]{R.mipmap.ic_buy_rec,R.mipmap.ic_new_project,R.mipmap.ic_project_rec};
 
     @ViewById
     ListView listRoleFunction;
@@ -165,6 +166,9 @@ public class FragmentHome extends BaseFragment {
                 }else
                 if(list.get(position)[0].equals("新建订单")){
                     NewOrderActivity_.intent(getActivity()).start();
+                }else
+                if(list.get(position)[0].equals("查看订单")){
+                    NewOrderRecordActivity_.intent(getActivity()).start();
                 }
 
             }
@@ -205,11 +209,18 @@ public class FragmentHome extends BaseFragment {
         LayoutParams params;
         // 初始化广告条资源
         for (Banner.PhotoItem item : items) {
+            final String jump_url = item.getUrl();
             mImageView = new ImageView(getActivity());
             Uri uri = Uri.fromFile(item.getCacheFile(getActivity()));
             Log.v("uri",uri.toString());
             mImageView.setImageURI(uri);
             mImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            mImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    WebViewActivity_.intent(getActivity()).url(jump_url).start();
+                }
+            });
             mImageList.add(mImageView);
 
             // 初始化广告条正下方的"点"
@@ -226,6 +237,7 @@ public class FragmentHome extends BaseFragment {
 
         // 设置广告条跳转时，广告语和状态语的变化
         viewpager.setOnPageChangeListener(new BannerListener());
+
 
         // 初始化广告条，当前索引Integer.MAX_VALUE的一半
         int index = (Integer.MAX_VALUE / 2) - (Integer.MAX_VALUE / 2 % items.size());

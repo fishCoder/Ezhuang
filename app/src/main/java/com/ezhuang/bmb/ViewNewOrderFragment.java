@@ -263,7 +263,7 @@ public class ViewNewOrderFragment extends BaseFragment {
                             .intent(ViewNewOrderFragment.this)
                             .title("公司名称")
                             .row(SET_SP_NAME)
-                            .rowValue(val_phone)
+                            .rowValue(val_sp_name)
                             .startForResult(ListModify.Add);
                 }
             });
@@ -274,7 +274,7 @@ public class ViewNewOrderFragment extends BaseFragment {
                             .intent(ViewNewOrderFragment.this)
                             .title("公司地址")
                             .row(SET_SP_ADDRESS)
-                            .rowValue(val_phone)
+                            .rowValue(val_sp_address)
                             .startForResult(ListModify.Add);
                 }
             });
@@ -441,7 +441,7 @@ public class ViewNewOrderFragment extends BaseFragment {
                 }else
                 if(row == SET_SP_ADDRESS){
                     val_sp_address = value;
-                    txt_sp_address.setText(val_sp_name);
+                    txt_sp_address.setText(val_address);
                 }
             }
         }
@@ -459,7 +459,7 @@ public class ViewNewOrderFragment extends BaseFragment {
 
         txt_sp_name.setText(val_sp_name);
 
-        txt_sp_address.setText(val_sp_name);
+        txt_sp_address.setText(val_address);
     }
 
     void newBmbOrder(){
