@@ -74,7 +74,7 @@ public class SchemeListActivity extends BaseActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     String url = Global.HOST+"/mobile/toSchemeDetail.do?cp_id=%s&schemeId=%s";
-                    position++;
+                    position--;
                     WebViewActivity_.intent(SchemeListActivity.this).scheme(mData.get(position)).url(String.format(url, MyApp.currentUser.getCompanyId(), mData.get(position).schemeId)).start();
 
                 }
