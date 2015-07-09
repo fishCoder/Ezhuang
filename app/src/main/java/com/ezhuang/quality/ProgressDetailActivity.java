@@ -159,24 +159,29 @@ public class ProgressDetailActivity extends BaseActivity {
         }
 
         if(pg!=null){
-            if(Global.PROJECT_MANAGER.equals(roleId)&&pg.owerScore!=0){
-                layout_share.setVisibility(View.VISIBLE);
-                layout_share.findViewById(R.id.share).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ShareSDK.initSDK(ProgressDetailActivity.this);
-                        OnekeyShare oks = new OnekeyShare();
-                        oks.setTitle(getString(R.string.share));
-                        oks.setText("装修进度-"+pg.nodeName);
-                        oks.setUrl("http://www.91jzw.com/index/home/share_pg.do?pgId="+pg.pgId);
-                        for(String url:pg.imgUrls)
-                            oks.setImageUrl(url);
-                        oks.show(ProgressDetailActivity.this);
-                    }
-                });
-            }
+            shareSDK();
         }
 
+    }
+
+
+    void shareSDK(){
+        if(pg.owerScore!=0){
+            layout_share.setVisibility(View.VISIBLE);
+            layout_share.findViewById(R.id.share).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ShareSDK.initSDK(ProgressDetailActivity.this);
+                    OnekeyShare oks = new OnekeyShare();
+                    oks.setTitle(getString(R.string.share));
+                    oks.setText("装修进度-"+pg.nodeName);
+                    oks.setUrl("http://www.91jzw.com/index/home/share_pg.do?pgId="+pg.pgId);
+                    for(String url:pg.imgUrls)
+                        oks.setImageUrl(url);
+                    oks.show(ProgressDetailActivity.this);
+                }
+            });
+        }
     }
 
     void fill_progress(){
@@ -242,7 +247,7 @@ public class ProgressDetailActivity extends BaseActivity {
 
             for (String url : pg.imgUrls) {
                 PhotoData photoData = new PhotoData(url);
-                Log.i("图片路径", url);
+
                 list.add(photoData);
             }
 
@@ -291,6 +296,8 @@ public class ProgressDetailActivity extends BaseActivity {
                 }
             });
         }
+
+        shareSDK();
     }
 
     @OptionsItem(android.R.id.home)

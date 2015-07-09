@@ -127,7 +127,7 @@ public class ViewProgressActivity extends BaseActivity {
                 }
                 mData.add(projectProgressList);
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
             toUI(0);
         }
         toUI(count);

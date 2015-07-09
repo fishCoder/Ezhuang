@@ -98,6 +98,7 @@ public class BmbMtFragment extends BaseFragment {
                 selectBigType = selectBigType.equals("1")?"2":"1";
                 mType = SpMtType.getTypeByBigType(selectBigType);
                 if(mType==null || mType.size()==0){
+                    selectBigType = "1";
                     return false;
                 }
                 publishProgress();
@@ -185,7 +186,7 @@ public class BmbMtFragment extends BaseFragment {
                     }
 
 
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
 
                 }
@@ -228,12 +229,18 @@ public class BmbMtFragment extends BaseFragment {
 
         @Override
         public int getGroupCount() {
+            if(mType==null){
+                return 0;
+            }
             return mType.size();
         }
 
         @Override
         public int getChildrenCount(int groupPosition) {
-            return mData.get(mType.get(groupPosition).typeId).size();
+            if(mData == null){
+                return 0;
+            }
+            return mData.size()==0?0:mData.get(mType.get(groupPosition).typeId).size();
         }
 
         @Override

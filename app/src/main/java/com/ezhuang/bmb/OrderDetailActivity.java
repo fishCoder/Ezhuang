@@ -133,7 +133,7 @@ public class OrderDetailActivity extends BaseActivity {
 
                 boolean flag = true;
                 for (BmbOdItem item : mData){
-                    if(item.spOdState<3){
+                    if(item.spOdState<2){
                         flag = false;
                     }
                 }

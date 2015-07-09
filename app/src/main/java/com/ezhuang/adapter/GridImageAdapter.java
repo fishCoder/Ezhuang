@@ -1,6 +1,6 @@
 package com.ezhuang.adapter;
 
-import android.graphics.Bitmap;
+
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,10 +10,10 @@ import android.widget.ImageView;
 
 import com.ezhuang.R;
 import com.ezhuang.common.Global;
+import com.ezhuang.common.ImageLoadTool;
 import com.ezhuang.model.PhotoData;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -66,18 +66,20 @@ public class GridImageAdapter extends BaseAdapter {
         holder.image.setImageResource(R.mipmap.ic_default_image);
         PhotoData photoData = mData.get(position);
         Uri data = photoData.uri;
-        holder.uri = data.toString();
+        holder.uri = data.toString()+"?imageView2/1/w/200/h/200";
 
-        ImageLoader.getInstance().loadImage(data.toString()+"?imageView2/1/w/200/h/200", mSize, new SimpleImageLoadingListener() {
-            @Override
-            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                for (ViewHolder item : holderList) {
-                    if (item.uri.equals(imageUri)) {
-                        item.image.setImageBitmap(loadedImage);
-                    }
-                }
-            }
-        });
+        ImageLoader.getInstance().displayImage(holder.uri,holder.image, ImageLoadTool.optionsImage);
+//        ImageLoader.getInstance().loadImage(data.toString()+"?imageView2/1/w/200/h/200", mSize, new SimpleImageLoadingListener() {
+//            @Override
+//            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+//                Log.i("图片路径", imageUri);
+//                for (ViewHolder item : holderList) {
+//                    if (item.uri.equals(imageUri)) {
+//                        item.image.setImageBitmap(loadedImage);
+//                    }
+//                }
+//            }
+//        });
 
         return holder.image;
     }

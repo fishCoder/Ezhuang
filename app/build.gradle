@@ -9,8 +9,8 @@ android {
         applicationId "com.ezhuang"
         minSdkVersion 11
         targetSdkVersion 21
-        versionCode 1
-        versionName "0.91"
+        versionCode 5
+        versionName "0.9.2"
     }
     buildTypes {
         release {

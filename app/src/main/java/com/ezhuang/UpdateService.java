@@ -24,6 +24,8 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.ezhuang.common.Global;
 import com.ezhuang.common.network.MyAsyncHttpClient;
 import com.ezhuang.settings.UpdateTipActivity;
+import com.pgyersdk.update.PgyUpdateManager;
+import com.pgyersdk.update.UpdateManagerListener;
 
 import org.apache.http.Header;
 import org.json.JSONObject;
@@ -167,49 +169,52 @@ public class UpdateService extends Service {
         Banner banner = new Banner(this);
         banner.update();
 
-        AsyncHttpClient client = MyAsyncHttpClient.createClient(this);
-        client.get(this, Global.HOST + "/app/res/queryVersion.do", new JsonHttpResponseHandler() {
 
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
 
-                    mUpdateInfo = new UpdateInfo(response.getJSONObject("data"));
 
-                    int versionCode = getVersion();
-                    Log.i("version",""+versionCode);
-                    if (mUpdateInfo.versionCode > versionCode) {
-
-                        SharedPreferences share = getSharedPreferences("version", Context.MODE_PRIVATE);
-                        int jumpVersion = share.getInt("jump", 0);
-
-                        if (mUpdateInfo.versionCode > jumpVersion) {
-                            Intent intentUpdateTipActivity = new Intent(UpdateService.this, UpdateTipActivity.class);
-                            intentUpdateTipActivity.putExtra("data", mUpdateInfo);
-                            intentUpdateTipActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intentUpdateTipActivity);
-                        }
-                    } else {
-                        if (!background) {
-                            Toast.makeText(UpdateService.this, "你的软件已经是最新版本", Toast.LENGTH_LONG).show();
-                        }
-                        stopSelf();
-                    }
-                } catch (Exception e) {
-                    Global.errorLog(e);
-                }
-            }
-
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                stopSelf();
-            }
-
-            @Override
-            public void onFinish() {
-                super.onFinish();
-                isChecking = false;
-            }
-        });
+//        AsyncHttpClient client = MyAsyncHttpClient.createClient(this);
+//        client.get(this, Global.HOST + "/app/res/queryVersion.do", new JsonHttpResponseHandler() {
+//
+//            @Override
+//            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+//                try {
+//
+//                    mUpdateInfo = new UpdateInfo(response.getJSONObject("data"));
+//
+//                    int versionCode = getVersion();
+//                    Log.i("version",""+versionCode);
+//                    if (mUpdateInfo.versionCode > versionCode) {
+//
+//                        SharedPreferences share = getSharedPreferences("version", Context.MODE_PRIVATE);
+//                        int jumpVersion = share.getInt("jump", 0);
+//
+//                        if (mUpdateInfo.versionCode > jumpVersion) {
+//                            Intent intentUpdateTipActivity = new Intent(UpdateService.this, UpdateTipActivity.class);
+//                            intentUpdateTipActivity.putExtra("data", mUpdateInfo);
+//                            intentUpdateTipActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                            startActivity(intentUpdateTipActivity);
+//                        }
+//                    } else {
+//                        if (!background) {
+//                            Toast.makeText(UpdateService.this, "你的软件已经是最新版本", Toast.LENGTH_LONG).show();
+//                        }
+//                        stopSelf();
+//                    }
+//                } catch (Exception e) {
+//                    Global.errorLog(e);
+//                }
+//            }
+//
+//            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+//                stopSelf();
+//            }
+//
+//            @Override
+//            public void onFinish() {
+//                super.onFinish();
+//                isChecking = false;
+//            }
+//        });
     }
 
     private int getVersion() {

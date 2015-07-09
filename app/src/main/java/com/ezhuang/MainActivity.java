@@ -18,6 +18,8 @@ import com.ezhuang.common.network.NetworkImpl;
 import com.ezhuang.model.AccountInfo;
 import com.ezhuang.model.StaffUser;
 import com.loopj.android.http.RequestParams;
+import com.pgyersdk.update.PgyUpdateManager;
+import com.pgyersdk.update.UpdateManagerListener;
 import com.readystatesoftware.viewbadger.BadgeView;
 
 import org.json.JSONException;
@@ -65,11 +67,14 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_);
 
-
-
         initView();
+        updateVersion();
     }
 
+    void updateVersion(){
+        String appId ="b87e159131abde328237831cd3902aad"; //蒲公英注册或上传应用获取的AppId
+        PgyUpdateManager.register(this, appId);
+    }
 
     /**
      * 初始化组件

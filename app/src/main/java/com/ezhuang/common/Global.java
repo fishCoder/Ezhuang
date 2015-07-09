@@ -59,8 +59,8 @@ import java.util.regex.Pattern;
  * Created by cc191954 on 14-8-233.
  */
 public class Global {
-    public static final String HOST_91JZ = "http://121.41.117.203:80";
-//    public static final String HOST_91JZ = "http://wwww.91jzw.com";
+//    public static final String HOST_91JZ = "http://121.41.117.203:80";
+    public static final String HOST_91JZ = "http://wwww.91jzw.com";
 //    public static final String HOST_91JZ = "http://192.168.0.189:8080/HardcoverServer";
 
     public static String HOST = HOST_91JZ;

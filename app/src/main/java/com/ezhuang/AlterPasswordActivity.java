@@ -78,12 +78,12 @@ public class AlterPasswordActivity extends BaseActivity {
 
     private void upateLoginButton() {
 
-        if (edit_password.getText().length() <= 6) {
+        if (edit_password.getText().length() < 6) {
             confirm_button.setEnabled(false);
             return;
         }
 
-        if (edit_repassword.getText().length() <= 6) {
+        if (edit_repassword.getText().length() < 6) {
             confirm_button.setEnabled(false);
             return;
         }
